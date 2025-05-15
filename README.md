@@ -11,3 +11,4 @@ Tecnologías Utilizadas: LibGDX, juego diseñado para escritorio.
 Cómo Compilar y Ejecutar: Descargar la carpeta lwjgl3 y compilar el juego desde la clase Principal
 
 Estado Actual del Proyecto: Configuración inicial y estructura del proyecto. 
+
