@@ -8,12 +8,32 @@ __Descripción del juego:__ Juego multijugador cooperativo para 2 jugadores que 
 
 __Tecnologías Utilizadas:__ LibGDX, juego diseñado para escritorio.
 
-__Cómo Compilar y Ejecutar:__
+__Compilar y Ejecutar el proyecto:__
 
 *Prerrequisitos:* 
 - Tener una versión actualizada de Java Development Kit (JDK 17 o posterior)
 - Tener IntelliJ IDEA o Eclipse instalado (Un IDE compatible con Gradle)
-- Acceder a su cuenta de GitHub en el IDE y... (seguir desde aca)
+- Tener Git instalado
+
+*Clonar el repositorio:*
+- Ejecutar Git Bash
+- Ejecutar el siguiente comando
+
+__git clone https://github.com/MatiDec/proyecto-final-tp-let-me-cook-libgdx/__
+
+__Importar y Ejecutar en el IDE__
+
+*Usando IntelliJ IDEA:*
+- Abrir el proyecto (File -> Open...) y seleccionar la carpeta raíz del proyecto clonado anteriormente (o el archivo *build.gradle*).
+- Esperar a que Gradle sincronice las dependencias.
+- Para ejecutar, buscar el módulo __lwjgl3__ y dentro de este, la clase __Lwjgl3Launcher.java__.
+- Hacer click derecho en la clase y seleccionar *Run* o *Debug*.
+
+*Usando Eclipse:*
+- Importar el proyecto (File > Import... > Gradle > Existing Gradle Project) y seleccionar la carpeta raíz del proyecto clonado anteriormente.
+- Esperar a que Gradle sincronice las dependencias.
+- Para ejecutar, buscar el módulo __lwjgl3__ y dentro de este, la clase __Lwgjl3Launcher.java__.
+- Hacer click derecho y seleccionar *Run As > Java Application*
 
 __Estado Actual del Proyecto:__ Configuración inicial y estructura del proyecto. 
 
