@@ -8,7 +8,12 @@ __Descripción del juego:__ Juego multijugador cooperativo para 2 jugadores que 
 
 __Tecnologías Utilizadas:__ LibGDX, juego diseñado para escritorio.
 
-__Cómo Compilar y Ejecutar:__ Descargar la carpeta lwjgl3 y compilar el juego desde la clase Principal
+__Cómo Compilar y Ejecutar:__
+
+*Prerrequisitos:* 
+- Tener una versión actualizada de Java Development Kit (JDK 17 o posterior)
+- Tener IntelliJ IDEA o Eclipse instalado (Un IDE compatible con Gradle)
+- Acceder a su cuenta de GitHub en el IDE y... (seguir desde aca)
 
 __Estado Actual del Proyecto:__ Configuración inicial y estructura del proyecto. 
 
