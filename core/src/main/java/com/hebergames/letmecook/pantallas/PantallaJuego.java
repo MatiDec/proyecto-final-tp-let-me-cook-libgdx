@@ -11,8 +11,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.elementos.MapaColisiones;
+import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.entidades.JugadorHost;
 import com.hebergames.letmecook.eventos.Entrada;
+import com.hebergames.letmecook.utiles.Recursos;
 import com.hebergames.letmecook.utiles.Render;
 
 public class PantallaJuego extends Pantalla {
@@ -24,7 +26,10 @@ public class PantallaJuego extends Pantalla {
     private Animation<TextureRegion> animacionJugador;
     private MapaColisiones mapaColisiones;
 
-   //debug aca tambien
+    private PantallaPausa pantallaPausa;
+    private boolean juegoEnPausa = false;
+
+    //debug aca tambien
     //private ShapeRenderer shapeRenderer;
 
     @Override
@@ -43,24 +48,30 @@ public class PantallaJuego extends Pantalla {
         Gdx.input.setInputProcessor(entrada);
         entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
 
-       //debug
+        pantallaPausa = new PantallaPausa(this);
+
+        //debug
         //shapeRenderer = new ShapeRenderer();
     }
 
     @Override
     public void render(float delta) {
-        jugadorHost.actualizar(delta);
-        entrada.actualizarEntradas();
+        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            togglePausa();
+        }
 
+        if (!juegoEnPausa) {
+            jugadorHost.actualizar(delta);
+            entrada.actualizarEntradas();
+        }
 
+        // Renderizar el juego siempre (para que se vea de fondo)
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
 
         batch.begin();
         jugadorHost.dibujar(batch);
         batch.end();
-
 
         //esto de aca es debug no se olviden del dispose de abajo
         /*
@@ -71,6 +82,33 @@ public class PantallaJuego extends Pantalla {
         }
         shapeRenderer.end();
          */
+
+        if (juegoEnPausa) {
+            pantallaPausa.render(delta);
+        }
+    }
+
+    public void togglePausa() {
+        juegoEnPausa = !juegoEnPausa;
+
+        if (juegoEnPausa) {
+            pantallaPausa.show();
+        } else {
+            entrada = new Entrada();
+            Gdx.input.setInputProcessor(entrada);
+            entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
+        }
+    }
+
+    public void reanudarJuego() {
+        juegoEnPausa = false;
+        entrada = new Entrada();
+        Gdx.input.setInputProcessor(entrada);
+        entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
+    }
+
+    public boolean isJuegoEnPausa() {
+        return this.juegoEnPausa;
     }
 
     @Override
@@ -88,6 +126,9 @@ public class PantallaJuego extends Pantalla {
     @Override
     public void dispose() {
         jugadorSheet.dispose();
+        if (pantallaPausa != null) {
+            pantallaPausa.dispose();
+        }
         //shapeRenderer.dispose();
     }
 }

@@ -9,31 +9,19 @@ import com.hebergames.letmecook.utiles.Render;
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class LetMeCookPrincipal extends Game {
 
-    public static PantallaMenu menuPrincipal = new PantallaMenu();
-    public static Pantalla pantallaActual = menuPrincipal;
-
     @Override
     public void create() {
         Render.batch = new SpriteBatch();
-        pantallaActual = obtenerPantallaActual();
-        this.setScreen(pantallaActual);
-    }
-
-    private Pantalla obtenerPantallaActual() {
-        return menuPrincipal.getPantallaElegida();
+        Pantalla.cambiarPantalla(new PantallaMenu());
+        this.setScreen(Pantalla.getPantallaActual());
     }
 
     @Override
     public void render() {
         super.render();
 
-        if(pantallaActual instanceof PantallaMenu) {
-            PantallaMenu menu = (PantallaMenu) pantallaActual;
-            Pantalla nueva = menu.getPantallaElegida();
-            if(nueva != pantallaActual) {
-                pantallaActual = nueva;
-                setScreen(nueva);
-            }
+        if(getScreen() != Pantalla.getPantallaActual()) {
+            setScreen(Pantalla.getPantallaActual());
         }
     }
 

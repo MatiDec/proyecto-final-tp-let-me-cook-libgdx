@@ -16,7 +16,6 @@ public class PantallaMenu extends Pantalla {
     Imagen fondo;
     SpriteBatch b;
 
-    Pantalla pantallaElegida = this;
     Entrada entrada;
 
     Texto o1, o2, o3, o4; // Así la cantidad de opciones que tenga el menú
@@ -50,10 +49,18 @@ public class PantallaMenu extends Pantalla {
         entrada = new Entrada();
         Gdx.input.setInputProcessor(entrada);
 
-        TextoInteractuable multijugadorLocal = new TextoInteractuable(o1, () -> pantallaElegida = new PantallaJuego());
-        TextoInteractuable multijugadorOnline = new TextoInteractuable(o2, () -> System.out.println("Acá debería entrar al modo multijugador online"));
-        TextoInteractuable opciones = new TextoInteractuable(o3, () -> System.out.println("Acá debería entrar al menu de opciones"));
-        TextoInteractuable salir = new TextoInteractuable(o4, () -> System.out.println("Acá debería salir"));
+        //La flechita es porque TextoInteractuable recibe una función, es por el Runnable. Lo mejor sería reemplazarlo pq es una expresión lambda y es complejo, se puede simplificar.
+        TextoInteractuable multijugadorLocal = new TextoInteractuable(o1, () ->
+            cambiarPantalla(new PantallaJuego()));
+
+        TextoInteractuable multijugadorOnline = new TextoInteractuable(o2, () ->
+            System.out.println("Acá debería entrar al modo multijugador online"));
+
+        TextoInteractuable opciones = new TextoInteractuable(o3, () ->
+            System.out.println("Acá debería entrar al menu de opciones"));
+
+        TextoInteractuable salir = new TextoInteractuable(o4, () ->
+            Gdx.app.exit());
 
         entrada.registrar(multijugadorLocal);
         entrada.registrar(multijugadorOnline);
@@ -96,9 +103,5 @@ public class PantallaMenu extends Pantalla {
     @Override
     public void dispose() {
 
-    }
-
-    public Pantalla getPantallaElegida() {
-        return this.pantallaElegida;
     }
 }
