@@ -7,12 +7,15 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.hebergames.letmecook.elementos.MapaColisiones;
+import com.badlogic.gdx.math.Vector2;
 import com.hebergames.letmecook.entidades.JugadorHost;
 import com.hebergames.letmecook.eventos.Entrada;
+import com.hebergames.letmecook.mapa.Mapa;
 import com.hebergames.letmecook.utiles.Recursos;
 import com.hebergames.letmecook.utiles.Render;
 import com.hebergames.letmecook.utiles.GestorAudio;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+
 
 public class PantallaJuego extends Pantalla {
 
@@ -21,15 +24,17 @@ public class PantallaJuego extends Pantalla {
     private JugadorHost jugadorHost;
     private Texture jugadorSheet;
     private Animation<TextureRegion> animacionJugador;
-    private MapaColisiones mapaColisiones;
+
+
+    private Mapa mapaJuego;
+    private OrthographicCamera camara;
+    private OrthographicCamera camaraUi;
+
 
     private PantallaPausa pantallaPausa;
     private boolean juegoEnPausa = false;
 
     private GestorAudio gestorAudio;
-
-    //debug aca tambien
-    //private ShapeRenderer shapeRenderer;
 
     @Override
     public void show() {
@@ -39,9 +44,9 @@ public class PantallaJuego extends Pantalla {
         TextureRegion[][] tmp = TextureRegion.split(jugadorSheet, 32, 32);
         animacionJugador = new Animation<>(0.5f, tmp[0]);
 
-        mapaColisiones = new MapaColisiones("core/src/main/java/com/hebergames/letmecook/imagenes/colisionesnomoral.png");
 
-        jugadorHost = new JugadorHost(100, 100, animacionJugador, mapaColisiones.getZonasColision());
+
+        jugadorHost = new JugadorHost(100, 100, animacionJugador);
 
         entrada = new Entrada();
         Gdx.input.setInputProcessor(entrada);
@@ -55,15 +60,30 @@ public class PantallaJuego extends Pantalla {
         gestorAudio.reproducirCancion("musica_fondo", true);
         gestorAudio.pausarMusica();
 
-        //debug
-        //shapeRenderer = new ShapeRenderer();
+        camara = new OrthographicCamera();
+        camara.setToOrtho(false, 1920, 1080); //aca va la medida del mapa
+        mapaJuego = new Mapa("core/src/main/java/com/hebergames/letmecook/recursos/mapas/Prueba.tmx");
+
+
+        camaraUi = new OrthographicCamera();
+        camaraUi.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+
+
     }
 
     @Override
     public void render(float delta) {
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             togglePausa();
         }
+
+        Vector2 posicionJugador = jugadorHost.getPosicion();
+        camara.position.set(posicionJugador.x, posicionJugador.y, 0);
+        camara.update();
+        mapaJuego.render(camara);
 
         if (!juegoEnPausa) {
             jugadorHost.actualizar(delta);
@@ -72,26 +92,19 @@ public class PantallaJuego extends Pantalla {
         }
 
         // Renderizar el juego siempre (para que se vea de fondo)
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        batch.setProjectionMatrix(camara.combined); //gracias chatty que esto no lo sabia
         batch.begin();
         jugadorHost.dibujar(batch);
         batch.end();
 
-        //esto de aca es debug no se olviden del dispose de abajo
-        /*
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.RED);
-        for (Rectangle r : mapaColisiones.getZonasColision()) {
-            shapeRenderer.rect(r.x, r.y, r.width, r.height);
-        }
-        shapeRenderer.end();
-         */
+
 
         if (juegoEnPausa) {
+            batch.setProjectionMatrix(camaraUi.combined);
             pantallaPausa.render(delta);
         }
+
     }
 
     public void togglePausa() {
@@ -153,6 +166,11 @@ public class PantallaJuego extends Pantalla {
         if (gestorAudio != null) {
             gestorAudio.dispose();
         }
-        //shapeRenderer.dispose();
+
+
+        if (mapaJuego != null) {
+            mapaJuego.dispose();
+        }
+
     }
 }

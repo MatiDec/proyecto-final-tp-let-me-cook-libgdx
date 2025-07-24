@@ -10,11 +10,11 @@ import com.hebergames.letmecook.eventos.DatosEntrada;
 import java.util.List;
 
 public class JugadorHost extends Jugador {
-    private List<Rectangle> colisiones;
 
-    public JugadorHost(float x, float y, Animation<TextureRegion> animacion, List<Rectangle> colisiones) {
+
+    public JugadorHost(float x, float y, Animation<TextureRegion> animacion) {
         super(x, y, animacion);
-        this.colisiones = colisiones;
+
     }
 
     @Override
@@ -47,12 +47,7 @@ public class JugadorHost extends Jugador {
         );
 
         boolean colisionX = false;
-        for (Rectangle colision : colisiones) {
-            if (colision.overlaps(futuroX)) {
-                colisionX = true;
-                break;
-            }
-        }
+
 
         if (!colisionX) {
             posicion.x = nuevaX;
@@ -68,12 +63,7 @@ public class JugadorHost extends Jugador {
         );
 
         boolean colisionY = false;
-        for (Rectangle colision : colisiones) {
-            if (colision.overlaps(futuroY)) {
-                colisionY = true;
-                break;
-            }
-        }
+
 
         if (!colisionY) {
             posicion.y = nuevaY;
