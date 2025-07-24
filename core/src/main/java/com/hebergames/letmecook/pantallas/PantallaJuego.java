@@ -2,20 +2,17 @@ package com.hebergames.letmecook.pantallas;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.elementos.MapaColisiones;
-import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.entidades.JugadorHost;
 import com.hebergames.letmecook.eventos.Entrada;
 import com.hebergames.letmecook.utiles.Recursos;
 import com.hebergames.letmecook.utiles.Render;
+import com.hebergames.letmecook.utiles.GestorAudio;
 
 public class PantallaJuego extends Pantalla {
 
@@ -28,6 +25,8 @@ public class PantallaJuego extends Pantalla {
 
     private PantallaPausa pantallaPausa;
     private boolean juegoEnPausa = false;
+
+    private GestorAudio gestorAudio;
 
     //debug aca tambien
     //private ShapeRenderer shapeRenderer;
@@ -50,6 +49,12 @@ public class PantallaJuego extends Pantalla {
 
         pantallaPausa = new PantallaPausa(this);
 
+        //Música de fondo en el nivel.
+        gestorAudio = GestorAudio.getInstance();
+        gestorAudio.cargarMusica("musica_fondo", Recursos.CANCION_FONDO);
+        gestorAudio.reproducirCancion("musica_fondo", true);
+        gestorAudio.pausarMusica();
+
         //debug
         //shapeRenderer = new ShapeRenderer();
     }
@@ -63,6 +68,7 @@ public class PantallaJuego extends Pantalla {
         if (!juegoEnPausa) {
             jugadorHost.actualizar(delta);
             entrada.actualizarEntradas();
+            gestorAudio.reanudarMusica();
         }
 
         // Renderizar el juego siempre (para que se vea de fondo)
@@ -93,10 +99,12 @@ public class PantallaJuego extends Pantalla {
 
         if (juegoEnPausa) {
             pantallaPausa.show();
+            gestorAudio.pausarMusica();
         } else {
             entrada = new Entrada();
             Gdx.input.setInputProcessor(entrada);
             entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
+            gestorAudio.reanudarMusica();
         }
     }
 
@@ -105,6 +113,8 @@ public class PantallaJuego extends Pantalla {
         entrada = new Entrada();
         Gdx.input.setInputProcessor(entrada);
         entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
+
+        gestorAudio.reanudarMusica();
     }
 
     public boolean isJuegoEnPausa() {
@@ -115,10 +125,20 @@ public class PantallaJuego extends Pantalla {
     public void resize(int width, int height) {}
 
     @Override
-    public void pause() {}
+    public void pause() {
+        // Pausar música cuando la aplicación se minimiza
+        if (gestorAudio != null) {
+            gestorAudio.pausarMusica();
+        }
+    }
 
     @Override
-    public void resume() {}
+    public void resume() {
+        // Reanudar música cuando la aplicación vuelve al foco
+        if (gestorAudio != null && !juegoEnPausa) {
+            gestorAudio.reanudarMusica();
+        }
+    }
 
     @Override
     public void hide() {}
@@ -128,6 +148,10 @@ public class PantallaJuego extends Pantalla {
         jugadorSheet.dispose();
         if (pantallaPausa != null) {
             pantallaPausa.dispose();
+        }
+        // Liberar recursos de audio
+        if (gestorAudio != null) {
+            gestorAudio.dispose();
         }
         //shapeRenderer.dispose();
     }
