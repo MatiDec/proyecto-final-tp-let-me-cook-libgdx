@@ -1,6 +1,6 @@
 package com.hebergames.letmecook.eventos;
 
-public interface Interactuable {
+public interface BotonInteractuable {
 
     boolean fueClickeado(float x, float y);
     void alClick();

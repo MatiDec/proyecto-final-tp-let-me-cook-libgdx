@@ -2,7 +2,7 @@ package com.hebergames.letmecook.eventos;
 
 import com.hebergames.letmecook.elementos.Texto;
 
-public class TextoInteractuable implements Interactuable {
+public class TextoInteractuable implements BotonInteractuable {
 
     private final Texto TEXTO;
     private final Runnable ACCION;

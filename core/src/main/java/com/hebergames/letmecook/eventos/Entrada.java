@@ -11,11 +11,11 @@ import java.util.Map;
 
 public class Entrada implements InputProcessor {
 
-    private final ArrayList<Interactuable> ELEMENTOS_INTERACTUABLES = new ArrayList<>();
+    private final ArrayList<BotonInteractuable> ELEMENTOS_INTERACTUABLES = new ArrayList<>();
     private final Map<Jugador, DatosEntrada> ENTRADAS_POR_JUGADOR = new HashMap<>();
     private final Map<Integer, Jugador> MAPA_TECLAS_JUGADOR = new HashMap<>();
 
-    public void registrar(Interactuable i) {
+    public void registrar(BotonInteractuable i) {
         ELEMENTOS_INTERACTUABLES.add(i);
     }
 
@@ -70,7 +70,7 @@ public class Entrada implements InputProcessor {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         float yCorrecto = Gdx.graphics.getHeight() - screenY;
 
-        for (Interactuable i : ELEMENTOS_INTERACTUABLES) {
+        for (BotonInteractuable i : ELEMENTOS_INTERACTUABLES) {
             if(i.fueClickeado(screenX, yCorrecto)) {
                 i.alClick();
                 return true;

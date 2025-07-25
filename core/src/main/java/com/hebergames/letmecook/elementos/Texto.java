@@ -6,10 +6,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
-import com.hebergames.letmecook.eventos.Interactuable;
+import com.hebergames.letmecook.eventos.BotonInteractuable;
 import com.hebergames.letmecook.utiles.Render;
 
-public class Texto implements Interactuable {
+public class Texto implements BotonInteractuable {
 
     BitmapFont fuente;
     private float x = 0, y = 0;
