@@ -11,7 +11,6 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Mapa {
 
@@ -24,8 +23,8 @@ public class Mapa {
         renderer = new OrthogonalTiledMapRenderer(mapa);
     }
 
-    private List<Rectangle> obtenerRectangulosDeCapa(String nombreCapa) {
-        List<Rectangle> rectangulos = new ArrayList<>();
+    private ArrayList<Rectangle> obtenerRectangulosDeCapa(String nombreCapa) {
+        ArrayList<Rectangle> rectangulos = new ArrayList<>();
         MapObjects objetos = mapa.getLayers().get(nombreCapa).getObjects(); //gracias video del chabon que hizo un pokemon
 
         for (MapObject objeto : objetos) {
@@ -37,12 +36,16 @@ public class Mapa {
         return rectangulos;
     }
 
-    public List<Rectangle> getRectangulosColision() {
+    public ArrayList<Rectangle> getRectangulosColision() {
         return obtenerRectangulosDeCapa("Colisionables");
     }
 
-    public List<Rectangle> getRectangulosInteractuables() {
+    public ArrayList<Rectangle> getRectangulosInteractuables() {
         return obtenerRectangulosDeCapa("Interactuables");
+    }
+
+    public ArrayList<Rectangle> getRectangulosClientes() {
+        return obtenerRectangulosDeCapa("Clientes");
     }
 
     public void render(OrthographicCamera camara) {

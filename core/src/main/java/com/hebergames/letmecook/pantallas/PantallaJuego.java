@@ -7,14 +7,19 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.hebergames.letmecook.entidades.GestorClientes;
 import com.hebergames.letmecook.entidades.JugadorHost;
 import com.hebergames.letmecook.eventos.Entrada;
+import com.hebergames.letmecook.eventos.HiloClientes;
 import com.hebergames.letmecook.mapa.Mapa;
 import com.hebergames.letmecook.utiles.Recursos;
 import com.hebergames.letmecook.utiles.Render;
 import com.hebergames.letmecook.utiles.GestorAudio;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+
+import java.util.ArrayList;
 
 
 public class PantallaJuego extends Pantalla {
@@ -35,6 +40,13 @@ public class PantallaJuego extends Pantalla {
     private boolean juegoEnPausa = false;
 
     private GestorAudio gestorAudio;
+
+    private GestorClientes gestorClientes;
+    private HiloClientes hiloClientes;
+    private Texture texturaClientes;
+    private TextureRegion texturaClientePresencial;
+    private TextureRegion texturaVirtualInactiva;
+    private TextureRegion texturaVirtualActiva;
 
     @Override
     public void show() {
@@ -72,7 +84,30 @@ public class PantallaJuego extends Pantalla {
         camaraUi = new OrthographicCamera();
         camaraUi.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
+        // Inicializar texturas de clientes
+        texturaClientes = new Texture(Gdx.files.internal("core/src/main/java/com/hebergames/letmecook/recursos/imagenes/clientes.jpg"));
+        TextureRegion[][] tmpClientes = TextureRegion.split(texturaClientes, 32, 32);
+        texturaClientePresencial = tmpClientes[0][0]; // Primera sprite para cliente presencial
+        texturaVirtualInactiva = tmpClientes[0][1];   // Segunda sprite para virtual inactivo
+        texturaVirtualActiva = tmpClientes[0][2];     // Tercera sprite para virtual activo
 
+        // Obtener ubicaciones de clientes del mapa (añadir capa "Clientes" en Tiled)
+        ArrayList<Rectangle> ubicacionesClientes = mapaJuego.getRectangulosClientes();
+
+        // Inicializar gestor de clientes (Si no está lo de arriba esto no funciona)
+        gestorClientes = new GestorClientes(ubicacionesClientes,
+            texturaClientePresencial,
+            texturaVirtualInactiva,
+            texturaVirtualActiva);
+
+        // Configurar parámetros de spawn (opcionales)
+        gestorClientes.setIntervalosSpawn(6f); // Cliente cada 6 segundos
+        gestorClientes.setTiempoToleraciaCliente(20f); // 20 segundos de tolerancia
+        gestorClientes.setMaxClientesSimultaneos(5); // Máximo 5 clientes
+
+        // Inicializar y empezar hilo de clientes
+        hiloClientes = new HiloClientes(gestorClientes);
+        hiloClientes.start();
 
     }
 
@@ -100,6 +135,9 @@ public class PantallaJuego extends Pantalla {
         batch.setProjectionMatrix(camara.combined); //gracias chatty que esto no lo sabia
         batch.begin();
         jugadorHost.dibujar(batch);
+
+        gestorClientes.dibujar(batch);
+
         batch.end();
 
 
@@ -117,11 +155,17 @@ public class PantallaJuego extends Pantalla {
         if (juegoEnPausa) {
             pantallaPausa.show();
             gestorAudio.pausarMusica();
+            if(hiloClientes != null) {
+                hiloClientes.pausar();
+            }
         } else {
             entrada = new Entrada();
             Gdx.input.setInputProcessor(entrada);
             entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
             gestorAudio.reanudarMusica();
+            if(hiloClientes != null) {
+                hiloClientes.reanudar();
+            }
         }
     }
 
@@ -132,6 +176,10 @@ public class PantallaJuego extends Pantalla {
         entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
 
         gestorAudio.reanudarMusica();
+
+        if(hiloClientes != null) {
+            hiloClientes.reanudar();
+        }
     }
 
     public boolean isJuegoEnPausa() {
@@ -147,6 +195,11 @@ public class PantallaJuego extends Pantalla {
         if (gestorAudio != null) {
             gestorAudio.pausarMusica();
         }
+
+        if(hiloClientes != null) {
+            hiloClientes.pausar();
+        }
+
     }
 
     @Override
@@ -154,6 +207,10 @@ public class PantallaJuego extends Pantalla {
         // Reanudar música cuando la aplicación vuelve al foco
         if (gestorAudio != null && !juegoEnPausa) {
             gestorAudio.reanudarMusica();
+        }
+
+        if (hiloClientes != null && !juegoEnPausa) {
+            hiloClientes.reanudar();
         }
     }
 
@@ -171,10 +228,17 @@ public class PantallaJuego extends Pantalla {
             gestorAudio.dispose();
         }
 
-
         if (mapaJuego != null) {
             mapaJuego.dispose();
         }
 
+        if (hiloClientes != null) {
+            hiloClientes.detener();
+            try {
+                hiloClientes.join(1000);//Esperar máximo 1 segundo, anda a saber qué es Join
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 }

@@ -55,7 +55,7 @@ public class PantallaPausa extends Pantalla {
         }));
 
         entrada.registrar(new TextoInteractuable(oSalir, () -> {
-            Gdx.app.exit();
+            Gdx.app.exit();//El programa cuando se cierra desde el menú de pausa, no logra detener el hiloClientes.
         }));
     }
 
