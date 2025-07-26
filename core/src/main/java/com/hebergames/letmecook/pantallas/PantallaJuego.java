@@ -40,13 +40,17 @@ public class PantallaJuego extends Pantalla {
     public void show() {
         batch = Render.batch;
 
-        jugadorSheet = new Texture(Gdx.files.internal("core/src/main/java/com/hebergames/letmecook/imagenes/imagendepruebanomoral.png"));
+        jugadorSheet = new Texture(Gdx.files.internal("core/src/main/java/com/hebergames/letmecook/recursos/imagenes/imagendepruebanomoral.png"));
         TextureRegion[][] tmp = TextureRegion.split(jugadorSheet, 32, 32);
         animacionJugador = new Animation<>(0.5f, tmp[0]);
 
 
-
+        mapaJuego = new Mapa("core/src/main/java/com/hebergames/letmecook/recursos/mapas/Prueba.tmx"); //aca estaba mal el orden
         jugadorHost = new JugadorHost(100, 100, animacionJugador);
+
+        jugadorHost.setColisionables(mapaJuego.getRectangulosColision());
+        jugadorHost.setInteractuables(mapaJuego.getRectangulosInteractuables()); // si también quieres incluirlos
+
 
         entrada = new Entrada();
         Gdx.input.setInputProcessor(entrada);
@@ -62,7 +66,7 @@ public class PantallaJuego extends Pantalla {
 
         camara = new OrthographicCamera();
         camara.setToOrtho(false, 1920, 1080); //aca va la medida del mapa
-        mapaJuego = new Mapa("core/src/main/java/com/hebergames/letmecook/recursos/mapas/Prueba.tmx");
+
 
 
         camaraUi = new OrthographicCamera();

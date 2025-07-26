@@ -47,8 +47,8 @@ public abstract class Jugador {
 
         float x = posicion.x;
         float y = posicion.y;
-        float width = frame.getRegionWidth();
-        float height = frame.getRegionHeight();
+        float width = 32;
+        float height = 32;
         float originX = width / 2f;
         float originY = height / 2f;
     //lo de arriba fue tapia
