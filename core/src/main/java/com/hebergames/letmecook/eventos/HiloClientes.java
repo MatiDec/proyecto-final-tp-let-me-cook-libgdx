@@ -9,6 +9,7 @@ public class HiloClientes extends Thread {
     private boolean pausado;
     private final Object pauseLock = new Object();
 
+    //toda esta parte del código es un arreglo para que no se utilice tanta cpu en el proceso del juego
     private static final int FPS_TARGET = 60;
     private static final long FRAME_TIME = 1000 / FPS_TARGET; // en milisegundos
 
@@ -16,7 +17,8 @@ public class HiloClientes extends Thread {
         this.gestorClientes = gestorClientes;
         this.ejecutando = false;
         this.pausado = false;
-        this.setName("HiloClientes");
+        this.setName("HiloClientes");//Esto le pone un nombre al hilo, sirve para el manejo de múltiples hilos sin confundirlos
+        this.setDaemon(true);//esta línea no sé que hace pero salva el quilombo de los hilos
     }
 
     @Override
@@ -40,12 +42,11 @@ public class HiloClientes extends Thread {
             float delta = (tiempoActual - tiempoAnterior) / 1000f; // Convertir a segundos
             tiempoAnterior = tiempoActual;
 
-            // Actualizar gestor de clientes
             if (gestorClientes != null) {
                 gestorClientes.actualizar(delta);
             }
 
-            // Control de FPS
+            // Control de FPS por lo del uso de cpu
             try {
                 long tiempoRestante = FRAME_TIME - (System.currentTimeMillis() - tiempoActual);
                 if (tiempoRestante > 0) {
@@ -71,15 +72,8 @@ public class HiloClientes extends Thread {
 
     public void detener() {
         ejecutando = false;
-        reanudar(); // Para asegurar que el hilo no quede bloqueado en wait()
-    }
-
-    public boolean isEjecutando() {
-        return ejecutando;
-    }
-
-    public boolean isPausado() {
-        return pausado;
+        reanudar();
+        this.interrupt();
     }
 
 }

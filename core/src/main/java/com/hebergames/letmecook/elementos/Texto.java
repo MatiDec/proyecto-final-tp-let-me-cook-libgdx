@@ -4,12 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.hebergames.letmecook.eventos.BotonInteractuable;
+import com.hebergames.letmecook.pantallas.ObjetoInterfazUsuario;
 import com.hebergames.letmecook.utiles.Render;
 
-public class Texto implements BotonInteractuable {
+public class Texto implements BotonInteractuable, ObjetoInterfazUsuario {
 
     BitmapFont fuente;
     private float x = 0, y = 0;
@@ -71,5 +73,18 @@ public class Texto implements BotonInteractuable {
 
     public Vector2 getPosicion() {
         return new Vector2(this.x, this.y);
+    }
+
+    @Override
+    public void dibujarEnUi(SpriteBatch batch) {
+        fuente.draw(batch, this.texto, this.x, this.y);
+    }
+
+    public float getX() {
+        return this.x;
+    }
+
+    public float getY() {
+        return this.y;
     }
 }
