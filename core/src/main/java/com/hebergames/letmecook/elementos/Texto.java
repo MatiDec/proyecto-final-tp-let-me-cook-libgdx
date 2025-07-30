@@ -6,12 +6,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.math.Vector2;
-import com.hebergames.letmecook.eventos.BotonInteractuable;
-import com.hebergames.letmecook.pantallas.ObjetoInterfazUsuario;
+import com.hebergames.letmecook.pantallas.ObjetoVisualizable;
 import com.hebergames.letmecook.utiles.Render;
 
-public class Texto implements BotonInteractuable, ObjetoInterfazUsuario {
+public class Texto implements ObjetoVisualizable {
 
     BitmapFont fuente;
     private float x = 0, y = 0;
@@ -34,23 +32,21 @@ public class Texto implements BotonInteractuable, ObjetoInterfazUsuario {
         fuente = generator.generateFont(parametro);
         layout = new GlyphLayout();
     }
-
-    @Override
-    public boolean fueClickeado(float x, float y) {
+    public boolean fueClickeado(float x, float y){
         float ancho = getAncho();
         float alto = getAlto();
-
         float yInferior = this.y - alto;
+
         return x >= this.x && x<=this.x + ancho && y >= yInferior && y <= this.y; // Si quieren se puede hacer más legible pero así funciona bien
-    }
-
-    @Override
-    public void alClick() {
-
-    }
+    };
 
     public void dibujar() {
         fuente.draw(Render.batch, this.texto, this.x, this.y);
+    }
+
+    @Override
+    public void dibujarEnUi(SpriteBatch batch) {
+        fuente.draw(batch, this.texto, this.x, this.y);
     }
 
     public void setTexto(String texto) {
@@ -69,15 +65,6 @@ public class Texto implements BotonInteractuable, ObjetoInterfazUsuario {
 
     public float getAlto() {
         return this.layout.height;
-    }
-
-    public Vector2 getPosicion() {
-        return new Vector2(this.x, this.y);
-    }
-
-    @Override
-    public void dibujarEnUi(SpriteBatch batch) {
-        fuente.draw(batch, this.texto, this.x, this.y);
     }
 
     public float getX() {

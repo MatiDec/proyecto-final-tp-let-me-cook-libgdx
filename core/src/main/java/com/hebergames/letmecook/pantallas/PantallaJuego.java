@@ -47,7 +47,7 @@ public class PantallaJuego extends Pantalla {
     private OrthographicCamera camaraJuego;
     private OrthographicCamera camaraUi;
 
-    private ArrayList<ObjetoInterfazUsuario> objetosUi;
+    private ArrayList<ObjetoVisualizable> objetosUi;
     private Texto textoContador;
     private float tiempoTranscurrido = 0;
 
@@ -174,7 +174,7 @@ public class PantallaJuego extends Pantalla {
             textoContador.setTexto(tiempoFormateado);
         }
 
-        for(ObjetoInterfazUsuario obj : objetosUi) {
+        for(ObjetoVisualizable obj : objetosUi) {
             obj.dibujarEnUi(batch);
         }
         batch.end();

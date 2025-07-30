@@ -6,8 +6,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.hebergames.letmecook.eventos.DatosEntrada;
 
-import java.util.Set;
-
 public abstract class Jugador {
     protected Vector2 posicion;
     protected Vector2 velocidad;
@@ -55,24 +53,11 @@ public abstract class Jugador {
         batch.draw(frame, x, y, originX, originY, width, height, 1f, 1f, anguloRotacion);
     }
 
-
-    public void mover(float dx, float dy) {
-        this.velocidad.set(dx, dy);
-    }
-
     public Vector2 getPosicion() {
         return this.posicion;
     }
 
-    public int getDistanciaMovimiento() {
-        return this.DISTANCIA_MOVIMIENTO;
-    }
-
     public abstract void manejarEntrada(DatosEntrada datos);
-
-    public float getAnguloRotacion() {
-        return this.anguloRotacion;
-    }
 
     public void setAnguloRotacion(float angulo) {
         this.anguloRotacion = angulo;
