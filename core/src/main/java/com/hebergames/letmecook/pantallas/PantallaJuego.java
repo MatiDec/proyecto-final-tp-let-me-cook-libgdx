@@ -20,6 +20,7 @@ import com.hebergames.letmecook.eventos.Entrada;
 import com.hebergames.letmecook.eventos.HiloClientes;
 import com.hebergames.letmecook.eventos.HiloPrincipal;
 import com.hebergames.letmecook.mapa.Mapa;
+import com.hebergames.letmecook.maquinas.EstacionTrabajo;
 import com.hebergames.letmecook.utiles.Recursos;
 import com.hebergames.letmecook.utiles.Render;
 import com.hebergames.letmecook.utiles.GestorAudio;
@@ -42,6 +43,7 @@ public class PantallaJuego extends Pantalla {
     private Animation<TextureRegion> animacionJugador;
 
     private Mapa mapaJuego;
+    private ArrayList<EstacionTrabajo> estaciones;
     private Viewport viewportJuego;
     private Viewport viewportUI;
     private OrthographicCamera camaraJuego;
@@ -87,6 +89,10 @@ public class PantallaJuego extends Pantalla {
         Gdx.input.setInputProcessor(entrada);
         entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
 
+        estaciones = mapaJuego.getEstacionesTrabajo();
+        entrada.registrarEstacionesTrabajo(estaciones);
+
+
         pantallaPausa = new PantallaPausa(this);
 
         //Música de fondo en el nivel.
@@ -103,6 +109,9 @@ public class PantallaJuego extends Pantalla {
 
         viewportJuego = new FitViewport(MUNDO_ANCHO, MUNDO_ALTO, camaraJuego);
         viewportUI = new ScreenViewport(camaraUi);
+
+        entrada.setViewportJuego(viewportJuego);
+        entrada.setViewportUI(viewportUI);
 
         inicializarUI();
         inicializarClientes();
@@ -226,8 +235,11 @@ public class PantallaJuego extends Pantalla {
             gestorAudio.pausarMusica();
         } else {
             entrada = new Entrada();
+            entrada.setViewportJuego(viewportJuego);
+            entrada.setViewportUI(viewportUI);
             Gdx.input.setInputProcessor(entrada);
             entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
+            entrada.registrarEstacionesTrabajo(mapaJuego.getEstacionesTrabajo());
             gestorAudio.reanudarMusica();
         }
     }
@@ -235,8 +247,11 @@ public class PantallaJuego extends Pantalla {
     public void reanudarJuego() {
         juegoEnPausa = false;
         entrada = new Entrada();
+        entrada.setViewportJuego(viewportJuego);
+        entrada.setViewportUI(viewportUI);
         Gdx.input.setInputProcessor(entrada);
         entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
+        entrada.registrarEstacionesTrabajo(mapaJuego.getEstacionesTrabajo());
         gestorAudio.reanudarMusica();
     }
 

@@ -9,6 +9,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.hebergames.letmecook.maquinas.*;
 
 import java.util.ArrayList;
 
@@ -65,4 +66,58 @@ public class Mapa {
     public OrthogonalTiledMapRenderer getRenderer() {
         return renderer;
     }
+
+    public ArrayList<EstacionTrabajo> getEstacionesTrabajo() {
+        ArrayList<EstacionTrabajo> estaciones = new ArrayList<>();
+        MapObjects objetos = mapa.getLayers().get("Interactuables").getObjects();
+
+
+
+        for (MapObject objeto : objetos) {
+            String tipo = objeto.getName();
+
+
+            Rectangle rect;
+
+            if (objeto instanceof RectangleMapObject) {
+                rect = ((RectangleMapObject) objeto).getRectangle();
+            } else {
+                float x = (Float) objeto.getProperties().get("x");
+                float y = (Float) objeto.getProperties().get("y");
+                float width = (Float) objeto.getProperties().get("width");
+                float height = (Float) objeto.getProperties().get("height"); //quilombo mistico que se puede simplificar pero no me da el brain
+                rect = new Rectangle(x, y, width, height); //es mas lo simplifique a muerte hasta ahora porque antes eran como 70 lineas de codigo esto
+            }
+
+            switch (tipo) {
+                case "Horno":
+                    estaciones.add(new Horno(rect));
+                    break;
+                case "Cafetera":
+                    estaciones.add(new Cafetera(rect));
+                    break;
+                case "Freidora":
+                    estaciones.add(new Freidora(rect));
+                    break;
+                case "Tostadora":
+                    estaciones.add(new Tostadora(rect));
+                    break;
+                case "Fuente":
+                    estaciones.add(new Fuente(rect));
+                    break;
+                case "AreaEnsamblaje":
+                    estaciones.add(new AreaEnsamblaje(rect));
+                    break; //añadan un case para cada maquina y mdyt si lees esto pone un default
+
+            }
+        }
+
+
+
+
+        return estaciones;
+    }
+
+
+
 }
