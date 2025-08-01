@@ -1,26 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="12" nextobjectid="87">
- <tileset firstgid="1" source="conjunto.tsx"/>
- <layer id="9" name="Mapa" width="30" height="20">
-  <data encoding="base64" compression="zlib">
-   eJxjYBgFo2BgACMReDjZy0IEhgFmJDYTHe2lJiDFXmQ/IvudHDDS0tUoGAWjYHACAEsxAJs=
-  </data>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="16" height="16" tilewidth="128" tileheight="128" infinite="0" nextlayerid="7" nextobjectid="72">
+ <tileset firstgid="1" source="ConjuntoPiso.tsx"/>
+ <tileset firstgid="3" source="ConjuntoColisionableMostrador.tsx"/>
+ <tileset firstgid="7" source="ConjuntoColisionableMesa.tsx"/>
+ <tileset firstgid="22" source="ConjuntoInteractuable.tsx"/>
+ <layer id="1" name="Capa de patrones 1" width="16" height="16">
+  <data encoding="csv">
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+3,4,3,4,3,4,3,4,3,5,5,5,5,6,6,3,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+9,2,2,7,8,8,25,26,26,25,8,8,9,2,2,7,
+14,2,2,12,13,13,13,13,13,13,13,13,14,2,2,12,
+14,2,2,12,13,13,10,28,28,11,13,13,14,2,2,12,
+14,2,2,12,13,13,14,2,2,12,13,13,14,2,2,12,
+22,2,2,12,13,13,14,2,2,12,13,13,14,2,2,22,
+22,2,2,12,13,13,14,2,2,12,13,13,14,2,2,22,
+14,2,2,12,13,13,14,2,2,12,13,13,14,2,2,12,
+24,2,2,17,18,18,19,2,2,17,18,18,19,2,2,23,
+24,2,2,2,2,2,2,2,2,2,2,2,2,2,2,23,
+14,2,2,2,2,2,2,2,2,2,2,2,2,2,2,12,
+15,8,8,8,8,8,8,27,27,8,8,8,8,8,8,16
+</data>
  </layer>
- <objectgroup id="12" name="Clientes">
-   <object id="90" x="128" y="160" width="32" height="32"/>
-   <object id="91" x="64" y="160" width="32" height="32"/>
-   <object id="92" x="192" y="160" width="32" height="32"/>
-   <object id="93" x="64" y="224" width="32" height="32"/>
-   <object id="94" x="128" y="224" width="32" height="32"/>
-  </objectgroup>
- <objectgroup id="10" name="Colisionables">
-  <object id="79" x="288" y="160" width="288" height="64"/>
-  <object id="81" x="288" y="320" width="288" height="64"/>
+ <objectgroup id="2" name="Interactuables">
+  <object id="5" name="Tostadora" type="Interactuable" x="768" y="640" width="128" height="128"/>
+  <object id="6" name="Tostadora" type="Interactuable" x="1152" y="640" width="128" height="128"/>
+  <object id="14" name="Cafetera" type="Interactuable" x="896" y="640" width="128" height="128"/>
+  <object id="16" name="Cafetera" type="Interactuable" x="1024" y="640" width="128" height="128"/>
+  <object id="23" name="Heladera" type="Interactuable" x="896" y="896" width="128" height="128"/>
+  <object id="24" name="Heladera" type="Interactuable" x="1024" y="896" width="128" height="128"/>
+  <object id="25" name="Horno" type="Interactuable" x="0" y="1152" width="128" height="128"/>
+  <object id="27" name="Horno" type="Interactuable" x="0" y="1280" width="128" height="128"/>
+  <object id="29" name="Fuente" type="Interactuable" x="0" y="1536" width="128" height="128"/>
+  <object id="30" name="Fuente" type="Interactuable" x="0" y="1664" width="128" height="128"/>
+  <object id="31" name="AreaEnsamblaje" type="Interactuable" x="896" y="1920" width="128" height="128"/>
+  <object id="32" name="AreaEnsamblaje" type="Interactuable" x="1024" y="1920" width="128" height="128"/>
+  <object id="33" name="Freidora" type="Interactuable" x="1920" y="1536" width="128" height="128"/>
+  <object id="34" name="Freidora" type="Interactuable" x="1920" y="1664" width="128" height="128"/>
+  <object id="35" name="Horno" type="Interactuable" x="1920" y="1152" width="128" height="128"/>
+  <object id="36" name="Horno" type="Interactuable" x="1920" y="1280" width="128" height="128"/>
  </objectgroup>
- <objectgroup id="11" name="Interactuables">
-  <object id="82" name="Freidora" gid="3" x="640" y="256" width="32" height="32"/>
-  <object id="83" name="AreaEnsamblaje" gid="3" x="736" y="320" width="32" height="32"/>
-  <object id="84" name="Tostadora" gid="2" x="736" y="256" width="32" height="32"/>
-  <object id="85" name="Horno" gid="2" x="640" y="320" width="32" height="32"/>
+ <objectgroup id="5" name="Colisionables">
+  <object id="47" type="Colisiobale" x="0" y="640" width="128" height="512"/>
+  <object id="48" type="Colisiobale" x="0" y="1408" width="128" height="128"/>
+  <object id="49" type="Colisiobale" x="0" y="1792" width="128" height="128"/>
+  <object id="50" type="Colisiobale" x="0" y="1920" width="896" height="128"/>
+  <object id="51" type="Colisiobale" x="1152" y="1920" width="896" height="128"/>
+  <object id="52" type="Colisiobale" x="1920" y="1792" width="128" height="128"/>
+  <object id="53" type="Colisiobale" x="1920" y="1408" width="128" height="128"/>
+  <object id="54" type="Colisiobale" x="1920" y="640" width="128" height="512"/>
+  <object id="55" type="Colisiobale" x="384" y="640" width="384" height="1024"/>
+  <object id="56" type="Colisiobale" x="768" y="768" width="128" height="896"/>
+  <object id="57" type="Colisiobale" x="1152" y="768" width="128" height="896"/>
+  <object id="58" type="Colisiobale" x="896" y="768" width="256" height="128"/>
+  <object id="59" type="Colisiobale" x="1280" y="640" width="384" height="1024"/>
+  <object id="60" type="Colisiobale" x="0" y="256" width="128" height="128"/>
+  <object id="61" type="Colisiobale" x="256" y="256" width="128" height="128"/>
+  <object id="62" type="Colisiobale" x="512" y="256" width="128" height="128"/>
+  <object id="63" type="Colisiobale" x="768" y="256" width="128" height="128"/>
+  <object id="64" type="Colisiobale" x="1024" y="256" width="128" height="128"/>
+  <object id="65" type="Colisiobale" x="1920" y="256" width="128" height="128"/>
+ </objectgroup>
+ <objectgroup id="6" name="Clientes">
+  <object id="66" type="Cliente" x="128" y="128" width="128" height="128"/>
+  <object id="67" type="Cliente" x="384" y="128" width="128" height="128"/>
+  <object id="68" type="Cliente" x="640" y="128" width="128" height="128"/>
+  <object id="69" x="896" y="128" width="128" height="128"/>
+  <object id="70" type="Cliente" x="128" y="0" width="128" height="128"/>
  </objectgroup>
 </map>
