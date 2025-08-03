@@ -1,6 +1,5 @@
 package com.hebergames.letmecook.mapa;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
@@ -106,8 +105,11 @@ public class Mapa {
                     estaciones.add(new Fuente(rect));
                     break;
                 case "AreaEnsamblaje":
-                    estaciones.add(new AreaEnsamblaje(rect));
+                    estaciones.add(new Mesa(rect));
                     break; //añadan un case para cada maquina y mdyt si lees esto pone un default
+                case "Heladera":
+                    estaciones.add(new Heladera(rect));
+                    break;
 
             }
         }

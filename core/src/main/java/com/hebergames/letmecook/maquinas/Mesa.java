@@ -3,8 +3,8 @@ package com.hebergames.letmecook.maquinas;
 import com.badlogic.gdx.math.Rectangle;
 
 
-public class AreaEnsamblaje extends EstacionTrabajo {
-    public AreaEnsamblaje(Rectangle area) {
+public class Mesa extends EstacionTrabajo {
+    public Mesa(Rectangle area) {
         super(area);
     }
 

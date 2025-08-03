@@ -19,6 +19,7 @@ import com.hebergames.letmecook.entidades.JugadorHost;
 import com.hebergames.letmecook.eventos.Entrada;
 import com.hebergames.letmecook.eventos.HiloClientes;
 import com.hebergames.letmecook.eventos.HiloPrincipal;
+import com.hebergames.letmecook.ingredientes.Ingrediente;
 import com.hebergames.letmecook.mapa.Mapa;
 import com.hebergames.letmecook.maquinas.EstacionTrabajo;
 import com.hebergames.letmecook.utiles.Recursos;
@@ -50,11 +51,13 @@ public class PantallaJuego extends Pantalla {
     private OrthographicCamera camaraUi;
 
     private ArrayList<ObjetoVisualizable> objetosUi;
-    private Texto textoContador;
+    private Texto textoContador, textoInventarioActual;
     private float tiempoTranscurrido = 0;
 
     private PantallaPausa pantallaPausa;
+    private PantallaHeladera pantallaHeladera;
     private boolean juegoEnPausa = false;
+    private boolean heladeraAbierta = false;
 
     private GestorAudio gestorAudio;
 
@@ -75,15 +78,8 @@ public class PantallaJuego extends Pantalla {
 
         batch = Render.batch;
 
-        jugadorSheet = new Texture(Gdx.files.internal("core/src/main/java/com/hebergames/letmecook/recursos/imagenes/imagendepruebanomoral.png"));
-        TextureRegion[][] tmp = TextureRegion.split(jugadorSheet, 32, 32);
-        animacionJugador = new Animation<>(0.5f, tmp[0]);
-
-        mapaJuego = new Mapa("core/src/main/java/com/hebergames/letmecook/recursos/mapas/Prueba.tmx");
-        jugadorHost = new JugadorHost(100, 100, animacionJugador);
-
-        jugadorHost.setColisionables(mapaJuego.getRectangulosColision());
-        jugadorHost.setInteractuables(mapaJuego.getRectangulosInteractuables());
+        configurarTexturasJugador();
+        configurarMapaYJugador();
 
         entrada = new Entrada();
         Gdx.input.setInputProcessor(entrada);
@@ -92,17 +88,20 @@ public class PantallaJuego extends Pantalla {
         estaciones = mapaJuego.getEstacionesTrabajo();
         entrada.registrarEstacionesTrabajo(estaciones);
 
-
         pantallaPausa = new PantallaPausa(this);
 
-        //Música de fondo en el nivel.
-        gestorAudio = GestorAudio.getInstance();
-        gestorAudio.cargarMusica("musica_fondo", Recursos.CANCION_FONDO);
-        gestorAudio.reproducirCancion("musica_fondo", true);
-        gestorAudio.pausarMusica();
+        inicializarMusicaFondo();
 
+        configurarCamara();
+
+        inicializarUI();
+        inicializarClientes();
+    }
+
+    private void configurarCamara() {
         camaraJuego = new OrthographicCamera();
         camaraJuego.setToOrtho(false, 1920, 1080);
+        camaraJuego.zoom = 1.7f;
 
         camaraUi = new OrthographicCamera();
         camaraUi.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -112,9 +111,27 @@ public class PantallaJuego extends Pantalla {
 
         entrada.setViewportJuego(viewportJuego);
         entrada.setViewportUI(viewportUI);
+    }
 
-        inicializarUI();
-        inicializarClientes();
+    private void configurarTexturasJugador() {
+        jugadorSheet = new Texture(Gdx.files.internal("core/src/main/java/com/hebergames/letmecook/recursos/imagenes/imagendepruebanomoral.png"));
+        TextureRegion[][] tmp = TextureRegion.split(jugadorSheet, 32, 32);
+        animacionJugador = new Animation<>(0.5f, tmp[0]);
+    }
+
+    private void configurarMapaYJugador() {
+        mapaJuego = new Mapa("core/src/main/java/com/hebergames/letmecook/recursos/mapas/Prueba.tmx");
+        jugadorHost = new JugadorHost(1000, 1000, animacionJugador);
+        jugadorHost.setColisionables(mapaJuego.getRectangulosColision());
+        jugadorHost.setInteractuables(mapaJuego.getRectangulosInteractuables());
+    }
+
+    private void inicializarMusicaFondo() {
+        //Música de fondo en el nivel.
+        gestorAudio = GestorAudio.getInstance();
+        gestorAudio.cargarMusica("musica_fondo", Recursos.CANCION_FONDO);
+        gestorAudio.reproducirCancion("musica_fondo", true);
+        gestorAudio.pausarMusica();
     }
 
     private void inicializarClientes() {
@@ -141,10 +158,16 @@ public class PantallaJuego extends Pantalla {
 
     private void inicializarUI() {
         objetosUi = new ArrayList<>();
+
         textoContador = new Texto(Recursos.FUENTE_MENU, 32, Color.WHITE, true);
         textoContador.setTexto("00:00");
-        textoContador.setPosition(50, Gdx.graphics.getHeight() - 50);
+        textoContador.setPosition(50, 50);
+
+        textoInventarioActual = new Texto(Recursos.FUENTE_MENU, 32, Color.WHITE, true);
+        textoInventarioActual.setTexto("Inventario: Nada");
+        textoInventarioActual.setPosition(100, Gdx.graphics.getHeight() - 50);
         objetosUi.add(textoContador);
+        objetosUi.add(textoInventarioActual);
     }
 
     private void renderizarJuego(float delta) {
@@ -157,8 +180,10 @@ public class PantallaJuego extends Pantalla {
         mapaJuego.render(camaraJuego);
 
         if (!juegoEnPausa) {
-            jugadorHost.actualizar(delta);
-            entrada.actualizarEntradas();
+            if(!heladeraAbierta) {
+                jugadorHost.actualizar(delta);
+                entrada.actualizarEntradas();
+            }
             gestorAudio.reanudarMusica();
         }
 
@@ -181,11 +206,13 @@ public class PantallaJuego extends Pantalla {
             int segundosRestantes = segundos % 60;
             String tiempoFormateado = String.format("%02d:%02d", minutos, segundosRestantes);
             textoContador.setTexto(tiempoFormateado);
+            textoInventarioActual.setTexto("Inventario: " + jugadorHost.getNombreItemInventario());
         }
 
         for(ObjetoVisualizable obj : objetosUi) {
             obj.dibujarEnUi(batch);
         }
+
         batch.end();
     }
 
@@ -194,7 +221,8 @@ public class PantallaJuego extends Pantalla {
         float uiWidth = viewportUI.getWorldWidth();
         float uiHeight = viewportUI.getWorldHeight();
 
-        textoContador.setPosition(margen, uiHeight - margen);
+        textoContador.setPosition(margen, margen);
+        textoInventarioActual.setPosition(margen, uiHeight-margen);
     }
 
     public Vector2 getCoordenadasJuego(int screenX, int screenY) {
@@ -220,6 +248,11 @@ public class PantallaJuego extends Pantalla {
 
         renderizarJuego(delta);
         renderizarUI();
+
+        if(heladeraAbierta && pantallaHeladera != null) {
+            batch.setProjectionMatrix(camaraUi.combined);
+            pantallaHeladera.render(delta);
+        }
 
         if (juegoEnPausa) {
             batch.setProjectionMatrix(camaraUi.combined);
@@ -253,6 +286,31 @@ public class PantallaJuego extends Pantalla {
         entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
         entrada.registrarEstacionesTrabajo(mapaJuego.getEstacionesTrabajo());
         gestorAudio.reanudarMusica();
+    }
+
+    public void abrirHeladera() {
+        if (!heladeraAbierta) {
+            heladeraAbierta = true;
+            pantallaHeladera = new PantallaHeladera();
+            pantallaHeladera.show();
+        }
+    }
+
+    public void cerrarHeladera() {
+        if (heladeraAbierta) {
+            heladeraAbierta = false;
+            if (pantallaHeladera != null) {
+                pantallaHeladera.hide();
+                pantallaHeladera = null;
+            }
+            // Restaurar el input processor al juego
+            entrada = new Entrada();
+            entrada.setViewportJuego(viewportJuego);
+            entrada.setViewportUI(viewportUI);
+            Gdx.input.setInputProcessor(entrada);
+            entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
+            entrada.registrarEstacionesTrabajo(mapaJuego.getEstacionesTrabajo());
+        }
     }
 
     @Override

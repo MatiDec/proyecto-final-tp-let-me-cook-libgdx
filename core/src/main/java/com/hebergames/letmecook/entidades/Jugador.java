@@ -15,7 +15,7 @@ public abstract class Jugador {
     protected float anguloRotacion = 0f; // grados
 
 
-    public final int DISTANCIA_MOVIMIENTO = 200;//Con esto se maneja la "velocidad" de los jugadores
+    public final int DISTANCIA_MOVIMIENTO = 400;//Con esto se maneja la "velocidad" de los jugadores
 
     public Jugador(float x, float y, Animation<TextureRegion> animacion) {
         this.posicion = new Vector2(x, y);
@@ -45,8 +45,8 @@ public abstract class Jugador {
 
         float x = posicion.x;
         float y = posicion.y;
-        float width = 32;
-        float height = 32;
+        float width = 128;
+        float height = 128;
         float originX = width / 2f;
         float originY = height / 2f;
     //lo de arriba fue tapia
