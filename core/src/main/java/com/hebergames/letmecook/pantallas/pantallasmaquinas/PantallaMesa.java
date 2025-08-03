@@ -95,6 +95,8 @@ public class PantallaMesa extends Pantalla {
             tInventario.setTexto("Inventario: " + JUGADOR.getInventario().getNombre());
         } else {
             tInventario.setTexto("Inventario: Vacío");
+            JUGADOR.setAnimacion(((PantallaJuego) Pantalla.getPantallaActual()).getAnimacionNormal());
+
         }
 
         // Actualizar producto preparado

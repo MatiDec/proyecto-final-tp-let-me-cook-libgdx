@@ -63,4 +63,8 @@ public abstract class Jugador {
         this.anguloRotacion = angulo;
     }
 
+    public void setAnimacion(Animation<TextureRegion> animacion)
+    {
+        this.animacion = animacion;
+    }
 }
