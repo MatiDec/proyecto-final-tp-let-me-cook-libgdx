@@ -1,4 +1,4 @@
-package com.hebergames.letmecook.pantallas;
+package com.hebergames.letmecook.pantallas.pantallasmaquinas;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -11,17 +11,17 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.entidades.JugadorHost;
+import com.hebergames.letmecook.entregables.ingredientes.Carne;
+import com.hebergames.letmecook.entregables.ingredientes.Pan;
 import com.hebergames.letmecook.eventos.Entrada;
 import com.hebergames.letmecook.eventos.TextoInteractuable;
-import com.hebergames.letmecook.ingredientes.*;
+import com.hebergames.letmecook.pantallas.Pantalla;
+import com.hebergames.letmecook.pantallas.PantallaJuego;
 import com.hebergames.letmecook.utiles.Configuracion;
 import com.hebergames.letmecook.utiles.Recursos;
 import com.hebergames.letmecook.utiles.Render;
 
 public class PantallaHeladera extends Pantalla {
-
-    //La estructura completa de la clase ya está bien diseñada dentro de tod, el problema es que no quiero que pantallajuego se pase siempre como parámetro. Esto es un error bastante feo
-    //y se debe solucionar en la brevedad. TODO
 
     private final JugadorHost JUGADOR;
     private final SpriteBatch BATCH;
@@ -41,12 +41,10 @@ public class PantallaHeladera extends Pantalla {
         this.camara = new OrthographicCamera();
         this.viewport = new ScreenViewport(camara);
 
-        // Cargar texturas (necesitarás crear estas texturas)
         cargarTexturas();
     }
 
     private void cargarTexturas() {
-        // Aquí deberías cargar las texturas reales desde tus recursos
         Texture ingredientesTextura = new Texture(Gdx.files.internal("core/src/main/java/com/hebergames/letmecook/recursos/imagenes/ingredientes.png"));
         TextureRegion[][] tmp = TextureRegion.split(ingredientesTextura, 32, 32);
         texturaCarne = tmp[0][0];

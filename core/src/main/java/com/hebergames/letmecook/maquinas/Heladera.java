@@ -2,7 +2,6 @@ package com.hebergames.letmecook.maquinas;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.pantallas.Pantalla;
-import com.hebergames.letmecook.pantallas.PantallaHeladera;
 import com.hebergames.letmecook.pantallas.PantallaJuego;
 
 public class Heladera extends EstacionTrabajo {

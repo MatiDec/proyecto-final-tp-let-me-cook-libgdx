@@ -1,4 +1,4 @@
-package com.hebergames.letmecook.ingredientes;
+package com.hebergames.letmecook.entregables.ingredientes;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 

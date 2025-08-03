@@ -19,9 +19,10 @@ import com.hebergames.letmecook.entidades.JugadorHost;
 import com.hebergames.letmecook.eventos.Entrada;
 import com.hebergames.letmecook.eventos.HiloClientes;
 import com.hebergames.letmecook.eventos.HiloPrincipal;
-import com.hebergames.letmecook.ingredientes.Ingrediente;
 import com.hebergames.letmecook.mapa.Mapa;
 import com.hebergames.letmecook.maquinas.EstacionTrabajo;
+import com.hebergames.letmecook.pantallas.pantallasmaquinas.PantallaHeladera;
+import com.hebergames.letmecook.pantallas.pantallasmaquinas.PantallaMesa;
 import com.hebergames.letmecook.utiles.Recursos;
 import com.hebergames.letmecook.utiles.Render;
 import com.hebergames.letmecook.utiles.GestorAudio;
@@ -36,6 +37,7 @@ public class PantallaJuego extends Pantalla {
     private static final float MUNDO_ALTO = 1080f;
     private static final float UI_ANCHO = 1920f;
     private static final float UI_ALTO = 1080f;
+    private static final int TIEMPO_OBJETIVO = 10;//10 segundos y termina el juego
 
     private SpriteBatch batch;
     private Entrada entrada;
@@ -56,8 +58,10 @@ public class PantallaJuego extends Pantalla {
 
     private PantallaPausa pantallaPausa;
     private PantallaHeladera pantallaHeladera;
+    private PantallaMesa pantallaMesa;
     private boolean juegoEnPausa = false;
     private boolean heladeraAbierta = false;
+    private boolean mesaAbierta = false;
 
     private GestorAudio gestorAudio;
 
@@ -180,7 +184,7 @@ public class PantallaJuego extends Pantalla {
         mapaJuego.render(camaraJuego);
 
         if (!juegoEnPausa) {
-            if(!heladeraAbierta) {
+            if(!heladeraAbierta && !mesaAbierta) {
                 jugadorHost.actualizar(delta);
                 entrada.actualizarEntradas();
             }
@@ -249,15 +253,30 @@ public class PantallaJuego extends Pantalla {
         renderizarJuego(delta);
         renderizarUI();
 
+        if(hiloPrincipal != null && hiloPrincipal.getSegundos() >= TIEMPO_OBJETIVO) {
+            terminarJuego(calcularPuntajeFinal());
+            return;
+        }
+
         if(heladeraAbierta && pantallaHeladera != null) {
             batch.setProjectionMatrix(camaraUi.combined);
             pantallaHeladera.render(delta);
+        }
+
+        if(mesaAbierta && pantallaMesa != null) {
+            batch.setProjectionMatrix(camaraUi.combined);
+            pantallaMesa.render(delta);
         }
 
         if (juegoEnPausa) {
             batch.setProjectionMatrix(camaraUi.combined);
             pantallaPausa.render(delta);
         }
+    }
+
+    private int calcularPuntajeFinal() {
+        //Aca se va a calcular los puntos que consigue el jugador por cada nivel.
+        return 1000;//Esto es para probar como se ve
     }
 
     public void togglePausa() {
@@ -303,7 +322,31 @@ public class PantallaJuego extends Pantalla {
                 pantallaHeladera.hide();
                 pantallaHeladera = null;
             }
-            // Restaurar el input processor al juego
+
+            entrada = new Entrada();
+            entrada.setViewportJuego(viewportJuego);
+            entrada.setViewportUI(viewportUI);
+            Gdx.input.setInputProcessor(entrada);
+            entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
+            entrada.registrarEstacionesTrabajo(mapaJuego.getEstacionesTrabajo());
+        }
+    }
+
+    public void abrirMesa() {
+        if(!mesaAbierta) {
+            mesaAbierta = true;
+            pantallaMesa = PantallaMesa.getInstancia();
+            pantallaMesa.show();
+        }
+    }
+
+    public void cerrarMesa() {
+        if (mesaAbierta) {
+            mesaAbierta = false;
+            if (pantallaMesa != null) {
+                pantallaMesa.hide();
+            }
+
             entrada = new Entrada();
             entrada.setViewportJuego(viewportJuego);
             entrada.setViewportUI(viewportUI);
@@ -353,6 +396,21 @@ public class PantallaJuego extends Pantalla {
             mapaJuego.dispose();
         }
     }
+
+    public void terminarJuego(int puntaje) {
+        detenerHilos(); // frena hilos y contadores
+        gestorAudio.pausarMusica();
+
+        int segundos = hiloPrincipal.getSegundos();
+        int minutos = segundos / 60;
+        int segundosRestantes = segundos % 60;
+        String tiempoFormateado = String.format("%02d:%02d", minutos, segundosRestantes);
+
+        pantallaMesa.resetearInstancia();
+
+        Pantalla.cambiarPantalla(new PantallaFinal(tiempoFormateado, puntaje));
+    }
+
 
     public void detenerHilos() {
         hiloPrincipal.detener();

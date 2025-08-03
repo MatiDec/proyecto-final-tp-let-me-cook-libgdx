@@ -5,8 +5,9 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.hebergames.letmecook.entregables.ObjetoAlmacenable;
 import com.hebergames.letmecook.eventos.DatosEntrada;
-import com.hebergames.letmecook.ingredientes.Ingrediente;
+import com.hebergames.letmecook.entregables.ingredientes.Ingrediente;
 import com.hebergames.letmecook.utiles.Configuracion;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class JugadorHost extends Jugador {
     private List<Rectangle> colisionables = new ArrayList<>();
     private List<Rectangle> interactuables = new ArrayList<>();
 
-    private Ingrediente inventario;
+    private ObjetoAlmacenable inventario;
 
     public JugadorHost(float x, float y, Animation<TextureRegion> animacion) {
         super(x, y, animacion);
@@ -103,7 +104,7 @@ public class JugadorHost extends Jugador {
         return this.inventario != null;
     }
 
-    public boolean guardarEnInventario(Ingrediente ingrediente) {
+    public boolean guardarEnInventario(ObjetoAlmacenable ingrediente) {
         if(this.inventario == null) {
             this.inventario = ingrediente;
             return true;
@@ -111,13 +112,13 @@ public class JugadorHost extends Jugador {
         return false;
     }
 
-    public Ingrediente sacarDeInventario() {
-        Ingrediente item = this.inventario;
+    public ObjetoAlmacenable sacarDeInventario() {
+        ObjetoAlmacenable item = this.inventario;
         this.inventario = null;
         return item;
     }
 
-    public Ingrediente getInventario() {
+    public ObjetoAlmacenable getInventario() {
         return this.inventario;
     }
 
@@ -125,7 +126,7 @@ public class JugadorHost extends Jugador {
         if(inventario != null) {
             return this.inventario.getNombre();
         }
-        return "Nada";
+        return "Vacío";
     }
 
     public void setColisionables(List<Rectangle> colisionables) {

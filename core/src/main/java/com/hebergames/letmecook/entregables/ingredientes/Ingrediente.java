@@ -1,8 +1,9 @@
-package com.hebergames.letmecook.ingredientes;
+package com.hebergames.letmecook.entregables.ingredientes;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.hebergames.letmecook.entregables.ObjetoAlmacenable;
 
-public abstract class Ingrediente {
+public abstract class Ingrediente implements ObjetoAlmacenable {
     protected String nombre;
     protected TextureRegion textura;
 
