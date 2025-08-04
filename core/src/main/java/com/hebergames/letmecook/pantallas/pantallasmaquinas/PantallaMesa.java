@@ -1,15 +1,7 @@
 package com.hebergames.letmecook.pantallas.pantallasmaquinas;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hebergames.letmecook.elementos.Texto;
-import com.hebergames.letmecook.entidades.JugadorHost;
-import com.hebergames.letmecook.eventos.Entrada;
 import com.hebergames.letmecook.eventos.TextoInteractuable;
 import com.hebergames.letmecook.entregables.*;
 import com.hebergames.letmecook.entregables.ingredientes.*;
@@ -21,18 +13,13 @@ import com.hebergames.letmecook.utiles.*;
 
 import java.util.ArrayList;
 
-public class PantallaMesa extends Pantalla {
+public class PantallaMesa extends PantallaMaquina {
 
     private static PantallaMesa instancia;
 
-    private final JugadorHost JUGADOR;
-    private final SpriteBatch BATCH;
     private final int MAX_SLOTS = 2;
 
     private Texto tSlot1, tSlot2, tPreparar, tLimpiar, tCerrar, tInventario, tProducto;
-    private Entrada entrada;
-    private Viewport viewport;
-    private OrthographicCamera camara;
 
     // Estado persistente de la mesa
     private ArrayList<Ingrediente> inventarioMesa;
@@ -40,10 +27,7 @@ public class PantallaMesa extends Pantalla {
     private GestorRecetas gestorRecetas;
 
     private PantallaMesa() {
-        this.JUGADOR = Configuracion.getInstancia().getJugadorPrincipal();
-        this.BATCH = Render.batch;
-        this.camara = new OrthographicCamera();
-        this.viewport = new ScreenViewport(camara);
+        super(true); // true porque tiene overlay visual
         this.inventarioMesa = new ArrayList<>();
         this.gestorRecetas = GestorRecetas.getInstance();
     }
@@ -56,16 +40,17 @@ public class PantallaMesa extends Pantalla {
     }
 
     @Override
-    public void show() {
-        viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
-        entrada = new Entrada();
-        Gdx.input.setInputProcessor(entrada);
-        inicializarTextos();
-        posicionarTextos();
-        registrarEntradas();
+    protected void ejecutarLogicaMaquina() {
+        System.out.println("Mesa abierta");
     }
 
-    private void inicializarTextos() {
+    @Override
+    protected void actualizarLogicaMaquina(float delta) {
+        // La mesa no necesita actualización continua
+    }
+
+    @Override
+    protected void inicializarInterfaz() {
         tSlot1 = new Texto(Recursos.FUENTE_MENU, 32, Color.WHITE, true);
         tSlot2 = new Texto(Recursos.FUENTE_MENU, 32, Color.WHITE, true);
 
@@ -107,7 +92,8 @@ public class PantallaMesa extends Pantalla {
         }
     }
 
-    private void posicionarTextos() {
+    @Override
+    protected void posicionarElementos() {
         float anchoViewport = viewport.getWorldWidth();
         float altoViewport = viewport.getWorldHeight();
         float centroX = anchoViewport / 2f;
@@ -123,7 +109,8 @@ public class PantallaMesa extends Pantalla {
         tInventario.setPosition(50, altoViewport - 50);
     }
 
-    private void registrarEntradas() {
+    @Override
+    protected void registrarInteracciones() {
         entrada.registrar(new TextoInteractuable(tSlot1, () -> {
             if (inventarioMesa.size() > 0) {
                 // Devolver ingrediente al jugador
@@ -180,10 +167,7 @@ public class PantallaMesa extends Pantalla {
         }));
 
         entrada.registrar(new TextoInteractuable(tCerrar, () -> {
-            Pantalla pantallaActual = Pantalla.getPantallaActual();
-            if (pantallaActual instanceof PantallaJuego) {
-                ((PantallaJuego) pantallaActual).cerrarMesa();
-            }
+            cerrarMaquina();
         }));
     }
 
@@ -197,23 +181,7 @@ public class PantallaMesa extends Pantalla {
     }
 
     @Override
-    public void render(float delta) {
-        entrada.actualizarEntradas();
-        viewport.apply();
-        camara.update();
-
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
-        BATCH.setProjectionMatrix(camara.combined);
-        BATCH.begin();
-
-        BATCH.setColor(0, 0, 0, 0.5f);
-        float anchoViewport = viewport.getWorldWidth();
-        float altoViewport = viewport.getWorldHeight();
-        BATCH.draw(Recursos.PIXEL, 0, 0, anchoViewport, altoViewport);
-        BATCH.setColor(1, 1, 1, 1);
-
+    protected void renderizarInterfaz() {
         tSlot1.dibujar();
         tSlot2.dibujar();
         tPreparar.dibujar();
@@ -221,28 +189,15 @@ public class PantallaMesa extends Pantalla {
         tProducto.dibujar();
         tCerrar.dibujar();
         tInventario.dibujar();
-
-        BATCH.end();
-        Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
     @Override
-    public void resize(int width, int height) {
-        viewport.update(width, height, true);
-        posicionarTextos();
+    protected void cerrarMaquina() {
+        Pantalla pantallaActual = Pantalla.getPantallaActual();
+        if (pantallaActual instanceof PantallaJuego) {
+            ((PantallaJuego) pantallaActual).cerrarMesa();
+        }
     }
-
-    @Override
-    public void pause() {}
-
-    @Override
-    public void resume() {}
-
-    @Override
-    public void hide() {}
-
-    @Override
-    public void dispose() {}
 
     public static void resetearInstancia() {
         instancia = null;

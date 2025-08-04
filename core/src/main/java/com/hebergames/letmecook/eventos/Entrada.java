@@ -94,7 +94,7 @@ public class Entrada implements InputProcessor {
 
             for (EstacionTrabajo e : ESTACIONES) {
                 if (e.fueClickeada(coordenadasJuego.x, coordenadasJuego.y)) {
-                    e.alInteractuar();
+                    e.interactuar();
                     return true;
                 }
             }

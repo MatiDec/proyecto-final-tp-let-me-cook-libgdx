@@ -29,8 +29,6 @@ import com.hebergames.letmecook.utiles.GestorAudio;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class PantallaJuego extends Pantalla {
 
@@ -39,15 +37,13 @@ public class PantallaJuego extends Pantalla {
     private static final float MUNDO_ALTO = 1080f;
     private static final float UI_ANCHO = 1920f;
     private static final float UI_ALTO = 1080f;
-    private static final int TIEMPO_OBJETIVO = 3000;//10 segundos y termina el juego
+    private static final int TIEMPO_OBJETIVO = 180;//3 minutos y termina el juego
 
     private SpriteBatch batch;
     private Entrada entrada;
     private JugadorHost jugadorHost;
     private Texture jugadorSheet;
-    private Animation<TextureRegion> animacionJugadorNormal;
-    private Map<String, Animation<TextureRegion>> animacionesConItem = new HashMap<>();
-
+    private Animation<TextureRegion> animacionJugador;
 
     private Mapa mapaJuego;
     private ArrayList<EstacionTrabajo> estaciones;
@@ -94,11 +90,13 @@ public class PantallaJuego extends Pantalla {
         entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
 
         estaciones = mapaJuego.getEstacionesTrabajo();
+        mapaJuego.configurarEstadoMaquinas(estaciones);
         entrada.registrarEstacionesTrabajo(estaciones);
+
 
         pantallaPausa = new PantallaPausa(this);
 
-        inicializarMusicaFondo();
+        inicializarMusicaYSonido();
 
         configurarCamara();
 
@@ -124,22 +122,24 @@ public class PantallaJuego extends Pantalla {
     private void configurarTexturasJugador() {
         jugadorSheet = new Texture(Gdx.files.internal("core/src/main/java/com/hebergames/letmecook/recursos/imagenes/imagendepruebanomoral.png"));
         TextureRegion[][] tmp = TextureRegion.split(jugadorSheet, 32, 32);
-        animacionJugadorNormal = new Animation<>(0.5f, tmp[0]);
+        animacionJugador = new Animation<>(0.5f, tmp[0]);
     }
 
     private void configurarMapaYJugador() {
         mapaJuego = new Mapa("core/src/main/java/com/hebergames/letmecook/recursos/mapas/Prueba.tmx");
-        jugadorHost = new JugadorHost(1000, 1000, animacionJugadorNormal);
+        jugadorHost = new JugadorHost(1000, 1000, animacionJugador);
         jugadorHost.setColisionables(mapaJuego.getRectangulosColision());
         jugadorHost.setInteractuables(mapaJuego.getRectangulosInteractuables());
     }
 
-    private void inicializarMusicaFondo() {
-        //Música de fondo en el nivel.
+    private void inicializarMusicaYSonido() {
         gestorAudio = GestorAudio.getInstance();
         gestorAudio.cargarMusica("musica_fondo", Recursos.CANCION_FONDO);
         gestorAudio.reproducirCancion("musica_fondo", true);
         gestorAudio.pausarMusica();
+
+        gestorAudio.cargarSonido("temporizador", "core/src/main/java/com/hebergames/letmecook/recursos/audio/sonidos/tictac.ogg");
+        gestorAudio.cargarSonido("coccion_perfecta", "core/src/main/java/com/hebergames/letmecook/recursos/audio/sonidos/coccion_completa.ogg");
     }
 
     private void inicializarClientes() {
@@ -199,6 +199,9 @@ public class PantallaJuego extends Pantalla {
         batch.begin();
         jugadorHost.dibujar(batch);
         gestorClientes.dibujar(batch);
+        for (EstacionTrabajo estacion : estaciones) {
+            estacion.dibujarIndicador(batch);
+        }
         batch.end();
     }
 
@@ -223,7 +226,6 @@ public class PantallaJuego extends Pantalla {
 
         batch.end();
     }
-
 
     private void actualizarPosicionesUI() {
         float margen = 50f;
@@ -256,6 +258,9 @@ public class PantallaJuego extends Pantalla {
         }
 
         renderizarJuego(delta);
+        for (EstacionTrabajo estacion : estaciones) {
+            estacion.actualizar(delta);
+        }
         renderizarUI();
 
         if(hiloPrincipal != null && hiloPrincipal.getSegundos() >= TIEMPO_OBJETIVO) {
@@ -400,29 +405,6 @@ public class PantallaJuego extends Pantalla {
         if (mapaJuego != null) {
             mapaJuego.dispose();
         }
-    }
-
-    public Animation<TextureRegion> getAnimacionNormal() {
-        return animacionJugadorNormal;
-    }
-
-
-    public Animation<TextureRegion> getAnimacionConItem(String nombreItem) {
-        Animation<TextureRegion> animacion = animacionesConItem.get(nombreItem);
-
-        if (animacion == null) {
-            try {
-                String ruta = "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/imagendepruebanomoral" + nombreItem.toLowerCase() + ".png";
-                Texture textura = new Texture(Gdx.files.internal(ruta));
-                TextureRegion[][] tmp = TextureRegion.split(textura, 32, 32);
-                animacion = new Animation<>(0.5f, tmp[0]);
-                animacionesConItem.put(nombreItem, animacion);
-            } catch (Exception e) {
-                return animacionJugadorNormal;
-            }
-        }
-
-        return animacion;
     }
 
     public void terminarJuego(int puntaje) {

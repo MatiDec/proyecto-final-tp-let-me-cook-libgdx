@@ -2,45 +2,26 @@ package com.hebergames.letmecook.pantallas.pantallasmaquinas;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hebergames.letmecook.elementos.Texto;
-import com.hebergames.letmecook.entidades.JugadorHost;
 import com.hebergames.letmecook.entregables.ingredientes.Carne;
 import com.hebergames.letmecook.entregables.ingredientes.Pan;
-import com.hebergames.letmecook.eventos.Entrada;
 import com.hebergames.letmecook.eventos.TextoInteractuable;
 import com.hebergames.letmecook.pantallas.Pantalla;
 import com.hebergames.letmecook.pantallas.PantallaJuego;
-import com.hebergames.letmecook.utiles.Configuracion;
 import com.hebergames.letmecook.utiles.Recursos;
-import com.hebergames.letmecook.utiles.Render;
 
-public class PantallaHeladera extends Pantalla {
-
-    private final JugadorHost JUGADOR;
-    private final SpriteBatch BATCH;
+public class PantallaHeladera extends PantallaMaquina {
 
     private Texto tCarne, tPan, tCerrar, tInventario;
-    private Entrada entrada;
-    private Viewport viewport;
-    private OrthographicCamera camara;
 
     // Texturas de ingredientes (cargarlas desde recursos)
     private TextureRegion texturaCarne;
     private TextureRegion texturaPan;
 
     public PantallaHeladera() {
-        this.JUGADOR = Configuracion.getInstancia().getJugadorPrincipal();
-        this.BATCH = Render.batch;
-        this.camara = new OrthographicCamera();
-        this.viewport = new ScreenViewport(camara);
-
+        super(true); // true porque tiene overlay visual
         cargarTexturas();
     }
 
@@ -52,16 +33,17 @@ public class PantallaHeladera extends Pantalla {
     }
 
     @Override
-    public void show() {
-        viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
-        entrada = new Entrada();
-        Gdx.input.setInputProcessor(entrada);
-        inicializarTextos();
-        posicionarTextos();
-        registrarEntradas();
+    protected void ejecutarLogicaMaquina() {
+        System.out.println("Heladera abierta");
     }
 
-    private void inicializarTextos() {
+    @Override
+    protected void actualizarLogicaMaquina(float delta) {
+        // La heladera no necesita actualización continua
+    }
+
+    @Override
+    protected void inicializarInterfaz() {
         tCarne = new Texto(Recursos.FUENTE_MENU, 48, Color.WHITE, true);
         tCarne.setTexto("Carne");
 
@@ -83,7 +65,8 @@ public class PantallaHeladera extends Pantalla {
         }
     }
 
-    private void posicionarTextos() {
+    @Override
+    protected void posicionarElementos() {
         float anchoViewport = viewport.getWorldWidth();
         float altoViewport = viewport.getWorldHeight();
         float centroX = anchoViewport / 2f;
@@ -96,7 +79,8 @@ public class PantallaHeladera extends Pantalla {
         tInventario.setPosition(50, altoViewport - 50);
     }
 
-    private void registrarEntradas() {
+    @Override
+    protected void registrarInteracciones() {
         entrada.registrar(new TextoInteractuable(tCarne, () -> {
             if (!JUGADOR.tieneInventarioLleno()) {
                 JUGADOR.guardarEnInventario(new Carne(texturaCarne));
@@ -116,55 +100,23 @@ public class PantallaHeladera extends Pantalla {
         }));
 
         entrada.registrar(new TextoInteractuable(tCerrar, () -> {
-            Pantalla pantallaActual = Pantalla.getPantallaActual();
-            if (pantallaActual instanceof PantallaJuego) {
-                ((PantallaJuego) pantallaActual).cerrarHeladera();
-            }
+            cerrarMaquina();
         }));
     }
 
     @Override
-    public void render(float delta) {
-        entrada.actualizarEntradas();
-        viewport.apply();
-        camara.update();
-
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
-        BATCH.setProjectionMatrix(camara.combined);
-        BATCH.begin();
-
-        BATCH.setColor(0, 0, 0, 0.5f);
-        float anchoViewport = viewport.getWorldWidth();
-        float altoViewport = viewport.getWorldHeight();
-        BATCH.draw(Recursos.PIXEL, 0, 0, anchoViewport, altoViewport);
-        BATCH.setColor(1, 1, 1, 1);
-
+    protected void renderizarInterfaz() {
         tCarne.dibujar();
         tPan.dibujar();
         tCerrar.dibujar();
         tInventario.dibujar();
-
-        BATCH.end();
-        Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
     @Override
-    public void resize(int width, int height) {
-        viewport.update(width, height, true);
-        posicionarTextos();
+    protected void cerrarMaquina() {
+        Pantalla pantallaActual = Pantalla.getPantallaActual();
+        if (pantallaActual instanceof PantallaJuego) {
+            ((PantallaJuego) pantallaActual).cerrarHeladera();
+        }
     }
-
-    @Override
-    public void pause() {}
-
-    @Override
-    public void resume() {}
-
-    @Override
-    public void hide() {}
-
-    @Override
-    public void dispose() {}
 }
