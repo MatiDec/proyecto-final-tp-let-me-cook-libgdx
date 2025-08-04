@@ -29,6 +29,8 @@ import com.hebergames.letmecook.utiles.GestorAudio;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PantallaJuego extends Pantalla {
 
@@ -73,6 +75,9 @@ public class PantallaJuego extends Pantalla {
     private TextureRegion texturaClientePresencial;
     private TextureRegion texturaVirtualInactiva;
     private TextureRegion texturaVirtualActiva;
+
+    private Map<String, Animation<TextureRegion>> animacionesConItem = new HashMap<>();
+    private Animation<TextureRegion> animacionJugadorNormal;
 
     @Override
     public void show() {
@@ -364,6 +369,27 @@ public class PantallaJuego extends Pantalla {
             entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
             entrada.registrarEstacionesTrabajo(mapaJuego.getEstacionesTrabajo());
         }
+    }
+
+    public Animation<TextureRegion> getAnimacionConItem(String nombreItem) {
+        Animation<TextureRegion> animacion = animacionesConItem.get(nombreItem);
+        if (animacion == null) {
+            try {
+                String ruta = "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/imagendepruebanomoral" + nombreItem.toLowerCase() + ".png";
+                Texture textura = new Texture(Gdx.files.internal(ruta));
+                TextureRegion[][] tmp = TextureRegion.split(textura, 32, 32);
+                animacion = new Animation<>(0.5f, tmp[0]);
+                animacionesConItem.put(nombreItem, animacion);
+            } catch (Exception e) {
+                Gdx.app.error("Spritesheet", "No se pudo cargar la animacion para: " + nombreItem, e);
+                return animacionJugadorNormal;
+            }
+        }
+        return animacion;
+    }
+
+    public Animation<TextureRegion> getAnimacionNormal() {
+        return animacionJugadorNormal;
     }
 
     @Override
