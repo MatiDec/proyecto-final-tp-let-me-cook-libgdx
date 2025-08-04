@@ -49,10 +49,13 @@ public class Texto implements ObjetoVisualizable {
         fuente.draw(batch, this.texto, this.x, this.y);
     }
 
-    public void setTexto(String texto) {
-        this.texto = texto;
-        this.layout.setText(fuente, texto);
+    public void setTexto(String nuevoTexto) {
+        if (!this.texto.equals(nuevoTexto)) { // solo si realmente cambia
+            this.texto = nuevoTexto;
+            this.layout.setText(fuente, nuevoTexto);
+        }
     }
+
 
     public void setPosition(float x, float y) {
         this.x = x;

@@ -167,6 +167,7 @@ public class PantallaMesa extends PantallaMaquina {
         }));
 
         entrada.registrar(new TextoInteractuable(tCerrar, () -> {
+            System.out.println("Se cerro");
             cerrarMaquina();
         }));
     }

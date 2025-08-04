@@ -27,6 +27,10 @@ public abstract class EstacionTrabajo {
     }
 
     public final void interactuar() {
+        System.out.println("DEBUG: EstacionTrabajo.interactuar() llamado");
+        System.out.println("DEBUG: fueraDeServicio: " + fueraDeServicio);
+        System.out.println("DEBUG: procesadora != null: " + (procesadora != null));
+
         if (fueraDeServicio) {
             GestorAudio.getInstance().reproducirSonido("error");
             System.out.println("Máquina fuera de servicio");
@@ -35,6 +39,7 @@ public abstract class EstacionTrabajo {
 
         // Intentar procesar directamente si es una máquina procesadora
         if (procesadora != null) {
+            System.out.println("DEBUG: Llamando a manejarProcesamiento()");
             manejarProcesamiento();
             return;
         }
@@ -52,13 +57,20 @@ public abstract class EstacionTrabajo {
     }
 
     private void manejarProcesamiento() {
+        System.out.println("DEBUG: manejarProcesamiento() iniciado");
+
         JugadorHost jugador = Configuracion.getInstancia().getJugadorPrincipal();
+        System.out.println("DEBUG: Jugador obtenido: " + (jugador != null ? "OK" : "NULL"));
 
         // --- Retiro solo si el jugador hace Shift + Click ---
         boolean retirar = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)
             || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);
 
+        System.out.println("DEBUG: Shift presionado: " + retirar);
+        System.out.println("DEBUG: procesadora.tieneProcesandose(): " + procesadora.tieneProcesandose());
+
         if (procesadora.tieneProcesandose()) {
+            System.out.println("DEBUG: Ya hay algo procesándose");
             if (retirar) {
                 if (!jugador.tieneInventarioLleno()) {
                     Ingrediente resultado = procesadora.obtenerResultado();
@@ -76,22 +88,30 @@ public abstract class EstacionTrabajo {
         }
 
         // Si no hay nada procesándose, intentar iniciar proceso
-        Ingrediente objetoInventario = (Ingrediente) jugador.getInventario();
-        if (objetoInventario != null) {
-            Ingrediente ingrediente = objetoInventario;
+        ObjetoAlmacenable objetoInventario = jugador.getInventario();
+        System.out.println("DEBUG: Objeto en inventario: " + objetoInventario);
+        System.out.println("DEBUG: Tipo del objeto: " + (objetoInventario != null ? objetoInventario.getClass().getSimpleName() : "null"));
+
+        if (objetoInventario instanceof Ingrediente) {
+            Ingrediente ingrediente = (Ingrediente) objetoInventario;
+            System.out.println("DEBUG: Ingrediente válido encontrado: " + ingrediente.getNombre());
+            System.out.println("DEBUG: Llamando a procesadora.iniciarProceso()");
+
             if (procesadora.iniciarProceso(ingrediente)) {
                 jugador.sacarDeInventario();
+                System.out.println("DEBUG: Proceso iniciado exitosamente!");
                 System.out.println("Iniciando proceso con: " + ingrediente.getNombre());
             } else {
+                System.out.println("DEBUG: procesadora.iniciarProceso() devolvió false");
                 System.out.println("Este ingrediente no se puede procesar aquí");
             }
         } else {
+            System.out.println("DEBUG: No hay ingrediente válido - objetoInventario no es Ingrediente");
             System.out.println("No tienes un ingrediente válido para procesar");
         }
 
         alInteractuar();
     }
-
 
     public void actualizar(float delta) {
         if (procesadora != null) {

@@ -45,7 +45,7 @@ public class PantallaJuego extends Pantalla {
     private Entrada entrada;
     private JugadorHost jugadorHost;
     private Texture jugadorSheet;
-    private Animation<TextureRegion> animacionJugador;
+    private Animation<TextureRegion> animacionJugadorNormal;
 
     private Mapa mapaJuego;
     private ArrayList<EstacionTrabajo> estaciones;
@@ -77,7 +77,7 @@ public class PantallaJuego extends Pantalla {
     private TextureRegion texturaVirtualActiva;
 
     private Map<String, Animation<TextureRegion>> animacionesConItem = new HashMap<>();
-    private Animation<TextureRegion> animacionJugadorNormal;
+
 
     @Override
     public void show() {
@@ -127,12 +127,12 @@ public class PantallaJuego extends Pantalla {
     private void configurarTexturasJugador() {
         jugadorSheet = new Texture(Gdx.files.internal("core/src/main/java/com/hebergames/letmecook/recursos/imagenes/imagendepruebanomoral.png"));
         TextureRegion[][] tmp = TextureRegion.split(jugadorSheet, 32, 32);
-        animacionJugador = new Animation<>(0.5f, tmp[0]);
+        animacionJugadorNormal = new Animation<>(0.5f, tmp[0]);
     }
 
     private void configurarMapaYJugador() {
         mapaJuego = new Mapa("core/src/main/java/com/hebergames/letmecook/recursos/mapas/Prueba.tmx");
-        jugadorHost = new JugadorHost(1000, 1000, animacionJugador);
+        jugadorHost = new JugadorHost(1000, 1000, animacionJugadorNormal);
         jugadorHost.setColisionables(mapaJuego.getRectangulosColision());
         jugadorHost.setInteractuables(mapaJuego.getRectangulosInteractuables());
     }
@@ -265,6 +265,7 @@ public class PantallaJuego extends Pantalla {
         renderizarJuego(delta);
         for (EstacionTrabajo estacion : estaciones) {
             estacion.actualizar(delta);
+
         }
         renderizarUI();
 
@@ -306,7 +307,7 @@ public class PantallaJuego extends Pantalla {
             entrada.setViewportUI(viewportUI);
             Gdx.input.setInputProcessor(entrada);
             entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
-            entrada.registrarEstacionesTrabajo(mapaJuego.getEstacionesTrabajo());
+            entrada.registrarEstacionesTrabajo(estaciones);
             gestorAudio.reanudarMusica();
         }
     }
@@ -318,7 +319,7 @@ public class PantallaJuego extends Pantalla {
         entrada.setViewportUI(viewportUI);
         Gdx.input.setInputProcessor(entrada);
         entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
-        entrada.registrarEstacionesTrabajo(mapaJuego.getEstacionesTrabajo());
+        entrada.registrarEstacionesTrabajo(estaciones);
         gestorAudio.reanudarMusica();
     }
 
@@ -343,7 +344,7 @@ public class PantallaJuego extends Pantalla {
             entrada.setViewportUI(viewportUI);
             Gdx.input.setInputProcessor(entrada);
             entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
-            entrada.registrarEstacionesTrabajo(mapaJuego.getEstacionesTrabajo());
+            entrada.registrarEstacionesTrabajo(estaciones);
         }
     }
 
@@ -367,7 +368,7 @@ public class PantallaJuego extends Pantalla {
             entrada.setViewportUI(viewportUI);
             Gdx.input.setInputProcessor(entrada);
             entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
-            entrada.registrarEstacionesTrabajo(mapaJuego.getEstacionesTrabajo());
+            entrada.registrarEstacionesTrabajo(estaciones);
         }
     }
 
