@@ -9,6 +9,7 @@ Todos los cambios notables de este proyecto se documentarán en este archivo.
 - Creación de ingredientes
 - Creación de recetas
 - Creación de productos
+- Creación del horno y su funcionamiento
 ### Changed
 - Cambios en la estructura de los productos
 - Mejora en el manejo de pantallas y jugadores

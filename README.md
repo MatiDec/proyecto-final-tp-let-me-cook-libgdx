@@ -8,6 +8,10 @@ Descripción del juego: Juego multijugador cooperativo para 2 jugadores que se d
 
 Tecnologías Utilizadas: LibGDX, juego diseñado para escritorio. 
 
-Cómo Compilar y Ejecutar: Descargar el proyecto completo ubicado en el repositorio, acceder a la carpeta *lwjgl3 > src > main > java > com.hebergames.letmecook.lwjgl3* y compilar el juego desde la clase Lwjgl3Launcher.java
+Cómo Compilar y Ejecutar: Descargar el proyecto completo ubicado en el repositorio, acceder a la carpeta *lwjgl3 > src > main > java > com.hebergames.letmecook.lwjgl3* y compilar el juego desde la clase **Lwjgl3Launcher.java**
 
 Estado Actual del Proyecto: Configuración de las mecánicas y elementos clave del juego.
+
+Todas las características implementadas se encuentran en el archivo [CHANGELOG.md](https://github.com/MatiDec/proyecto-final-tp-let-me-cook-libgdx/blob/main/CHANGELOG.md)
+
+[Ver una demostración del prototipo jugable del proyecto aquí](https://youtu.be/aVAIvmzZSUY)

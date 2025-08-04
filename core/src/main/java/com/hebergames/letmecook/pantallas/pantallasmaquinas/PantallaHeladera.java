@@ -29,7 +29,7 @@ public class PantallaHeladera extends PantallaMaquina {
         Texture ingredientesTextura = new Texture(Gdx.files.internal("core/src/main/java/com/hebergames/letmecook/recursos/imagenes/ingredientes.png"));
         TextureRegion[][] tmp = TextureRegion.split(ingredientesTextura, 32, 32);
         texturaCarne = tmp[0][0];
-        texturaPan = tmp[0][1];
+        texturaPan = tmp[0][0];
     }
 
     @Override

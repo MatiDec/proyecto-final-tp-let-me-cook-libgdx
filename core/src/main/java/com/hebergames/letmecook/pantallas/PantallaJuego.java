@@ -39,13 +39,12 @@ public class PantallaJuego extends Pantalla {
     private static final float MUNDO_ALTO = 1080f;
     private static final float UI_ANCHO = 1920f;
     private static final float UI_ALTO = 1080f;
-    private static final int TIEMPO_OBJETIVO = 180;//3 minutos y termina el juego
+    private static final int TIEMPO_OBJETIVO = 90;//3 minutos y termina el juego
 
     private SpriteBatch batch;
     private Entrada entrada;
     private JugadorHost jugadorHost;
     private Texture jugadorSheet;
-    private Animation<TextureRegion> animacionJugadorNormal;
 
     private Mapa mapaJuego;
     private ArrayList<EstacionTrabajo> estaciones;
@@ -77,7 +76,7 @@ public class PantallaJuego extends Pantalla {
     private TextureRegion texturaVirtualActiva;
 
     private Map<String, Animation<TextureRegion>> animacionesConItem = new HashMap<>();
-
+    private Animation<TextureRegion> animacionJugadorNormal;
 
     @Override
     public void show() {
@@ -265,7 +264,6 @@ public class PantallaJuego extends Pantalla {
         renderizarJuego(delta);
         for (EstacionTrabajo estacion : estaciones) {
             estacion.actualizar(delta);
-
         }
         renderizarUI();
 

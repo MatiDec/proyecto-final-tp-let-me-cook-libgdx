@@ -18,7 +18,7 @@ public class RecetaHamburguesa extends Receta {
 
     private static ArrayList<String> crearListaIngredientes() {
         ArrayList<String> ingredientes = new ArrayList<>();
-        ingredientes.add("Carne");
+        ingredientes.add("Carne (Cocido)");
         ingredientes.add("Pan");
         return ingredientes;
     }
