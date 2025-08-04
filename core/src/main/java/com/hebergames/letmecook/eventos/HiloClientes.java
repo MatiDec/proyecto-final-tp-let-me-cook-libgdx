@@ -18,7 +18,7 @@ public class HiloClientes extends Thread {
         this.ejecutando = false;
         this.pausado = false;
         this.setName("HiloClientes");//Esto le pone un nombre al hilo, sirve para el manejo de múltiples hilos sin confundirlos
-        this.setDaemon(true);//esta línea no sé que hace pero salva el quilombo de los hilos
+        this.setDaemon(true);//Convierte al hilo a tipo Daemon
     }
 
     @Override

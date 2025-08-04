@@ -39,7 +39,6 @@ public class PantallaHeladera extends PantallaMaquina {
 
     @Override
     protected void actualizarLogicaMaquina(float delta) {
-        // La heladera no necesita actualización continua
     }
 
     @Override

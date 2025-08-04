@@ -37,14 +37,14 @@ public abstract class EstacionTrabajo {
             return;
         }
 
-        // Intentar procesar directamente si es una máquina procesadora
+        //intentar procesar directamente si es una máquina procesadora
         if (procesadora != null) {
             System.out.println("DEBUG: Llamando a manejarProcesamiento()");
             manejarProcesamiento();
             return;
         }
 
-        // Si no es procesadora, usar pantalla tradicional
+        //si no es procesadora, usar pantalla tradicional
         if (pantallaMaquina == null) {
             pantallaMaquina = crearPantallaMaquina();
         }
@@ -62,7 +62,7 @@ public abstract class EstacionTrabajo {
         JugadorHost jugador = Configuracion.getInstancia().getJugadorPrincipal();
         System.out.println("DEBUG: Jugador obtenido: " + (jugador != null ? "OK" : "NULL"));
 
-        // --- Retiro solo si el jugador hace Shift + Click ---
+        //retiro solo si el jugador hace shift + click, para evitar spam de clicks
         boolean retirar = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)
             || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);
 
@@ -87,7 +87,7 @@ public abstract class EstacionTrabajo {
             return;
         }
 
-        // Si no hay nada procesándose, intentar iniciar proceso
+        //si no hay nada procesándose, intentar iniciar proceso
         ObjetoAlmacenable objetoInventario = jugador.getInventario();
         System.out.println("DEBUG: Objeto en inventario: " + objetoInventario);
         System.out.println("DEBUG: Tipo del objeto: " + (objetoInventario != null ? objetoInventario.getClass().getSimpleName() : "null"));

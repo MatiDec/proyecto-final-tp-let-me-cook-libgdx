@@ -27,7 +27,7 @@ public class GestorAudio implements Disposable {
     }
 
     //Patrón de diseño Singleton, se asegura de que una clase tenga una única instancia en
-    // todo el programa y provee un punto de acceso global a esa única instancia, haciendola static.
+    // la totalidad del programa y provee un punto de acceso global a esa única instancia, haciendola static.
     public static GestorAudio getInstance() {
         if (instancia == null) {
             instancia = new GestorAudio();

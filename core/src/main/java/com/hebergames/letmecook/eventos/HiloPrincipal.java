@@ -7,7 +7,7 @@ public class HiloPrincipal extends Thread {
     private boolean pausado = false;
 
     public HiloPrincipal() {
-        this.setDaemon(true);//esta línea no sé que hace pero salva el quilombo de los hilos
+        this.setDaemon(true);
     }
 
     public synchronized void pausar() {

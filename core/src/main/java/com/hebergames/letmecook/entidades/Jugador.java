@@ -12,7 +12,7 @@ public abstract class Jugador {
     protected TextureRegion frameActual; // Esto tiene que ver con las texturas, se puede usar más adelante o no, lo dejo por si sirve
     protected Animation<TextureRegion> animacion; // esto con las animaciones, quizá es útil para más adelante, efectivamente fue util
     protected float estadoTiempo;
-    protected float anguloRotacion = 0f; // grados
+    protected float anguloRotacion = 0f; // grados de rotación
 
 
     public final int DISTANCIA_MOVIMIENTO = 400;//Con esto se maneja la "velocidad" de los jugadores
@@ -29,11 +29,11 @@ public abstract class Jugador {
         if (velocidad.x != 0 || velocidad.y != 0) {
             estadoTiempo += delta;
         } else {
-            estadoTiempo = 0; //si se queda quieto vuelve al frame inicial pero con la rotacion que tiene de antes
+            estadoTiempo = 0; //si se queda quieto vuelve al frame inicial, pero con la rotacion que tiene de antes
         }
 
 
-        frameActual = animacion.getKeyFrame(estadoTiempo, true); //aca va en true porque si no no se loopea cuando se mueve
+        frameActual = animacion.getKeyFrame(estadoTiempo, true);
 
         // actualiza posicion
         posicion.add(velocidad.x * delta, velocidad.y * delta);
@@ -49,7 +49,7 @@ public abstract class Jugador {
         float height = 128;
         float originX = width / 2f;
         float originY = height / 2f;
-    //lo de arriba fue tapia
+
         batch.draw(frame, x, y, originX, originY, width, height, 1f, 1f, anguloRotacion);
     }
 

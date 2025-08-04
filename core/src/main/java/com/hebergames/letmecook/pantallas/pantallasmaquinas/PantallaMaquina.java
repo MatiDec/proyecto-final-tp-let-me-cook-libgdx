@@ -81,17 +81,14 @@ public abstract class PantallaMaquina extends Pantalla {
         }
     }
 
-    // Métodos abstractos que cada máquina debe implementar
     protected abstract void ejecutarLogicaMaquina();
     protected abstract void actualizarLogicaMaquina(float delta);
 
-    // Métodos por defecto para máquinas con overlay (pueden ser sobrescritos)
     protected void inicializarInterfaz() {}
     protected void posicionarElementos() {}
     protected void registrarInteracciones() {}
     protected void renderizarInterfaz() {}
 
-    // Método helper para cerrar la máquina
     protected abstract void cerrarMaquina();
 
     @Override

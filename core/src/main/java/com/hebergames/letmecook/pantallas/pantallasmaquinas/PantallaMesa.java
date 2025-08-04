@@ -21,7 +21,6 @@ public class PantallaMesa extends PantallaMaquina {
 
     private Texto tSlot1, tSlot2, tPreparar, tLimpiar, tCerrar, tInventario, tProducto;
 
-    // Estado persistente de la mesa
     private ArrayList<Ingrediente> inventarioMesa;
     private Producto productoPreparado;
     private GestorRecetas gestorRecetas;
@@ -46,7 +45,6 @@ public class PantallaMesa extends PantallaMaquina {
 
     @Override
     protected void actualizarLogicaMaquina(float delta) {
-        // La mesa no necesita actualización continua
     }
 
     @Override
@@ -71,11 +69,9 @@ public class PantallaMesa extends PantallaMaquina {
     }
 
     private void actualizarTextos() {
-        // Actualizar slots de ingredientes
         tSlot1.setTexto("Slot 1: " + (inventarioMesa.size() > 0 ? inventarioMesa.get(0).getNombre() : "Vacío"));
         tSlot2.setTexto("Slot 2: " + (inventarioMesa.size() > 1 ? inventarioMesa.get(1).getNombre() : "Vacío"));
 
-        // Actualizar inventario jugador
         if (JUGADOR.tieneInventarioLleno()) {
             tInventario.setTexto("Inventario: " + JUGADOR.getInventario().getNombre());
         } else {
@@ -84,7 +80,6 @@ public class PantallaMesa extends PantallaMaquina {
 
         }
 
-        // Actualizar producto preparado
         if (productoPreparado != null) {
             tProducto.setTexto("Producto: " + productoPreparado.getNombre() + " (Click para tomar)");
         } else {
@@ -113,13 +108,11 @@ public class PantallaMesa extends PantallaMaquina {
     protected void registrarInteracciones() {
         entrada.registrar(new TextoInteractuable(tSlot1, () -> {
             if (inventarioMesa.size() > 0) {
-                // Devolver ingrediente al jugador
                 if (!JUGADOR.tieneInventarioLleno()) {
                     JUGADOR.guardarEnInventario(inventarioMesa.remove(0));
                     actualizarTextos();
                 }
             } else {
-                // Agregar ingrediente del jugador al slot (solo si es ingrediente)
                 if (JUGADOR.tieneInventarioLleno() && JUGADOR.getInventario() instanceof Ingrediente) {
                     inventarioMesa.add((Ingrediente) JUGADOR.sacarDeInventario());
                     actualizarTextos();
@@ -129,13 +122,11 @@ public class PantallaMesa extends PantallaMaquina {
 
         entrada.registrar(new TextoInteractuable(tSlot2, () -> {
             if (inventarioMesa.size() > 1) {
-                // Devolver ingrediente al jugador
                 if (!JUGADOR.tieneInventarioLleno()) {
                     JUGADOR.guardarEnInventario(inventarioMesa.remove(1));
                     actualizarTextos();
                 }
             } else if (inventarioMesa.size() == 1) {
-                // Agregar ingrediente del jugador al slot 2 (solo si es ingrediente)
                 if (JUGADOR.tieneInventarioLleno() && JUGADOR.getInventario() instanceof Ingrediente) {
                     inventarioMesa.add((Ingrediente) JUGADOR.sacarDeInventario());
                     actualizarTextos();
@@ -173,7 +164,6 @@ public class PantallaMesa extends PantallaMaquina {
     }
 
     private void limpiarMesa() {
-        // Si el jugador no tiene nada en el inventario, devolver un ingrediente
         if (!JUGADOR.tieneInventarioLleno() && !inventarioMesa.isEmpty()) {
             JUGADOR.guardarEnInventario(inventarioMesa.remove(0));
             actualizarTextos();

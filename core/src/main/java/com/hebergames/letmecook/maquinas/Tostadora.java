@@ -16,6 +16,5 @@ public class Tostadora extends EstacionTrabajo {
     @Override
     public void alInteractuar() {
         System.out.println("Tostando pan");
-        // tapia was here
     }
 }

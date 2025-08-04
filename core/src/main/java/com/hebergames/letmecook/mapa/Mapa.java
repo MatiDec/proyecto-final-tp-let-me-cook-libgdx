@@ -84,8 +84,8 @@ public class Mapa {
                 float x = (Float) objeto.getProperties().get("x");
                 float y = (Float) objeto.getProperties().get("y");
                 float width = (Float) objeto.getProperties().get("width");
-                float height = (Float) objeto.getProperties().get("height"); //quilombo mistico que se puede simplificar pero no me da el brain
-                rect = new Rectangle(x, y, width, height); //es mas lo simplifique a muerte hasta ahora porque antes eran como 70 lineas de codigo esto
+                float height = (Float) objeto.getProperties().get("height");
+                rect = new Rectangle(x, y, width, height);
             }
 
             switch (tipo) {
@@ -106,23 +106,19 @@ public class Mapa {
                     break;
                 case "AreaEnsamblaje":
                     estaciones.add(new Mesa(rect));
-                    break; //añadan un case para cada maquina y mdyt si lees esto pone un default
+                    break;
                 case "Heladera":
                     estaciones.add(new Heladera(rect));
                     break;
-
             }
         }
-
-
-
 
         return estaciones;
     }
 
     public void configurarEstadoMaquinas(ArrayList<EstacionTrabajo> estaciones) {
         for (EstacionTrabajo estacion : estaciones) {
-            if (Math.random() < 0.01f) {//1%
+            if (Math.random() < 0.01f) {//1% de probabilidades de que se rompa una máquina
                 estacion.setFueraDeServicio(true);
                 System.out.println("Máquina " + estacion.getClass().getSimpleName() + " fuera de servicio");
             }

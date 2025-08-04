@@ -63,7 +63,6 @@ public class PantallaFinal extends Pantalla {
         batch.end();
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            // Cambiar a pantalla menú principal (debes reemplazar PantallaMenu por tu clase real)
             Pantalla.cambiarPantalla(new PantallaMenu());
         }
     }

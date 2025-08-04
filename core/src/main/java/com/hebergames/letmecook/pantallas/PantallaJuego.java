@@ -34,7 +34,6 @@ import java.util.Map;
 
 public class PantallaJuego extends Pantalla {
 
-    // Configuración de viewports
     private static final float MUNDO_ANCHO = 1920f;
     private static final float MUNDO_ALTO = 1080f;
     private static final float UI_ANCHO = 1920f;

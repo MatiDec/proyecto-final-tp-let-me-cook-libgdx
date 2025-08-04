@@ -37,7 +37,7 @@ public class Texto implements ObjetoVisualizable {
         float alto = getAlto();
         float yInferior = this.y - alto;
 
-        return x >= this.x && x<=this.x + ancho && y >= yInferior && y <= this.y; // Si quieren se puede hacer más legible pero así funciona bien
+        return x >= this.x && x<=this.x + ancho && y >= yInferior && y <= this.y;
     };
 
     public void dibujar() {

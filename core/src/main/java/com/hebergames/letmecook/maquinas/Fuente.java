@@ -16,6 +16,5 @@ public class Fuente extends EstacionTrabajo {
     @Override
     public void alInteractuar() {
         System.out.println("bebida");
-        // ozores wasnt jiar
     }
 }

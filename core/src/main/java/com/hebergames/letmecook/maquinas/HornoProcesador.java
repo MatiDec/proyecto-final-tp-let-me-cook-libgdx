@@ -71,7 +71,6 @@ public class HornoProcesador implements MaquinaProcesadora, CoccionListener {
 
         ingredienteCocinando.actualizarCoccion(delta);
 
-        // Sonido de temporizador
         tiempoSonidoTemporizador += delta;
         if (tiempoSonidoTemporizador >= INTERVALO_SONIDO_TEMPORIZADOR) {
             tiempoSonidoTemporizador = 0f;
@@ -90,7 +89,6 @@ public class HornoProcesador implements MaquinaProcesadora, CoccionListener {
 
     @Override
     public Ingrediente obtenerResultado() {
-        // El jugador puede retirar el ingrediente en cualquier estado
         if (!tieneProcesandose()) return null;
 
         Ingrediente resultado = ingredienteCocinando;
@@ -110,12 +108,10 @@ public class HornoProcesador implements MaquinaProcesadora, CoccionListener {
                 ", ingrediente: " + (ingredienteCocinando != null ? ingredienteCocinando.getNombre() : "null"));
         }
 
-        // Actualizar el texto del indicador
         String texto;
         if (procesando && ingredienteCocinando != null) {
             EstadoCoccion estado = ingredienteCocinando.getEstadoCoccion();
 
-            // Mostrar estado actual y que se puede retirar
             if (estado == EstadoCoccion.CRUDO) {
                 float progreso = ingredienteCocinando.getTiempoCoccionActual() / ingredienteCocinando.getTiempoCoccionMaximo();
                 int barrasLlenas = (int)(progreso * 5);

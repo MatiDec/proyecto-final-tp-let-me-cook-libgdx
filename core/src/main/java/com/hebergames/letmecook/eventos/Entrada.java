@@ -20,7 +20,7 @@ public class Entrada implements InputProcessor {
     private final Map<Integer, Jugador> MAPA_TECLAS_JUGADOR = new HashMap<>();
     private final ArrayList<EstacionTrabajo> ESTACIONES = new ArrayList<>();
     private Viewport viewportJuego;
-    private Viewport viewportUI; //NO SIRVE DE NADA
+    private Viewport viewportUI;
 
 
 
@@ -85,9 +85,9 @@ public class Entrada implements InputProcessor {
                     i.alClick();
                     return true;
                 }
-            } // si lo de arriba esta cambiado es culpa de mdyt
+            }
 
-        if (viewportJuego != null) //aca como el mapa cargaba antes que el viewport nao arrancaba
+        if (viewportJuego != null)
         {
             Vector2 coordenadasJuego = new Vector2(screenX, screenY);
             viewportJuego.unproject(coordenadasJuego);

@@ -35,7 +35,7 @@ public class JugadorHost extends Jugador {
         if (datosEntrada.estaPresionada(Input.Keys.D)) dx += DISTANCIA_MOVIMIENTO;
 
         if (dx != 0 || dy != 0) {
-            float angulo = (float) Math.toDegrees(Math.atan2(dy, dx)) - 90f; //linea turbianga que no se como cambiar
+            float angulo = (float) Math.toDegrees(Math.atan2(dy, dx)) - 90f;
             setAnguloRotacion(angulo);
         }
 
@@ -45,7 +45,7 @@ public class JugadorHost extends Jugador {
     private boolean colisiona(Rectangle rect) {
         for (Rectangle obstaculo : colisionables) {
             if (obstaculo.overlaps(rect)) {
-                return true; //quilombo mistico
+                return true;
             }
         }
         return false;
@@ -55,7 +55,7 @@ public class JugadorHost extends Jugador {
 
     private void moverSiNoColisiona(float dx, float dy) {
         float anchoSprite = 32;
-        float altoSprite = 32; //aca lo cambie porque no me di cuenta que antes aplicabamos 2 veces el movimiento, por eso lo vas a ver re lento al jugador
+        float altoSprite = 32;
 
         float deltaTime = Gdx.graphics.getDeltaTime();
         float desplazamientoX = dx * deltaTime;

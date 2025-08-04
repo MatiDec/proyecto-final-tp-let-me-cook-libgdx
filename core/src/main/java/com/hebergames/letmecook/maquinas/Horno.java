@@ -7,7 +7,7 @@ public class Horno extends EstacionTrabajo {
 
     public Horno(Rectangle area) {
         super(area);
-        procesadora = new HornoProcesador(area); // Usar procesadora en lugar de pantalla
+        procesadora = new HornoProcesador(area);
     }
 
     @Override
