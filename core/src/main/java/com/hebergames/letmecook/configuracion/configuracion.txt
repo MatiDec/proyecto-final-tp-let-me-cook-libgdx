@@ -1,0 +1,5 @@
+#Configuraciones del juego
+#Wed Sep 03 19:57:13 ART 2025
+resolucion=1366x768
+pantallaCompleta=false
+volumenMusica=35

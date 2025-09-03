@@ -21,7 +21,7 @@ public class Entrada implements InputProcessor {
     private final ArrayList<EstacionTrabajo> ESTACIONES = new ArrayList<>();
     private Viewport viewportJuego;
     private Viewport viewportUI;
-
+    private float ultimoClickX = 0f;
 
 
     public void registrar(BotonInteractuable i) {
@@ -77,8 +77,8 @@ public class Entrada implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-            Vector2 coordenadasUI = new Vector2(screenX, Gdx.graphics.getHeight() - screenY);
-
+        Vector2 coordenadasUI = new Vector2(screenX, Gdx.graphics.getHeight() - screenY);
+        ultimoClickX = screenX * (Gdx.graphics.getWidth() / (float) Gdx.graphics.getWidth());
 
             for (BotonInteractuable i : ELEMENTOS_INTERACTUABLES) {
                 if(i.fueClickeado(coordenadasUI.x, coordenadasUI.y)) {
@@ -145,4 +145,7 @@ public class Entrada implements InputProcessor {
         this.viewportUI = viewport;
     }
 
+    public float getUltimoClickX() {
+        return this.ultimoClickX;
+    }
 }

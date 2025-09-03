@@ -77,4 +77,11 @@ public class Texto implements ObjetoVisualizable {
     public float getY() {
         return this.y;
     }
+
+    public void setColor(Color color) {
+    }
+
+    public String getTexto() {
+        return this.texto;
+    }
 }

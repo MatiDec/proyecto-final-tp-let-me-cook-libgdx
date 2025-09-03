@@ -57,7 +57,7 @@ public class PantallaMenu extends Pantalla {
             System.out.println("Acá debería entrar al modo multijugador online"));
 
         TextoInteractuable opciones = new TextoInteractuable(o3, () ->
-            System.out.println("Acá debería entrar al menu de opciones"));
+            cambiarPantalla(new PantallaOpciones()));
 
         TextoInteractuable salir = new TextoInteractuable(o4, () -> {
             dispose();
