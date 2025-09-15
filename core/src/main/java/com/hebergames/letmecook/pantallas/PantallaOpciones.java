@@ -28,7 +28,7 @@ public class PantallaOpciones extends Pantalla {
 
     private int volumenActual;
     private boolean pantallaCompleta;
-    private String[] resoluciones = {"1280x720", "1366x768", "1600x900", "1920x1080", "2560x1440"};
+    private String[] resoluciones = {"840x680", "1280x720", "1366x768", "1600x900", "1920x1080", "2560x1440"};
     private int indiceResolucion;
     private boolean menuResolucionesAbierto = false;
 

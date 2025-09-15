@@ -14,12 +14,10 @@ import com.hebergames.letmecook.utiles.GestorAudio;
 public abstract class EstacionTrabajo {
     protected Rectangle area;
     protected PantallaMaquina pantallaMaquina;
-    protected boolean fueraDeServicio;
     protected MaquinaProcesadora procesadora;
 
     public EstacionTrabajo(Rectangle area) {
         this.area = area;
-        this.fueraDeServicio = false;
     }
 
     public boolean fueClickeada(float x, float y) {
@@ -28,14 +26,7 @@ public abstract class EstacionTrabajo {
 
     public final void interactuar() {
         System.out.println("DEBUG: EstacionTrabajo.interactuar() llamado");
-        System.out.println("DEBUG: fueraDeServicio: " + fueraDeServicio);
         System.out.println("DEBUG: procesadora != null: " + (procesadora != null));
-
-        if (fueraDeServicio) {
-            GestorAudio.getInstance().reproducirSonido("error");
-            System.out.println("Máquina fuera de servicio");
-            return;
-        }
 
         //intentar procesar directamente si es una máquina procesadora
         if (procesadora != null) {
@@ -123,14 +114,6 @@ public abstract class EstacionTrabajo {
         if (procesadora != null) {
             procesadora.dibujarIndicador(batch);
         }
-    }
-
-    public void setFueraDeServicio(boolean fueraDeServicio) {
-        this.fueraDeServicio = fueraDeServicio;
-    }
-
-    public boolean estaFueraDeServicio() {
-        return fueraDeServicio;
     }
 
     protected abstract PantallaMaquina crearPantallaMaquina();

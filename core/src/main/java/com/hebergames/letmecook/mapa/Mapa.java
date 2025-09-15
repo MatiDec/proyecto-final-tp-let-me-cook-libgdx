@@ -116,14 +116,4 @@ public class Mapa {
         return estaciones;
     }
 
-    public void configurarEstadoMaquinas(ArrayList<EstacionTrabajo> estaciones) {
-        for (EstacionTrabajo estacion : estaciones) {
-            if (Math.random() < 0.01f) {//1% de probabilidades de que se rompa una máquina
-                estacion.setFueraDeServicio(true);
-                System.out.println("Máquina " + estacion.getClass().getSimpleName() + " fuera de servicio");
-            }
-        }
-    }
-
-
 }

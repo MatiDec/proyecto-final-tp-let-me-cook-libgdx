@@ -55,8 +55,8 @@ public class JugadorHost extends Jugador {
 
 
     private void moverSiNoColisiona(float dx, float dy) {
-        float anchoSprite = 32;
-        float altoSprite = 32;
+        float anchoSprite = 128;
+        float altoSprite = 128;
 
         float deltaTime = Gdx.graphics.getDeltaTime();
         float desplazamientoX = dx * deltaTime;

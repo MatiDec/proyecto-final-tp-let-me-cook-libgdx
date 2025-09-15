@@ -96,9 +96,7 @@ public class PantallaJuego extends Pantalla {
         entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
 
         estaciones = mapaJuego.getEstacionesTrabajo();
-        mapaJuego.configurarEstadoMaquinas(estaciones);
         entrada.registrarEstacionesTrabajo(estaciones);
-
 
         pantallaPausa = new PantallaPausa(this);
 
