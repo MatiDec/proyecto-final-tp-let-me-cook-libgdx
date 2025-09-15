@@ -9,6 +9,7 @@ import com.hebergames.letmecook.entregables.ObjetoAlmacenable;
 import com.hebergames.letmecook.eventos.DatosEntrada;
 import com.hebergames.letmecook.entregables.ingredientes.Ingrediente;
 import com.hebergames.letmecook.utiles.Configuracion;
+import com.hebergames.letmecook.utiles.GestorAnimacion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +21,8 @@ public class JugadorHost extends Jugador {
 
     private ObjetoAlmacenable inventario;
 
-    public JugadorHost(float x, float y, Animation<TextureRegion> animacion) {
-        super(x, y, animacion);
+    public JugadorHost(float x, float y, GestorAnimacion gestorAnimacion) {
+        super(x, y, gestorAnimacion);
         Configuracion.getInstancia().setJugadorPrincipal(this);//Poner al jugador host como principal en la configuracion
     }
 

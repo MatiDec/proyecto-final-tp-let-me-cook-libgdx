@@ -27,6 +27,7 @@ import com.hebergames.letmecook.utiles.Recursos;
 import com.hebergames.letmecook.utiles.Render;
 import com.hebergames.letmecook.utiles.GestorAudio;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.hebergames.letmecook.utiles.GestorAnimacion;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,6 +74,8 @@ public class PantallaJuego extends Pantalla {
     private TextureRegion texturaClientePresencial;
     private TextureRegion texturaVirtualInactiva;
     private TextureRegion texturaVirtualActiva;
+
+    private GestorAnimacion gestorAnimacion;
 
     private Map<String, Animation<TextureRegion>> animacionesConItem = new HashMap<>();
     private Animation<TextureRegion> animacionJugadorNormal;
@@ -123,14 +126,15 @@ public class PantallaJuego extends Pantalla {
     }
 
     private void configurarTexturasJugador() {
-        jugadorSheet = new Texture(Gdx.files.internal("core/src/main/java/com/hebergames/letmecook/recursos/imagenes/imagendepruebanomoral.png"));
-        TextureRegion[][] tmp = TextureRegion.split(jugadorSheet, 32, 32);
-        animacionJugadorNormal = new Animation<>(0.5f, tmp[0]);
+        gestorAnimacion = new GestorAnimacion(
+            "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/jugador.png",
+            32, 32, 0.2f
+        );
     }
 
     private void configurarMapaYJugador() {
         mapaJuego = new Mapa("core/src/main/java/com/hebergames/letmecook/recursos/mapas/Prueba.tmx");
-        jugadorHost = new JugadorHost(1000, 1000, animacionJugadorNormal);
+        jugadorHost = new JugadorHost(1000, 1000, gestorAnimacion); // CAMBIO
         jugadorHost.setColisionables(mapaJuego.getRectangulosColision());
         jugadorHost.setInteractuables(mapaJuego.getRectangulosInteractuables());
     }

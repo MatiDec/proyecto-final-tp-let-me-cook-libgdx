@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.hebergames.letmecook.eventos.DatosEntrada;
+import com.hebergames.letmecook.utiles.GestorAnimacion;
 
 public abstract class Jugador {
     protected Vector2 posicion;
@@ -17,10 +18,13 @@ public abstract class Jugador {
 
     public final int DISTANCIA_MOVIMIENTO = 400;//Con esto se maneja la "velocidad" de los jugadores
 
-    public Jugador(float x, float y, Animation<TextureRegion> animacion) {
+    protected GestorAnimacion gestorAnimacion;
+
+    public Jugador(float x, float y, GestorAnimacion gestorAnimacion) {
         this.posicion = new Vector2(x, y);
         this.velocidad = new Vector2(0,0);
-        this.animacion = animacion;
+        this.gestorAnimacion = gestorAnimacion;
+        this.animacion = gestorAnimacion.getAnimacion(0);
         this.estadoTiempo = 0;
     }
 
@@ -63,8 +67,11 @@ public abstract class Jugador {
         this.anguloRotacion = angulo;
     }
 
-    public void setAnimacion(Animation<TextureRegion> animacion)
-    {
-        this.animacion = animacion;
+    public void setAnimacion(int fila) {
+        Animation<TextureRegion> nuevaAnimacion = gestorAnimacion.getAnimacion(fila);
+        if (nuevaAnimacion != null) {
+            this.animacion = nuevaAnimacion;
+            this.estadoTiempo = 0;
+        }
     }
 }
