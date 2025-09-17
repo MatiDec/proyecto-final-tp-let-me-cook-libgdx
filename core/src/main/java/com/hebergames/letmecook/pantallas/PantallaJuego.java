@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.entidades.GestorClientes;
 import com.hebergames.letmecook.entidades.JugadorHost;
+import com.hebergames.letmecook.entregables.productos.GestorProductos;
 import com.hebergames.letmecook.eventos.Entrada;
 import com.hebergames.letmecook.eventos.HiloClientes;
 import com.hebergames.letmecook.eventos.HiloPrincipal;
@@ -23,6 +24,7 @@ import com.hebergames.letmecook.mapa.Mapa;
 import com.hebergames.letmecook.maquinas.EstacionTrabajo;
 import com.hebergames.letmecook.pantallas.pantallasmaquinas.PantallaHeladera;
 import com.hebergames.letmecook.pantallas.pantallasmaquinas.PantallaMesa;
+import com.hebergames.letmecook.pedidos.Pedido;
 import com.hebergames.letmecook.utiles.Recursos;
 import com.hebergames.letmecook.utiles.Render;
 import com.hebergames.letmecook.utiles.GestorAudio;
@@ -79,6 +81,8 @@ public class PantallaJuego extends Pantalla {
 
     private Map<String, Animation<TextureRegion>> animacionesConItem = new HashMap<>();
     private Animation<TextureRegion> animacionJugadorNormal;
+
+    private ArrayList<Pedido> pedidosEnEspera;
 
     @Override
     public void show() {
@@ -167,6 +171,8 @@ public class PantallaJuego extends Pantalla {
 
         hiloClientes = new HiloClientes(gestorClientes);
         hiloClientes.start();
+
+        pedidosEnEspera = gestorClientes.getPedidosActivos();
     }
 
     private void inicializarUI() {

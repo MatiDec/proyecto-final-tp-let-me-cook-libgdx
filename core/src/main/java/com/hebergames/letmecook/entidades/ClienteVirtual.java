@@ -9,6 +9,7 @@ public class ClienteVirtual extends Cliente {
     private TextureRegion texturaInactiva;
     private TextureRegion texturaActiva;
     private TextureRegion texturaActual;
+    private boolean nuevo;
 
     public ClienteVirtual(float tiempoToleancia, Rectangle ubicacion,
                           TextureRegion texturaInactiva, TextureRegion texturaActiva) {
@@ -20,33 +21,42 @@ public class ClienteVirtual extends Cliente {
 
     @Override
     public void actualizar(float delta) {
-        if (!activo) return;
+        if (!this.activo) return;
 
-        tiempoActual += delta;
+        this.tiempoActual += delta;
 
         // Si se agotó el tiempo de tolerancia, desaparece
-        if (tiempoActual >= tiempoToleancia) {
+        if (this.tiempoActual >= this.tiempoToleancia) {
             desaparecer();
         }
     }
 
     @Override
     public void dibujar(SpriteBatch batch) {
-        if (texturaActual != null) {
+        if (this.texturaActual != null) {
             batch.draw(texturaActual, ubicacion.x, ubicacion.y, ubicacion.width, ubicacion.height);
         }
     }
 
     @Override
     public void aparecer() {
-        texturaActual = texturaActiva;
-        activo = true;
-        tiempoActual = 0f;
+        this.nuevo = true;
+        this.texturaActual = texturaActiva;
+        this.activo = true;
+        this.tiempoActual = 0f;
     }
 
     @Override
     public void desaparecer() {
-        texturaActual = texturaInactiva;
-        activo = false;
+        this.texturaActual = texturaInactiva;
+        this.activo = false;
+    }
+
+    public boolean acabaDeAparecer() {
+        if(this.nuevo) {
+            this.nuevo = false;
+            return true;
+        }
+        return false;
     }
 }

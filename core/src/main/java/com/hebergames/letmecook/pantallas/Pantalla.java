@@ -20,6 +20,5 @@ public abstract class Pantalla implements Screen {
         }
         pantallaAnterior = pantallaActual;
         pantallaActual = nuevaPantalla;
-        pantallaActual.show();
     }
 }

@@ -8,6 +8,7 @@ public class ClientePresencial extends Cliente {
 
     private TextureRegion texturaCliente;
     private boolean visible;
+    private boolean recienAparecido;
 
     public ClientePresencial(float tiempoToleancia, Rectangle ubicacion, TextureRegion textura) {
         super(tiempoToleancia, ubicacion);
@@ -19,35 +20,46 @@ public class ClientePresencial extends Cliente {
     public void actualizar(float delta) {
         if (!activo) return;
 
-        tiempoActual += delta;
+        this.tiempoActual += delta;
 
         // Si se agotó el tiempo de tolerancia, desaparece
-        if (tiempoActual >= tiempoToleancia) {
+        if (this.tiempoActual >= this.tiempoToleancia) {
             desaparecer();
         }
     }
 
     @Override
     public void dibujar(SpriteBatch batch) {
-        if (visible && activo && texturaCliente != null) {
+        if (this.visible && this.activo && this.texturaCliente != null) {
             batch.draw(texturaCliente, ubicacion.x, ubicacion.y, ubicacion.width, ubicacion.height);
         }
     }
 
     @Override
     public void aparecer() {
-        visible = true;
-        activo = true;
-        tiempoActual = 0f;
+        this.visible = true;
+        this.activo = true;
+        this.tiempoActual = 0f;
+        this.recienAparecido = true;
+        this.setPedidoAsignado(false);
     }
 
     @Override
     public void desaparecer() {
-        visible = false;
-        activo = false;
+        this.visible = false;
+        this.activo = false;
+    }
+
+    @Override
+    public boolean acabaDeAparecer() {
+        return this.recienAparecido && !isPedidoAsignado();
+    }
+
+    public void setRecienAparecido(boolean recienAparecido) {
+        this.recienAparecido = recienAparecido;
     }
 
     public boolean isVisible() {
-        return visible;
+        return this.visible;
     }
 }
