@@ -10,11 +10,14 @@ import com.hebergames.letmecook.entregables.ingredientes.Ingrediente;
 import com.hebergames.letmecook.pantallas.pantallasmaquinas.PantallaMaquina;
 import com.hebergames.letmecook.utiles.Configuracion;
 import com.hebergames.letmecook.utiles.GestorAudio;
+import com.hebergames.letmecook.utiles.Recursos;
 
 public abstract class EstacionTrabajo {
     protected Rectangle area;
     protected PantallaMaquina pantallaMaquina;
     protected MaquinaProcesadora procesadora;
+
+    private final static int DIFERENCIA = 256;
 
     public EstacionTrabajo(Rectangle area) {
         this.area = area;
@@ -58,15 +61,15 @@ public abstract class EstacionTrabajo {
         float centroMaquinaX = area.x + area.width / 2f;
         float centroMaquinaY = area.y + area.height / 2f;
 
-        float centroJugadorX = jugador.getPosicion().x + 128 / 2f;
-        float centroJugadorY = jugador.getPosicion().y + 128 / 2f; //sacar numeros magicos
+        float centroJugadorX = jugador.getPosicion().x + Recursos.MEDIDA_TILE / 2f;
+        float centroJugadorY = jugador.getPosicion().y + Recursos.MEDIDA_TILE / 2f; //sacar numeros magicos
 
         float dx = centroJugadorX - centroMaquinaX;
         float dy = centroJugadorY - centroMaquinaY;
 
         double distancia = Math.sqrt(dx * dx + dy * dy);
 
-        return distancia <= 256; // los pixeles de diferencia despues pasalo a un static final nena
+        return distancia <= DIFERENCIA;
         //mi logica de esto, si la maquina mide 128 y el jugador mide 128 sus centros estan a 64px de sus bordes, entonces la suma ya te da 128
         //lo que es una tile entonces le tengo que sumar 128 de la tile para que funque
     }

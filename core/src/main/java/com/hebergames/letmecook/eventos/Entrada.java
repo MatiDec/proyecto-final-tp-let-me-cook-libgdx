@@ -103,9 +103,6 @@ public class Entrada implements InputProcessor {
         return false;
     }
 
-
-
-
     public void registrarEstacionesTrabajo(List<EstacionTrabajo> estaciones) {
         ESTACIONES.clear();
         ESTACIONES.addAll(estaciones);
