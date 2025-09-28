@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.Gdx;
+import com.hebergames.letmecook.entregables.ingredientes.AnimacionIngrediente;
 
 public class GestorAnimacion {
     private Texture spritesheet;
@@ -14,6 +15,20 @@ public class GestorAnimacion {
         spritesheet = new Texture(Gdx.files.internal(ruta));
         regiones = TextureRegion.split(spritesheet, frameWidth, frameHeight);
         this.duracionFrame = duracion;
+    }
+
+    public Animation<TextureRegion> getAnimacionPorObjeto(String nombreObjeto) {
+        AnimacionIngrediente[] valores = AnimacionIngrediente.values();
+        int i = 0;
+
+        do {
+            if (valores[i].getNombre().equalsIgnoreCase(nombreObjeto)) {
+                return getAnimacion(valores[i].getFilaAnimacion());
+            }
+            i++;
+        } while (i < valores.length);
+
+        return getAnimacion(AnimacionIngrediente.VACIO.getFilaAnimacion());
     }
 
     public Animation<TextureRegion> getAnimacion(int fila) {

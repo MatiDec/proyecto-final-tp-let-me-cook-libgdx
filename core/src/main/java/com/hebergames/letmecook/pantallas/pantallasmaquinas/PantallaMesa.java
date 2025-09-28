@@ -76,7 +76,8 @@ public class PantallaMesa extends PantallaMaquina {
             tInventario.setTexto("Inventario: " + JUGADOR.getInventario().getNombre());
         } else {
             tInventario.setTexto("Inventario: Vacío");
-            JUGADOR.setAnimacion(0); // fila 0 la animation normal pa
+            JUGADOR.setObjetoEnMano("vacio");
+
         }
 
         if (productoPreparado != null) {

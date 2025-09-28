@@ -10,39 +10,36 @@ import com.hebergames.letmecook.utiles.GestorAnimacion;
 public abstract class Jugador {
     protected Vector2 posicion;
     protected Vector2 velocidad;
-    protected TextureRegion frameActual; // Esto tiene que ver con las texturas, se puede usar más adelante o no, lo dejo por si sirve
-    protected Animation<TextureRegion> animacion; // esto con las animaciones, quizá es útil para más adelante, efectivamente fue util
+    protected TextureRegion frameActual;
+    protected Animation<TextureRegion> animacion;
     protected float estadoTiempo;
-    protected float anguloRotacion = 0f; // grados de rotación
+    protected float anguloRotacion = 0f;
 
-
-    public final int DISTANCIA_MOVIMIENTO = 400;//Con esto se maneja la "velocidad" de los jugadores
+    public final int DISTANCIA_MOVIMIENTO = 400;
 
     protected GestorAnimacion gestorAnimacion;
+    private String objetoEnMano = "vacio";
 
     public Jugador(float x, float y, GestorAnimacion gestorAnimacion) {
         this.posicion = new Vector2(x, y);
-        this.velocidad = new Vector2(0,0);
+        this.velocidad = new Vector2(0, 0);
         this.gestorAnimacion = gestorAnimacion;
-        this.animacion = gestorAnimacion.getAnimacion(0);
+        this.animacion = gestorAnimacion.getAnimacionPorObjeto(objetoEnMano);
         this.estadoTiempo = 0;
     }
 
     public void actualizar(float delta) {
-       // solo se cambia si se mueve basicamente
         if (velocidad.x != 0 || velocidad.y != 0) {
             estadoTiempo += delta;
         } else {
-            estadoTiempo = 0; //si se queda quieto vuelve al frame inicial, pero con la rotacion que tiene de antes
+            estadoTiempo = 0; // si no se mueve, vuelve al primer frame
         }
-
 
         frameActual = animacion.getKeyFrame(estadoTiempo, true);
 
-        // actualiza posicion
+        // actualizar posición
         posicion.add(velocidad.x * delta, velocidad.y * delta);
     }
-
 
     public void dibujar(SpriteBatch batch) {
         TextureRegion frame = frameActual;
@@ -67,11 +64,15 @@ public abstract class Jugador {
         this.anguloRotacion = angulo;
     }
 
-    public void setAnimacion(int fila) {
-        Animation<TextureRegion> nuevaAnimacion = gestorAnimacion.getAnimacion(fila);
-        if (nuevaAnimacion != null) {
-            this.animacion = nuevaAnimacion;
+    public void setObjetoEnMano(String nombreObjeto) {
+        if (!nombreObjeto.equalsIgnoreCase(this.objetoEnMano)) {
+            this.objetoEnMano = nombreObjeto;
+            this.animacion = gestorAnimacion.getAnimacionPorObjeto(nombreObjeto);
             this.estadoTiempo = 0;
         }
+    }
+
+    public String getObjetoEnMano() {
+        return objetoEnMano;
     }
 }

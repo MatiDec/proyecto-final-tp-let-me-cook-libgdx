@@ -2,12 +2,9 @@ package com.hebergames.letmecook.entidades;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.entregables.ObjetoAlmacenable;
 import com.hebergames.letmecook.eventos.DatosEntrada;
-import com.hebergames.letmecook.entregables.ingredientes.Ingrediente;
 import com.hebergames.letmecook.utiles.Configuracion;
 import com.hebergames.letmecook.utiles.GestorAnimacion;
 
@@ -23,7 +20,7 @@ public class JugadorHost extends Jugador {
 
     public JugadorHost(float x, float y, GestorAnimacion gestorAnimacion) {
         super(x, y, gestorAnimacion);
-        Configuracion.getInstancia().setJugadorPrincipal(this);//Poner al jugador host como principal en la configuracion
+        Configuracion.getInstancia().setJugadorPrincipal(this); // Poner al jugador host como principal
     }
 
     @Override
@@ -52,8 +49,6 @@ public class JugadorHost extends Jugador {
         return false;
     }
 
-
-
     private void moverSiNoColisiona(float dx, float dy) {
         float anchoSprite = 128;
         float altoSprite = 128;
@@ -72,7 +67,6 @@ public class JugadorHost extends Jugador {
             return;
         }
 
-
         boolean puedeMoverX = false;
         boolean puedeMoverY = false;
 
@@ -86,13 +80,11 @@ public class JugadorHost extends Jugador {
             puedeMoverY = !colisiona(areaFuturaY);
         }
 
-
         if (puedeMoverX) {
             velocidad.x = dx;
         } else {
             velocidad.x = 0;
         }
-
 
         if (puedeMoverY) {
             velocidad.y = dy;
@@ -105,9 +97,12 @@ public class JugadorHost extends Jugador {
         return this.inventario != null;
     }
 
-    public boolean guardarEnInventario(ObjetoAlmacenable ingrediente) {
-        if(this.inventario == null) {
-            this.inventario = ingrediente;
+    public boolean guardarEnInventario(ObjetoAlmacenable objeto) {
+        if (this.inventario == null) {
+            this.inventario = objeto;
+
+            setObjetoEnMano(objeto.getNombre());
+
             return true;
         }
         return false;
@@ -116,6 +111,8 @@ public class JugadorHost extends Jugador {
     public ObjetoAlmacenable sacarDeInventario() {
         ObjetoAlmacenable item = this.inventario;
         this.inventario = null;
+        setObjetoEnMano("vacio");
+
         return item;
     }
 
@@ -124,7 +121,7 @@ public class JugadorHost extends Jugador {
     }
 
     public String getNombreItemInventario() {
-        if(inventario != null) {
+        if (inventario != null) {
             return this.inventario.getNombre();
         }
         return "Vacío";
@@ -137,6 +134,4 @@ public class JugadorHost extends Jugador {
     public void setInteractuables(List<Rectangle> interactuables) {
         this.interactuables = interactuables;
     }
-
-
 }

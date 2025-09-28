@@ -83,7 +83,7 @@ public class PantallaHeladera extends PantallaMaquina {
         entrada.registrar(new TextoInteractuable(tCarne, () -> {
             if (!JUGADOR.tieneInventarioLleno()) {
                 JUGADOR.guardarEnInventario(new Carne(texturaCarne));
-                JUGADOR.setAnimacion(1); // fila 1 = con carne
+                JUGADOR.setObjetoEnMano("carne"); // fila 1 = con carne
                 actualizarTextoInventario();
             }
         }));
@@ -91,7 +91,7 @@ public class PantallaHeladera extends PantallaMaquina {
         entrada.registrar(new TextoInteractuable(tPan, () -> {
             if (!JUGADOR.tieneInventarioLleno()) {
                 JUGADOR.guardarEnInventario(new Pan(texturaPan));
-                JUGADOR.setAnimacion(2); // fila 2 es con pan y asi con todas
+                JUGADOR.setObjetoEnMano("pan");
                 actualizarTextoInventario();
             }
         }));
