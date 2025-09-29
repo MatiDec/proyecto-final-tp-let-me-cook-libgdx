@@ -16,7 +16,6 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.entidades.GestorClientes;
 import com.hebergames.letmecook.entidades.JugadorHost;
-import com.hebergames.letmecook.entregables.productos.GestorProductos;
 import com.hebergames.letmecook.eventos.Entrada;
 import com.hebergames.letmecook.eventos.HiloClientes;
 import com.hebergames.letmecook.eventos.HiloPrincipal;
@@ -166,7 +165,7 @@ public class PantallaJuego extends Pantalla {
             texturaVirtualActiva);
 
         gestorClientes.setIntervalosSpawn(6f);
-        gestorClientes.setTiempoToleraciaCliente(20f);
+        gestorClientes.setTiempoToleranciaCliente(20f);
         gestorClientes.setMaxClientesSimultaneos(5);
 
         hiloClientes = new HiloClientes(gestorClientes);

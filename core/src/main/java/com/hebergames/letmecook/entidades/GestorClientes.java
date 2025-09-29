@@ -8,7 +8,6 @@ import com.hebergames.letmecook.entregables.productos.Producto;
 import com.hebergames.letmecook.pedidos.Pedido;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Random;
 
 public class GestorClientes {
@@ -23,7 +22,7 @@ public class GestorClientes {
 
     private float tiempoSpawn;
     private float intervalosSpawn;
-    private float tiempoToleraciaCliente;
+    private float tiempoToleranciaCliente;
     private int maxClientesSimultaneos;
     private Random random;
 
@@ -42,9 +41,9 @@ public class GestorClientes {
         this.pedidosActivos = new ArrayList<>();
         this.gestorProductos = new GestorProductos();
         this.tiempoSpawn = 0f;
-        this.intervalosSpawn = 5f; //Esto es cada cuanto spawnea
-        this.tiempoToleraciaCliente = 15f; // Esto es cuanto tiempo se banca que tardes con el pedido
-        this.maxClientesSimultaneos = 3; // Esto es el límite de clientes q puede haber
+        this.intervalosSpawn = 5f;
+        this.tiempoToleranciaCliente = 15f;
+        this.maxClientesSimultaneos = 3;
         this.random = new Random();
     }
 
@@ -58,7 +57,7 @@ public class GestorClientes {
                 asignarPedido(cliente);
             }
 
-            // Remover clientes inactivos (Los que se agota el tiempo de tolerancia)
+            // Remover clientes inactivos
             if (!cliente.isActivo()) {
                 removerPedido(cliente);
                 clientes.remove(i);
@@ -96,12 +95,14 @@ public class GestorClientes {
         // Seleccionar ubicación aleatoria
         Rectangle ubicacionSeleccionada = ubicacionesLibres.get(random.nextInt(ubicacionesLibres.size()));
 
-        // Decidir tipo de cliente (70% presencial, 30% virtual) Esto de acá genera de forma random si el cliente que va a aparecer es virtual o presencial
+        // Decidir tipo de cliente (70% presencial, 30% virtual)
         Cliente nuevoCliente;
         if (random.nextFloat() < 0.7f) {
-            nuevoCliente = new ClientePresencial(tiempoToleraciaCliente, ubicacionSeleccionada, texturaClientePresencial);
+            // Crear cliente presencial usando el constructor correspondiente
+            nuevoCliente = new Cliente(tiempoToleranciaCliente, ubicacionSeleccionada, texturaClientePresencial);
         } else {
-            nuevoCliente = new ClienteVirtual(tiempoToleraciaCliente, ubicacionSeleccionada,
+            // Crear cliente virtual usando el constructor correspondiente
+            nuevoCliente = new Cliente(tiempoToleranciaCliente, ubicacionSeleccionada,
                 texturaVirtualInactiva, texturaVirtualActiva);
         }
 
@@ -110,7 +111,6 @@ public class GestorClientes {
     }
 
     private void asignarPedido(Cliente cliente) {
-
         if(cliente.isPedidoAsignado() || yaTienePedido(cliente)) {
             return;
         }
@@ -123,10 +123,10 @@ public class GestorClientes {
 
         cliente.setPedidoAsignado(true);
 
-        if(cliente instanceof ClientePresencial) {
-            ((ClientePresencial) cliente).setRecienAparecido(false);
+        // Si es presencial, marcar que ya no es recién aparecido
+        if(cliente.getTipo() == TipoCliente.PRESENCIAL) {
+            cliente.setRecienAparecido(false);
         }
-
     }
 
     private boolean yaTienePedido(Cliente cliente) {
@@ -137,7 +137,7 @@ public class GestorClientes {
     }
 
     private void removerPedido(Cliente cliente) {
-        pedidosActivos.removeIf(p -> p.getIdClienteSolicitante() == cliente.getIdCliente());//linea rara
+        pedidosActivos.removeIf(p -> p.getIdClienteSolicitante() == cliente.getIdCliente());
     }
 
     public void dibujar(SpriteBatch batch) {
@@ -151,8 +151,8 @@ public class GestorClientes {
         this.intervalosSpawn = intervalos;
     }
 
-    public void setTiempoToleraciaCliente(float tiempo) {
-        this.tiempoToleraciaCliente = tiempo;
+    public void setTiempoToleranciaCliente(float tiempo) {
+        this.tiempoToleranciaCliente = tiempo;
     }
 
     public void setMaxClientesSimultaneos(int max) {
