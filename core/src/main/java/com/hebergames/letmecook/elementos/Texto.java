@@ -84,4 +84,8 @@ public class Texto implements ObjetoVisualizable {
     public String getTexto() {
         return this.texto;
     }
+
+    public BitmapFont getFuente() {
+        return this.fuente;
+    }
 }
