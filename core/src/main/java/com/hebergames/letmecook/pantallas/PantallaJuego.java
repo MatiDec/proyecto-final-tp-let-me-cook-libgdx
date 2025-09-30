@@ -2,7 +2,6 @@ package com.hebergames.letmecook.pantallas;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -10,25 +9,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
-import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.entidades.GestorClientes;
 import com.hebergames.letmecook.entidades.JugadorHost;
-import com.hebergames.letmecook.eventos.Entrada;
 import com.hebergames.letmecook.eventos.HiloClientes;
-import com.hebergames.letmecook.eventos.HiloPrincipal;
 import com.hebergames.letmecook.mapa.Mapa;
 import com.hebergames.letmecook.maquinas.EstacionTrabajo;
-import com.hebergames.letmecook.pantallas.pantallasmaquinas.PantallaHeladera;
-import com.hebergames.letmecook.pantallas.pantallasmaquinas.PantallaMesa;
 import com.hebergames.letmecook.pedidos.Pedido;
-import com.hebergames.letmecook.utiles.Recursos;
-import com.hebergames.letmecook.utiles.Render;
-import com.hebergames.letmecook.utiles.GestorAudio;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.hebergames.letmecook.utiles.GestorAnimacion;
+import com.hebergames.letmecook.utiles.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,94 +23,65 @@ import java.util.Map;
 
 public class PantallaJuego extends Pantalla {
 
-    private static final float MUNDO_ANCHO = 1920f;
-    private static final float MUNDO_ALTO = 1080f;
-    private static final float UI_ANCHO = 1920f;
-    private static final float UI_ALTO = 1080f;
-    private static final int TIEMPO_OBJETIVO = 90;//3 minutos y termina el juego
+    private static final int TIEMPO_OBJETIVO = 90; // 3 minutos
 
     private SpriteBatch batch;
-    private Entrada entrada;
     private JugadorHost jugadorHost;
-    private Texture jugadorSheet;
-
     private Mapa mapaJuego;
     private ArrayList<EstacionTrabajo> estaciones;
-    private Viewport viewportJuego;
-    private Viewport viewportUI;
-    private OrthographicCamera camaraJuego;
-    private OrthographicCamera camaraUi;
 
-    private ArrayList<ObjetoVisualizable> objetosUi;
-    private Texto textoContador, textoInventarioActual;
-    private float tiempoTranscurrido = 0;
-
-    private PantallaPausa pantallaPausa;
-    private PantallaHeladera pantallaHeladera;
-    private PantallaMesa pantallaMesa;
-    private boolean juegoEnPausa = false;
-    private boolean heladeraAbierta = false;
-    private boolean mesaAbierta = false;
-
+    //gestores
+    private GestorViewport gestorViewport;
+    private GestorUIJuego gestorUI;
+    private GestorEntradaJuego gestorEntrada;
+    private GestorPantallasOverlay gestorOverlays;
     private GestorAudio gestorAudio;
-
     private GestorClientes gestorClientes;
-    private HiloClientes hiloClientes;
-    private HiloPrincipal hiloPrincipal;
+    private GestorAnimacion gestorAnimacion;
+    private GestorTiempoJuego gestorTiempo;
 
+    private HiloClientes hiloClientes;
+
+    //texturas y animaciones
+    private Texture jugadorSheet;
     private Texture texturaClientes;
     private TextureRegion texturaClientePresencial;
     private TextureRegion texturaVirtualInactiva;
     private TextureRegion texturaVirtualActiva;
-
-    private GestorAnimacion gestorAnimacion;
-
     private Map<String, Animation<TextureRegion>> animacionesConItem = new HashMap<>();
     private Animation<TextureRegion> animacionJugadorNormal;
 
+    //pedidos
     private ArrayList<Pedido> pedidosEnEspera;
 
     @Override
     public void show() {
-
-        hiloPrincipal = new HiloPrincipal();
-        hiloPrincipal.start();
-
-        batch = Render.batch;
-
-        configurarTexturasJugador();
-        configurarMapaYJugador();
-
-        entrada = new Entrada();
-        Gdx.input.setInputProcessor(entrada);
-        entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
-
-        estaciones = mapaJuego.getEstacionesTrabajo();
-        entrada.registrarEstacionesTrabajo(estaciones);
-
-        pantallaPausa = new PantallaPausa(this);
-
-        inicializarMusicaYSonido();
-
-        configurarCamara();
-
-        inicializarUI();
+        inicializarCore();
+        inicializarGestores();
+        configurarJugadorYMapa();
+        configurarEntrada();
+        inicializarAudio();
         inicializarClientes();
     }
 
-    private void configurarCamara() {
-        camaraJuego = new OrthographicCamera();
-        camaraJuego.setToOrtho(false, 1920, 1080);
-        camaraJuego.zoom = 1.7f;
+    private void inicializarCore() {
+        batch = Render.batch;
+        gestorTiempo = new GestorTiempoJuego(TIEMPO_OBJETIVO);
+    }
 
-        camaraUi = new OrthographicCamera();
-        camaraUi.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    private void inicializarGestores() {
+        gestorViewport = new GestorViewport();
+        gestorUI = new GestorUIJuego();
+        gestorAudio = GestorAudio.getInstance();
+    }
 
-        viewportJuego = new FitViewport(MUNDO_ANCHO, MUNDO_ALTO, camaraJuego);
-        viewportUI = new ScreenViewport(camaraUi);
-
-        entrada.setViewportJuego(viewportJuego);
-        entrada.setViewportUI(viewportUI);
+    private void configurarJugadorYMapa() {
+        configurarTexturasJugador();
+        mapaJuego = new Mapa("core/src/main/java/com/hebergames/letmecook/recursos/mapas/Prueba.tmx");
+        jugadorHost = new JugadorHost(1000, 1000, gestorAnimacion);
+        jugadorHost.setColisionables(mapaJuego.getRectangulosColision());
+        jugadorHost.setInteractuables(mapaJuego.getRectangulosInteractuables());
+        estaciones = mapaJuego.getEstacionesTrabajo();
     }
 
     private void configurarTexturasJugador() {
@@ -133,21 +91,23 @@ public class PantallaJuego extends Pantalla {
         );
     }
 
-    private void configurarMapaYJugador() {
-        mapaJuego = new Mapa("core/src/main/java/com/hebergames/letmecook/recursos/mapas/Prueba.tmx");
-        jugadorHost = new JugadorHost(1000, 1000, gestorAnimacion); // CAMBIO
-        jugadorHost.setColisionables(mapaJuego.getRectangulosColision());
-        jugadorHost.setInteractuables(mapaJuego.getRectangulosInteractuables());
+    private void configurarEntrada() {
+        gestorEntrada = new GestorEntradaJuego(jugadorHost, estaciones);
+        gestorEntrada.configurarEntrada(
+            gestorViewport.getViewportJuego(),
+            gestorViewport.getViewportUI()
+        );
     }
 
-    private void inicializarMusicaYSonido() {
-        gestorAudio = GestorAudio.getInstance();
+    private void inicializarAudio() {
         gestorAudio.cargarMusica("musica_fondo", Recursos.CANCION_FONDO);
         gestorAudio.reproducirCancion("musica_fondo", true);
         gestorAudio.pausarMusica();
-
         gestorAudio.cargarSonido("temporizador", "core/src/main/java/com/hebergames/letmecook/recursos/audio/sonidos/tictac.ogg");
         gestorAudio.cargarSonido("coccion_perfecta", "core/src/main/java/com/hebergames/letmecook/recursos/audio/sonidos/coccion_completa.ogg");
+
+        PantallaPausa pantallaPausa = new PantallaPausa(this);
+        gestorOverlays = new GestorPantallasOverlay(pantallaPausa, gestorAudio);
     }
 
     private void inicializarClientes() {
@@ -174,206 +134,126 @@ public class PantallaJuego extends Pantalla {
         pedidosEnEspera = gestorClientes.getPedidosActivos();
     }
 
-    private void inicializarUI() {
-        objetosUi = new ArrayList<>();
+    @Override
+    public void render(float delta) {
+        limpiarPantalla();
+        manejarInput();
 
-        textoContador = new Texto(Recursos.FUENTE_MENU, 32, Color.WHITE, true);
-        textoContador.setTexto("00:00");
-        textoContador.setPosition(50, 50);
+        renderizarJuego(delta);
+        renderizarUI();
+        renderizarOverlays(delta);
 
-        textoInventarioActual = new Texto(Recursos.FUENTE_MENU, 32, Color.WHITE, true);
-        textoInventarioActual.setTexto("Inventario: Nada");
-        textoInventarioActual.setPosition(100, Gdx.graphics.getHeight() - 50);
-        objetosUi.add(textoContador);
-        objetosUi.add(textoInventarioActual);
+        verificarFinDeJuego();
+    }
+
+    private void limpiarPantalla() {
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    }
+
+    private void manejarInput() {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            togglePausa();
+        }
     }
 
     private void renderizarJuego(float delta) {
-        viewportJuego.apply();
+        gestorViewport.getViewportJuego().apply();
 
         Vector2 posicionJugador = jugadorHost.getPosicion();
-        camaraJuego.position.set(posicionJugador.x, posicionJugador.y, 0);
-        camaraJuego.update();
+        gestorViewport.actualizarCamaraJuego(posicionJugador);
 
-        mapaJuego.render(camaraJuego);
+        mapaJuego.render(gestorViewport.getCamaraJuego());
 
-        if (!juegoEnPausa) {
-            if(!heladeraAbierta && !mesaAbierta) {
+        if (!gestorOverlays.isJuegoEnPausa()) {
+            if (!gestorOverlays.isHeladeraAbierta() && !gestorOverlays.isMesaAbierta()) {
                 jugadorHost.actualizar(delta);
-                entrada.actualizarEntradas();
+                gestorEntrada.actualizarEntradas();
             }
             gestorAudio.reanudarMusica();
         }
 
-        batch.setProjectionMatrix(camaraJuego.combined);
+        batch.setProjectionMatrix(gestorViewport.getCamaraJuego().combined);
         batch.begin();
         jugadorHost.dibujar(batch);
         gestorClientes.dibujar(batch);
         for (EstacionTrabajo estacion : estaciones) {
+            estacion.actualizar(delta);
             estacion.dibujarIndicador(batch);
         }
         batch.end();
     }
 
     private void renderizarUI() {
-        viewportUI.apply();
-        camaraUi.update();
+        gestorViewport.getViewportUI().apply();
+        gestorViewport.actualizarCamaraUI();
 
-        batch.setProjectionMatrix(camaraUi.combined);
+        gestorUI.actualizarTiempo(gestorTiempo.getSegundos());
+        gestorUI.actualizarInventario(jugadorHost.getNombreItemInventario());
+
+        batch.setProjectionMatrix(gestorViewport.getCamaraUI().combined);
         batch.begin();
-        if(hiloPrincipal != null) {
-            int segundos = hiloPrincipal.getSegundos();
-            int minutos = segundos/60;
-            int segundosRestantes = segundos % 60;
-            String tiempoFormateado = String.format("%02d:%02d", minutos, segundosRestantes);
-            textoContador.setTexto(tiempoFormateado);
-            textoInventarioActual.setTexto("Inventario: " + jugadorHost.getNombreItemInventario());
-        }
-
-        for(ObjetoVisualizable obj : objetosUi) {
-            obj.dibujarEnUi(batch);
-        }
-
+        gestorUI.dibujar(batch);
         batch.end();
     }
 
-    private void actualizarPosicionesUI() {
-        float margen = 50f;
-        float uiWidth = viewportUI.getWorldWidth();
-        float uiHeight = viewportUI.getWorldHeight();
-
-        textoContador.setPosition(margen, margen);
-        textoInventarioActual.setPosition(margen, uiHeight-margen);
+    private void renderizarOverlays(float delta) {
+        batch.setProjectionMatrix(gestorViewport.getCamaraUI().combined);
+        gestorOverlays.renderOverlays(delta, batch);
     }
 
-    public Vector2 getCoordenadasJuego(int screenX, int screenY) {
-        Vector2 coordenadasJuego = new Vector2(screenX, screenY);
-        viewportJuego.unproject(coordenadasJuego);
-        return coordenadasJuego;
-    }
-
-    public Vector2 getCoordenadasUi(int screenX, int screenY) {
-        Vector2 coordenadasUi = new Vector2(screenX, screenY);
-        viewportUI.unproject(coordenadasUi);
-        return coordenadasUi;
-    }
-
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            togglePausa();
-        }
-
-        renderizarJuego(delta);
-        for (EstacionTrabajo estacion : estaciones) {
-            estacion.actualizar(delta);
-        }
-        renderizarUI();
-
-        if(hiloPrincipal != null && hiloPrincipal.getSegundos() >= TIEMPO_OBJETIVO) {
+    private void verificarFinDeJuego() {
+        if (gestorTiempo.haTerminadoTiempo()) {
             terminarJuego(calcularPuntajeFinal());
-            return;
-        }
-
-        if(heladeraAbierta && pantallaHeladera != null) {
-            batch.setProjectionMatrix(camaraUi.combined);
-            pantallaHeladera.render(delta);
-        }
-
-        if(mesaAbierta && pantallaMesa != null) {
-            batch.setProjectionMatrix(camaraUi.combined);
-            pantallaMesa.render(delta);
-        }
-
-        if (juegoEnPausa) {
-            batch.setProjectionMatrix(camaraUi.combined);
-            pantallaPausa.render(delta);
         }
     }
 
     private int calcularPuntajeFinal() {
-        //Aca se va a calcular los puntos que consigue el jugador por cada nivel.
-        return 1000;//Esto es para probar como se ve
+        //cálculo de puntos
+        return 1000;
     }
 
     public void togglePausa() {
-        juegoEnPausa = !juegoEnPausa;
+        gestorOverlays.togglePausa();
 
-        if (juegoEnPausa) {
-            pantallaPausa.show();
-            gestorAudio.pausarMusica();
-        } else {
-            entrada = new Entrada();
-            entrada.setViewportJuego(viewportJuego);
-            entrada.setViewportUI(viewportUI);
-            Gdx.input.setInputProcessor(entrada);
-            entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
-            entrada.registrarEstacionesTrabajo(estaciones);
-            gestorAudio.reanudarMusica();
+        if (!gestorOverlays.isJuegoEnPausa()) {
+            gestorEntrada.configurarEntrada(
+                gestorViewport.getViewportJuego(),
+                gestorViewport.getViewportUI()
+            );
         }
     }
 
     public void reanudarJuego() {
-        juegoEnPausa = false;
-        entrada = new Entrada();
-        entrada.setViewportJuego(viewportJuego);
-        entrada.setViewportUI(viewportUI);
-        Gdx.input.setInputProcessor(entrada);
-        entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
-        entrada.registrarEstacionesTrabajo(estaciones);
-        gestorAudio.reanudarMusica();
+        gestorOverlays.reanudarJuego();
+        gestorEntrada.configurarEntrada(
+            gestorViewport.getViewportJuego(),
+            gestorViewport.getViewportUI()
+        );
     }
 
     public void abrirHeladera() {
-        if (!heladeraAbierta) {
-            heladeraAbierta = true;
-            pantallaHeladera = new PantallaHeladera();
-            pantallaHeladera.show();
-        }
+        gestorOverlays.abrirHeladera();
     }
 
     public void cerrarHeladera() {
-        if (heladeraAbierta) {
-            heladeraAbierta = false;
-            if (pantallaHeladera != null) {
-                pantallaHeladera.hide();
-                pantallaHeladera = null;
-            }
-
-            entrada = new Entrada();
-            entrada.setViewportJuego(viewportJuego);
-            entrada.setViewportUI(viewportUI);
-            Gdx.input.setInputProcessor(entrada);
-            entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
-            entrada.registrarEstacionesTrabajo(estaciones);
-        }
+        gestorOverlays.cerrarHeladera();
+        gestorEntrada.configurarEntrada(
+            gestorViewport.getViewportJuego(),
+            gestorViewport.getViewportUI()
+        );
     }
 
     public void abrirMesa() {
-        if(!mesaAbierta) {
-            mesaAbierta = true;
-            pantallaMesa = PantallaMesa.getInstancia();
-            pantallaMesa.show();
-        }
+        gestorOverlays.abrirMesa();
     }
 
     public void cerrarMesa() {
-        if (mesaAbierta) {
-            mesaAbierta = false;
-            if (pantallaMesa != null) {
-                pantallaMesa.hide();
-            }
-
-            entrada = new Entrada();
-            entrada.setViewportJuego(viewportJuego);
-            entrada.setViewportUI(viewportUI);
-            Gdx.input.setInputProcessor(entrada);
-            entrada.registrarJugador(jugadorHost, new int[]{Input.Keys.W, Input.Keys.A, Input.Keys.S, Input.Keys.D});
-            entrada.registrarEstacionesTrabajo(estaciones);
-        }
+        gestorOverlays.cerrarMesa();
+        gestorEntrada.configurarEntrada(
+            gestorViewport.getViewportJuego(),
+            gestorViewport.getViewportUI()
+        );
     }
 
     public Animation<TextureRegion> getAnimacionConItem(String nombreItem) {
@@ -397,11 +277,21 @@ public class PantallaJuego extends Pantalla {
         return animacionJugadorNormal;
     }
 
+    public Vector2 getCoordenadasJuego(int screenX, int screenY) {
+        return gestorViewport.convertirCoordenadasJuego(screenX, screenY);
+    }
+
+    public Vector2 getCoordenadasUi(int screenX, int screenY) {
+        return gestorViewport.convertirCoordenadasUI(screenX, screenY);
+    }
+
     @Override
     public void resize(int width, int height) {
-        viewportJuego.update(width, height);
-        viewportUI.update(width, height, true);
-        actualizarPosicionesUI();
+        gestorViewport.resize(width, height);
+        gestorUI.actualizarPosiciones(
+            gestorViewport.getViewportUI().getWorldWidth(),
+            gestorViewport.getViewportUI().getWorldHeight()
+        );
     }
 
     @Override
@@ -413,7 +303,7 @@ public class PantallaJuego extends Pantalla {
 
     @Override
     public void resume() {
-        if (gestorAudio != null && !juegoEnPausa) {
+        if (gestorAudio != null && !gestorOverlays.isJuegoEnPausa()) {
             gestorAudio.reanudarMusica();
         }
     }
@@ -423,11 +313,11 @@ public class PantallaJuego extends Pantalla {
 
     @Override
     public void dispose() {
-        jugadorSheet.dispose();
-
-        if (pantallaPausa != null) {
-            pantallaPausa.dispose();
+        if (jugadorSheet != null) {
+            jugadorSheet.dispose();
         }
+
+        gestorOverlays.dispose();
 
         if (gestorAudio != null) {
             gestorAudio.dispose();
@@ -439,22 +329,15 @@ public class PantallaJuego extends Pantalla {
     }
 
     public void terminarJuego(int puntaje) {
-        detenerHilos(); // frena hilos y contadores
+        detenerHilos();
         gestorAudio.pausarMusica();
+        gestorOverlays.resetearMesa();
 
-        int segundos = hiloPrincipal.getSegundos();
-        int minutos = segundos / 60;
-        int segundosRestantes = segundos % 60;
-        String tiempoFormateado = String.format("%02d:%02d", minutos, segundosRestantes);
-
-        pantallaMesa.resetearInstancia();
-
-        Pantalla.cambiarPantalla(new PantallaFinal(tiempoFormateado, puntaje));
+        Pantalla.cambiarPantalla(new PantallaFinal(gestorTiempo.getTiempoFormateado(), puntaje));
     }
 
-
     public void detenerHilos() {
-        hiloPrincipal.detener();
+        gestorTiempo.detener();
         hiloClientes.detener();
     }
 }
