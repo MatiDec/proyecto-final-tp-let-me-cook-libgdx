@@ -103,11 +103,13 @@ public class Entrada implements InputProcessor {
             jugador = entry.getKey();
             int[] teclas = entry.getValue();
 
-            for (int i = 0; i < teclas.length; i++) {
-                if (keycode == teclas[i]) {
-                    // Guarda la selección como 1, 2, 3, 4, 5 (índice + 1)
-                    NUMERO_SELECCIONADO.put(jugador, i + 1);
-                    return true;
+            // Solo procesar si el jugador está en menú
+            if (jugador.estaEnMenu()) {
+                for (int i = 0; i < teclas.length; i++) {
+                    if (keycode == teclas[i]) {
+                        NUMERO_SELECCIONADO.put(jugador, i + 1);
+                        return true;
+                    }
                 }
             }
         }
@@ -117,17 +119,31 @@ public class Entrada implements InputProcessor {
 
     private void interactuarConEstacionCercana(Jugador jugador) {
         Vector2 posJugador = jugador.getPosicion();
-        float radioInteraccion = 100f; // Ajusta según necesites
+        float radioInteraccion = 100f;
 
         System.out.println("DEBUG: Buscando estación cerca de: " + posJugador);
 
+        EstacionTrabajo estacionMasCercana = null;
+        float distanciaMasCercana = Float.MAX_VALUE;
+
+        // Buscar la estación MÁS CERCANA dentro del radio
         for (EstacionTrabajo estacion : ESTACIONES) {
-            // Calcular distancia aproximada (puedes mejorar esto según tu implementación)
             if (estacion.estaCerca(posJugador.x, posJugador.y, radioInteraccion)) {
-                System.out.println("DEBUG: Estación encontrada, interactuando...");
-                estacion.interactuarConJugador(jugador);
-                break;
+                float distancia = estacion.calcularDistanciaA(posJugador.x, posJugador.y);
+
+                if (distancia < distanciaMasCercana) {
+                    distanciaMasCercana = distancia;
+                    estacionMasCercana = estacion;
+                }
             }
+        }
+
+        // Interactuar con la estación más cercana encontrada
+        if (estacionMasCercana != null) {
+            System.out.println("DEBUG: Estación más cercana encontrada a " + distanciaMasCercana + "px, interactuando...");
+            estacionMasCercana.interactuarConJugador(jugador);
+        } else {
+            System.out.println("DEBUG: No hay estaciones cercanas");
         }
     }
 

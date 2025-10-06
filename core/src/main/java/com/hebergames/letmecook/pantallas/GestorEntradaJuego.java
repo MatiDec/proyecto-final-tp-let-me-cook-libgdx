@@ -38,11 +38,13 @@ public class GestorEntradaJuego {
     );
 
     public static final int[] TECLAS_MENU_JUGADOR_1 = {
-        Input.Keys.NUM_1, Input.Keys.NUM_2, Input.Keys.NUM_3, Input.Keys.NUM_4, Input.Keys.NUM_5
+        Input.Keys.NUM_1, Input.Keys.NUM_2, Input.Keys.NUM_3, Input.Keys.NUM_4, Input.Keys.NUM_5,
+        Input.Keys.NUM_6, Input.Keys.NUM_7, Input.Keys.NUM_8, Input.Keys.NUM_9
     };
 
     public static final int[] TECLAS_MENU_JUGADOR_2 = {
-        Input.Keys.NUMPAD_1, Input.Keys.NUMPAD_2, Input.Keys.NUMPAD_3, Input.Keys.NUMPAD_4, Input.Keys.NUMPAD_5
+        Input.Keys.NUMPAD_1, Input.Keys.NUMPAD_2, Input.Keys.NUMPAD_3, Input.Keys.NUMPAD_4, Input.Keys.NUMPAD_5,
+        Input.Keys.NUMPAD_6, Input.Keys.NUMPAD_7, Input.Keys.NUMPAD_8, Input.Keys.NUMPAD_9
     };
 
     public GestorEntradaJuego(List<Jugador> jugadores, ArrayList<EstacionTrabajo> estaciones) {
@@ -67,9 +69,10 @@ public class GestorEntradaJuego {
             Jugador jugador = jugadores.get(i);
             ConfiguracionTeclas config = obtenerConfiguracionTeclas(i);
             entrada.registrarJugador(jugador, config);
-            entrada.registrarTeclasMenu(jugadores.get(0), TECLAS_MENU_JUGADOR_1);
-            if (jugadores.size() > 1) {
-                entrada.registrarTeclasMenu(jugadores.get(1), TECLAS_MENU_JUGADOR_2);
+            if (i == 0) {
+                entrada.registrarTeclasMenu(jugador, TECLAS_MENU_JUGADOR_1);
+            } else if (i == 1 && jugadores.size() > 1) {
+                entrada.registrarTeclasMenu(jugador, TECLAS_MENU_JUGADOR_2);
             }
         }
 

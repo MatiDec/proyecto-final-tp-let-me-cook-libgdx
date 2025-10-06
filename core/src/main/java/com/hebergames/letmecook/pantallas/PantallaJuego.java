@@ -198,6 +198,9 @@ public class PantallaJuego extends Pantalla {
             for (Jugador jugador : jugadores) {
                 jugador.actualizar(delta);
             }
+            for (EstacionTrabajo estacion : estaciones) {
+                estacion.verificarDistanciaYLiberar();
+            }
             gestorEntrada.actualizarEntradas();
             gestorAudio.reanudarMusica();
         }
@@ -209,6 +212,7 @@ public class PantallaJuego extends Pantalla {
         for (Jugador jugador : jugadores) {
             jugador.dibujar(batch);
         }
+
 
         gestorClientes.dibujar(batch);
 
@@ -235,6 +239,14 @@ public class PantallaJuego extends Pantalla {
         batch.setProjectionMatrix(gestorViewport.getCamaraUI().combined);
         batch.begin();
         gestorUI.dibujar(batch);
+        for (Jugador jugador : jugadores) {
+            if (jugador.estaEnMenu()) {
+                EstacionTrabajo estacion = jugador.getEstacionActual();
+                if (estacion != null) {
+                    estacion.dibujar(batch, jugador);
+                }
+            }
+        }
         batch.end();
     }
 

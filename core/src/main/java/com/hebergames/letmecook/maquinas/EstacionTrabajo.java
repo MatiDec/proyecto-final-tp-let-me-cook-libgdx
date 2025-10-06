@@ -10,7 +10,7 @@ import com.hebergames.letmecook.entregables.ingredientes.Ingrediente;
 import com.hebergames.letmecook.utiles.Recursos;
 
 public abstract class EstacionTrabajo {
-    protected Rectangle area;
+    public Rectangle area;
     protected MaquinaProcesadora procesadora;
 
     private final static int DIFERENCIA = 256;
@@ -37,6 +37,8 @@ public abstract class EstacionTrabajo {
         return distancia <= radioInteraccion;
     }
 
+    // Modificar para que NO salga del menú automáticamente cuando ya está interactuando:
+
     public final void interactuarConJugador(Jugador jugador) {
         if (jugador == null) {
             System.out.println("ERROR: Jugador es null");
@@ -48,56 +50,22 @@ public abstract class EstacionTrabajo {
             return;
         }
 
-        if(jugadorOcupante == null) {
-            ocupar(jugador);
-        } else if (jugadorOcupante != jugador) {
-            System.out.println("Maquina ocupada por otro jugador."); //Aca debería ir alguna alerta visual para que la vea el jugador 2
-        }
-
-        if(jugador.estaEnMenu() && jugador.getEstacionActual() == this) {
-            jugador.salirDeMenu();
-            jugadorOcupante = null;
-        } else if (!jugador.estaEnMenu()) {
-            jugadorOcupante = jugador;
-            jugador.entrarEnMenu(this);
-            iniciarMenu(jugador);
-        }
-
-        // Si es una máquina procesadora, intentar procesamiento directo
-        if (procesadora != null) {
-            manejarProcesamiento(jugador);
-        } else {
-            // Si no es procesadora, y no está en menú, iniciar el menú (reemplazo de pantalla)
-            if (!jugador.estaEnMenu()) {
-                iniciarMenu(jugador);
-            }
-        }
-
-        System.out.println("DEBUG: EstacionTrabajo.interactuar() llamado");
-        System.out.println("DEBUG: procesadora != null: " + (procesadora != null));
-
-        // intentar procesar directamente si es una máquina procesadora
-        if (procesadora != null) {
-            System.out.println("DEBUG: Llamando a manejarProcesamiento()");
-            manejarProcesamiento(jugador);
+        // Si la máquina está ocupada por otro jugador
+        if (jugadorOcupante != null && jugadorOcupante != jugador) {
+            System.out.println("Maquina ocupada por otro jugador.");
             return;
         }
 
+        // Si el jugador no está ocupando esta estación, ocuparla
+        if (jugadorOcupante != jugador) {
+            ocupar(jugador);
+            if (!jugador.estaEnMenu()) {
+                jugador.entrarEnMenu(this);
+            }
+        }
+
+        // Ejecutar la interacción específica de cada máquina
         alInteractuar();
-    }
-
-    public boolean isOcupada() {
-        return jugadorOcupante != null;
-    }
-
-    public Jugador getJugadorOcupante() {
-        return jugadorOcupante;
-    }
-
-    public void ocupar(Jugador jugador) {
-        this.jugadorOcupante = jugador;
-        // Iniciar el menú inmediatamente
-        iniciarMenu(jugador);
     }
 
     private boolean puedeInteractuar(Jugador jugador) {
@@ -109,7 +77,7 @@ public abstract class EstacionTrabajo {
 
         float dx = centroJugadorX - centroMaquinaX;
         float dy = centroJugadorY - centroMaquinaY;
-        float radioInteraccion = 100f;
+        float radioInteraccion = 128f;
 
         //double distancia = Math.sqrt(dx * dx + dy * dy);
 
@@ -119,37 +87,44 @@ public abstract class EstacionTrabajo {
         return estaCerca(jugador.getPosicion().x, jugador.getPosicion().y, radioInteraccion);
     }
 
+    public float calcularDistanciaA(float x, float y) {
+        float centroMaquinaX = area.x + area.width / 2f;
+        float centroMaquinaY = area.y + area.height / 2f;
 
-    private void manejarProcesamiento(Jugador jugador) {
+        float dx = x - centroMaquinaX;
+        float dy = y - centroMaquinaY;
+
+        return (float) Math.sqrt(dx * dx + dy * dy);
+    }
+
+    public void manejarProcesamiento(Jugador jugador) {
         System.out.println("DEBUG: manejarProcesamiento() iniciado");
         System.out.println("DEBUG: Jugador obtenido: " + (jugador != null ? "OK" : "NULL"));
 
-        //retiro solo si el jugador hace shift + click, para evitar spam de clicks
-        boolean retirar = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)
-            || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);
+        if (procesadora == null) {
+            System.out.println("DEBUG: Esta estación no tiene procesadora");
+            return;
+        }
 
-        System.out.println("DEBUG: Shift presionado: " + retirar);
         System.out.println("DEBUG: procesadora.tieneProcesandose(): " + procesadora.tieneProcesandose());
 
+        // Si hay algo procesándose, retirar
         if (procesadora.tieneProcesandose()) {
-            System.out.println("DEBUG: Ya hay algo procesándose");
-            if (retirar) {
-                if (!jugador.tieneInventarioLleno()) {
-                    Ingrediente resultado = procesadora.obtenerResultado();
-                    if (resultado != null) {
-                        jugador.guardarEnInventario(resultado);
-                        System.out.println("Retirado: " + resultado.getNombre());
-                    }
-                } else {
-                    System.out.println("Inventario lleno, no se puede retirar");
+            System.out.println("DEBUG: Ya hay algo procesándose, intentando retirar");
+
+            if (!jugador.tieneInventarioLleno()) {
+                Ingrediente resultado = procesadora.obtenerResultado();
+                if (resultado != null) {
+                    jugador.guardarEnInventario(resultado);
+                    System.out.println("Retirado: " + resultado.getNombre());
                 }
             } else {
-                System.out.println("El horno está cocinando. Mantén SHIFT para retirar.");
+                System.out.println("Inventario lleno, no se puede retirar");
             }
             return;
         }
 
-        //si no hay nada procesándose, intentar iniciar proceso
+        // Si no hay nada procesándose, intentar iniciar proceso
         ObjetoAlmacenable objetoInventario = jugador.getInventario();
         System.out.println("DEBUG: Objeto en inventario: " + objetoInventario);
         System.out.println("DEBUG: Tipo del objeto: " + (objetoInventario != null ? objetoInventario.getClass().getSimpleName() : "null"));
@@ -171,8 +146,6 @@ public abstract class EstacionTrabajo {
             System.out.println("DEBUG: No hay ingrediente válido - objetoInventario no es Ingrediente");
             System.out.println("No tienes un ingrediente válido para procesar");
         }
-
-        alInteractuar();
     }
 
     public void actualizar(float delta) {
@@ -193,9 +166,35 @@ public abstract class EstacionTrabajo {
         }
     }
 
+    public Jugador getJugadorOcupante() {
+        return this.jugadorOcupante;
+    }
+
+    public void ocupar(Jugador jugador) {
+        if (jugador != null) {
+            this.jugadorOcupante = jugador;
+        }
+    }
+
+    public void verificarDistanciaYLiberar() {
+        if (jugadorOcupante != null) {
+            // Aumentar un poco la distancia de liberación para evitar liberaciones accidentales
+            float distanciaLiberacion = 120f; // Mayor que el radio de interacción
+
+            if (!estaCerca(jugadorOcupante.getPosicion().x,
+                jugadorOcupante.getPosicion().y,
+                distanciaLiberacion)) {
+                System.out.println("DEBUG: Liberando estación, jugador se alejó");
+                jugadorOcupante.salirDeMenu();
+                jugadorOcupante = null;
+            }
+        }
+    }
+
     protected abstract void iniciarMenu(Jugador jugador);
     public abstract void manejarSeleccionMenu(Jugador jugador, int numeroSeleccion);
     protected abstract void dibujarMenu(SpriteBatch batch, Jugador jugador);
 
     public abstract void alInteractuar();
+
 }
