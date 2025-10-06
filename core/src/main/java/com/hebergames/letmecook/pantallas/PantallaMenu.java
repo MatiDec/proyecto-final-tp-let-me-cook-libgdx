@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.eventos.Entrada;
 import com.hebergames.letmecook.eventos.TextoInteractuable;
-import com.hebergames.letmecook.utiles.Configuracion;
+import com.hebergames.letmecook.utiles.GestorJugadores;
 import com.hebergames.letmecook.elementos.Imagen;
 import com.hebergames.letmecook.utiles.Recursos;
 import com.hebergames.letmecook.utiles.Render;
@@ -126,7 +126,7 @@ public class PantallaMenu extends Pantalla {
     }
 
     private void actualizarFondo() {
-        fondo.setSize((int)Configuracion.ANCHO, (int)Configuracion.ALTO);
+        fondo.setSize((int) GestorJugadores.ANCHO, (int) GestorJugadores.ALTO);
         fondo.setPosicion(0, 0);
     }
 

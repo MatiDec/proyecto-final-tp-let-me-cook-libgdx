@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.hebergames.letmecook.entidades.GestorClientes;
-import com.hebergames.letmecook.entidades.JugadorHost;
+import com.hebergames.letmecook.entidades.Jugador;
 import com.hebergames.letmecook.eventos.HiloClientes;
 import com.hebergames.letmecook.mapa.Mapa;
 import com.hebergames.letmecook.maquinas.EstacionTrabajo;
@@ -19,14 +19,18 @@ import com.hebergames.letmecook.utiles.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PantallaJuego extends Pantalla {
 
     private static final int TIEMPO_OBJETIVO = 90; // 3 minutos
+    private static final boolean MODO_MULTIJUGADOR = true; // Cambiar a false para un solo jugador
 
     private SpriteBatch batch;
-    private JugadorHost jugadorHost;
+    private Jugador jugador1;
+    private Jugador jugador2;
+    private ArrayList<Jugador> jugadores;
     private Mapa mapaJuego;
     private ArrayList<EstacionTrabajo> estaciones;
 
@@ -37,7 +41,8 @@ public class PantallaJuego extends Pantalla {
     private GestorPantallasOverlay gestorOverlays;
     private GestorAudio gestorAudio;
     private GestorClientes gestorClientes;
-    private GestorAnimacion gestorAnimacion;
+    private GestorAnimacion gestorAnimacionJ1;
+    private GestorAnimacion gestorAnimacionJ2;
     private GestorTiempoJuego gestorTiempo;
 
     private HiloClientes hiloClientes;
@@ -59,7 +64,8 @@ public class PantallaJuego extends Pantalla {
         inicializarCore();
         inicializarGestores();
         configurarJugadorYMapa();
-        configurarEntrada();
+        GestorJugadores.getInstancia().setJugadores(jugadores);
+        configurarEntradaJugadores();
         inicializarAudio();
         inicializarClientes();
     }
@@ -67,6 +73,7 @@ public class PantallaJuego extends Pantalla {
     private void inicializarCore() {
         batch = Render.batch;
         gestorTiempo = new GestorTiempoJuego(TIEMPO_OBJETIVO);
+        jugadores = new ArrayList<>();
     }
 
     private void inicializarGestores() {
@@ -76,23 +83,44 @@ public class PantallaJuego extends Pantalla {
     }
 
     private void configurarJugadorYMapa() {
-        configurarTexturasJugador();
+        configurarTexturasJugadores();
         mapaJuego = new Mapa("core/src/main/java/com/hebergames/letmecook/recursos/mapas/Prueba.tmx");
-        jugadorHost = new JugadorHost(1000, 1000, gestorAnimacion);
-        jugadorHost.setColisionables(mapaJuego.getRectangulosColision());
-        jugadorHost.setInteractuables(mapaJuego.getRectangulosInteractuables());
+
+        // Crear Jugador 1
+        jugador1 = new Jugador(1000, 1000, gestorAnimacionJ1);
+        jugador1.setColisionables(mapaJuego.getRectangulosColision());
+        jugador1.setInteractuables(mapaJuego.getRectangulosInteractuables());
+        jugadores.add(jugador1);
+
+        // Crear Jugador 2 si está en modo multijugador
+        if (MODO_MULTIJUGADOR) {
+            jugador2 = new Jugador(1000, 1000, gestorAnimacionJ2);
+            jugador2.setColisionables(mapaJuego.getRectangulosColision());
+            jugador2.setInteractuables(mapaJuego.getRectangulosInteractuables());
+            jugadores.add(jugador2);
+        }
+
         estaciones = mapaJuego.getEstacionesTrabajo();
     }
 
-    private void configurarTexturasJugador() {
-        gestorAnimacion = new GestorAnimacion(
-            "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/jugador.png",
+    private void configurarTexturasJugadores() {
+        // Gestor de animación para Jugador 1
+        gestorAnimacionJ1 = new GestorAnimacion(
+            "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/Jugador.png",
             32, 32, 0.2f
         );
+
+        // Gestor de animación para Jugador 2 (puedes usar otra textura diferente)
+        if (MODO_MULTIJUGADOR) {
+            gestorAnimacionJ2 = new GestorAnimacion(
+                "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/Jugador.png", // Cambia si tienes otra textura
+                32, 32, 0.2f
+            );
+        }
     }
 
-    private void configurarEntrada() {
-        gestorEntrada = new GestorEntradaJuego(jugadorHost, estaciones);
+    private void configurarEntradaJugadores() {
+        gestorEntrada = new GestorEntradaJuego(jugadores, estaciones);
         gestorEntrada.configurarEntrada(
             gestorViewport.getViewportJuego(),
             gestorViewport.getViewportUI()
@@ -160,23 +188,30 @@ public class PantallaJuego extends Pantalla {
     private void renderizarJuego(float delta) {
         gestorViewport.getViewportJuego().apply();
 
-        Vector2 posicionJugador = jugadorHost.getPosicion();
-        gestorViewport.actualizarCamaraJuego(posicionJugador);
+        // La cámara sigue al jugador 1 (puedes cambiar esto para seguir a ambos o al centro)
+        Vector2 posicionJugador = jugador1.getPosicion();
+        gestorViewport.actualizarCamaraDinamica(jugador1, jugador2);
 
         mapaJuego.render(gestorViewport.getCamaraJuego());
 
         if (!gestorOverlays.isJuegoEnPausa()) {
-            if (!gestorOverlays.isHeladeraAbierta() && !gestorOverlays.isMesaAbierta()) {
-                jugadorHost.actualizar(delta);
-                gestorEntrada.actualizarEntradas();
+            for (Jugador jugador : jugadores) {
+                jugador.actualizar(delta);
             }
+            gestorEntrada.actualizarEntradas();
             gestorAudio.reanudarMusica();
         }
 
         batch.setProjectionMatrix(gestorViewport.getCamaraJuego().combined);
         batch.begin();
-        jugadorHost.dibujar(batch);
+
+        // Dibujar todos los jugadores
+        for (Jugador jugador : jugadores) {
+            jugador.dibujar(batch);
+        }
+
         gestorClientes.dibujar(batch);
+
         for (EstacionTrabajo estacion : estaciones) {
             estacion.actualizar(delta);
             estacion.dibujarIndicador(batch);
@@ -189,7 +224,13 @@ public class PantallaJuego extends Pantalla {
         gestorViewport.actualizarCamaraUI();
 
         gestorUI.actualizarTiempo(gestorTiempo.getSegundos());
-        gestorUI.actualizarInventario(jugadorHost.getNombreItemInventario());
+
+        // CAMBIO: Mostrar inventarios de ambos jugadores
+        String itemJ2 = (jugador2 != null) ? jugador2.getNombreItemInventario() : null;
+        gestorUI.actualizarInventario(
+            jugador1.getNombreItemInventario(),
+            itemJ2 // Pasa null si jugador2 no existe
+        );
 
         batch.setProjectionMatrix(gestorViewport.getCamaraUI().combined);
         batch.begin();
@@ -232,30 +273,6 @@ public class PantallaJuego extends Pantalla {
         );
     }
 
-    public void abrirHeladera() {
-        gestorOverlays.abrirHeladera();
-    }
-
-    public void cerrarHeladera() {
-        gestorOverlays.cerrarHeladera();
-        gestorEntrada.configurarEntrada(
-            gestorViewport.getViewportJuego(),
-            gestorViewport.getViewportUI()
-        );
-    }
-
-    public void abrirMesa() {
-        gestorOverlays.abrirMesa();
-    }
-
-    public void cerrarMesa() {
-        gestorOverlays.cerrarMesa();
-        gestorEntrada.configurarEntrada(
-            gestorViewport.getViewportJuego(),
-            gestorViewport.getViewportUI()
-        );
-    }
-
     public Animation<TextureRegion> getAnimacionConItem(String nombreItem) {
         Animation<TextureRegion> animacion = animacionesConItem.get(nombreItem);
         if (animacion == null) {
@@ -283,6 +300,18 @@ public class PantallaJuego extends Pantalla {
 
     public Vector2 getCoordenadasUi(int screenX, int screenY) {
         return gestorViewport.convertirCoordenadasUI(screenX, screenY);
+    }
+
+    public Jugador getJugador1() {
+        return jugador1;
+    }
+
+    public Jugador getJugador2() {
+        return jugador2;
+    }
+
+    public List<Jugador> getJugadores() {
+        return jugadores;
     }
 
     @Override
@@ -331,7 +360,6 @@ public class PantallaJuego extends Pantalla {
     public void terminarJuego(int puntaje) {
         detenerHilos();
         gestorAudio.pausarMusica();
-        gestorOverlays.resetearMesa();
 
         Pantalla.cambiarPantalla(new PantallaFinal(gestorTiempo.getTiempoFormateado(), puntaje));
     }

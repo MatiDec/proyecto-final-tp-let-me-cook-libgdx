@@ -23,5 +23,4 @@ public class DatosEntrada {
     public Set<Integer> getTeclasPresionadas() {
         return this.TECLAS_PRESIONADAS;
     }
-
 }

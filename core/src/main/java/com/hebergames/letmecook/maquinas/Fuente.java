@@ -1,7 +1,8 @@
 package com.hebergames.letmecook.maquinas;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import com.hebergames.letmecook.pantallas.pantallasmaquinas.PantallaMaquina;
+import com.hebergames.letmecook.entidades.Jugador;
 
 public class Fuente extends EstacionTrabajo {
     public Fuente(Rectangle area) {
@@ -9,8 +10,18 @@ public class Fuente extends EstacionTrabajo {
     }
 
     @Override
-    protected PantallaMaquina crearPantallaMaquina() {
-        return null;
+    protected void iniciarMenu(Jugador jugador) {
+
+    }
+
+    @Override
+    public void manejarSeleccionMenu(Jugador jugador, int direccion) {
+
+    }
+
+    @Override
+    protected void dibujarMenu(SpriteBatch batch, Jugador jugador) {
+
     }
 
     @Override

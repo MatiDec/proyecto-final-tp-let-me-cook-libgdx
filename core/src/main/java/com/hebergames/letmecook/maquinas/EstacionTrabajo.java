@@ -4,20 +4,18 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import com.hebergames.letmecook.entidades.JugadorHost;
+import com.hebergames.letmecook.entidades.Jugador;
 import com.hebergames.letmecook.entregables.ObjetoAlmacenable;
 import com.hebergames.letmecook.entregables.ingredientes.Ingrediente;
-import com.hebergames.letmecook.pantallas.pantallasmaquinas.PantallaMaquina;
-import com.hebergames.letmecook.utiles.Configuracion;
-import com.hebergames.letmecook.utiles.GestorAudio;
 import com.hebergames.letmecook.utiles.Recursos;
 
 public abstract class EstacionTrabajo {
     protected Rectangle area;
-    protected PantallaMaquina pantallaMaquina;
     protected MaquinaProcesadora procesadora;
 
     private final static int DIFERENCIA = 256;
+
+    private Jugador jugadorOcupante = null;
 
     public EstacionTrabajo(Rectangle area) {
         this.area = area;
@@ -27,12 +25,52 @@ public abstract class EstacionTrabajo {
         return area.contains(x, y);
     }
 
-    public final void interactuar() {
-        JugadorHost jugador = Configuracion.getInstancia().getJugadorPrincipal();
+    public boolean estaCerca(float x, float y, float radioInteraccion) {
+        float centroMaquinaX = area.x + area.width / 2f;
+        float centroMaquinaY = area.y + area.height / 2f;
+
+        float dx = x - centroMaquinaX;
+        float dy = y - centroMaquinaY;
+
+        double distancia = Math.sqrt(dx * dx + dy * dy);
+
+        return distancia <= radioInteraccion;
+    }
+
+    public final void interactuarConJugador(Jugador jugador) {
+        if (jugador == null) {
+            System.out.println("ERROR: Jugador es null");
+            return;
+        }
 
         if (!puedeInteractuar(jugador)) {
             System.out.println("Estas demasiado lejos para interactuar con la maquina.");
             return;
+        }
+
+        if(jugadorOcupante == null) {
+            ocupar(jugador);
+        } else if (jugadorOcupante != jugador) {
+            System.out.println("Maquina ocupada por otro jugador."); //Aca debería ir alguna alerta visual para que la vea el jugador 2
+        }
+
+        if(jugador.estaEnMenu() && jugador.getEstacionActual() == this) {
+            jugador.salirDeMenu();
+            jugadorOcupante = null;
+        } else if (!jugador.estaEnMenu()) {
+            jugadorOcupante = jugador;
+            jugador.entrarEnMenu(this);
+            iniciarMenu(jugador);
+        }
+
+        // Si es una máquina procesadora, intentar procesamiento directo
+        if (procesadora != null) {
+            manejarProcesamiento(jugador);
+        } else {
+            // Si no es procesadora, y no está en menú, iniciar el menú (reemplazo de pantalla)
+            if (!jugador.estaEnMenu()) {
+                iniciarMenu(jugador);
+            }
         }
 
         System.out.println("DEBUG: EstacionTrabajo.interactuar() llamado");
@@ -41,23 +79,28 @@ public abstract class EstacionTrabajo {
         // intentar procesar directamente si es una máquina procesadora
         if (procesadora != null) {
             System.out.println("DEBUG: Llamando a manejarProcesamiento()");
-            manejarProcesamiento();
+            manejarProcesamiento(jugador);
             return;
-        }
-
-        // si no es procesadora, usar pantalla tradicional
-        if (pantallaMaquina == null) {
-            pantallaMaquina = crearPantallaMaquina();
-        }
-
-        if (pantallaMaquina != null) {
-            pantallaMaquina.show();
         }
 
         alInteractuar();
     }
 
-    private boolean puedeInteractuar(JugadorHost jugador) {
+    public boolean isOcupada() {
+        return jugadorOcupante != null;
+    }
+
+    public Jugador getJugadorOcupante() {
+        return jugadorOcupante;
+    }
+
+    public void ocupar(Jugador jugador) {
+        this.jugadorOcupante = jugador;
+        // Iniciar el menú inmediatamente
+        iniciarMenu(jugador);
+    }
+
+    private boolean puedeInteractuar(Jugador jugador) {
         float centroMaquinaX = area.x + area.width / 2f;
         float centroMaquinaY = area.y + area.height / 2f;
 
@@ -66,19 +109,19 @@ public abstract class EstacionTrabajo {
 
         float dx = centroJugadorX - centroMaquinaX;
         float dy = centroJugadorY - centroMaquinaY;
+        float radioInteraccion = 100f;
 
-        double distancia = Math.sqrt(dx * dx + dy * dy);
+        //double distancia = Math.sqrt(dx * dx + dy * dy);
 
-        return distancia <= DIFERENCIA;
+        //return distancia <= DIFERENCIA;
         //mi logica de esto, si la maquina mide 128 y el jugador mide 128 sus centros estan a 64px de sus bordes, entonces la suma ya te da 128
         //lo que es una tile entonces le tengo que sumar 128 de la tile para que funque
+        return estaCerca(jugador.getPosicion().x, jugador.getPosicion().y, radioInteraccion);
     }
 
 
-    private void manejarProcesamiento() {
+    private void manejarProcesamiento(Jugador jugador) {
         System.out.println("DEBUG: manejarProcesamiento() iniciado");
-
-        JugadorHost jugador = Configuracion.getInstancia().getJugadorPrincipal();
         System.out.println("DEBUG: Jugador obtenido: " + (jugador != null ? "OK" : "NULL"));
 
         //retiro solo si el jugador hace shift + click, para evitar spam de clicks
@@ -144,7 +187,15 @@ public abstract class EstacionTrabajo {
         }
     }
 
-    protected abstract PantallaMaquina crearPantallaMaquina();
+    public void dibujar(SpriteBatch batch, Jugador jugador) {
+        if (jugadorOcupante == jugador && jugador.estaEnMenu()) {
+            dibujarMenu(batch, jugador);
+        }
+    }
+
+    protected abstract void iniciarMenu(Jugador jugador);
+    public abstract void manejarSeleccionMenu(Jugador jugador, int numeroSeleccion);
+    protected abstract void dibujarMenu(SpriteBatch batch, Jugador jugador);
 
     public abstract void alInteractuar();
 }

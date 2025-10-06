@@ -6,12 +6,17 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.hebergames.letmecook.entidades.Jugador;
 
 public class GestorViewport {
 
     private static final float MUNDO_ANCHO = 1920f;
     private static final float MUNDO_ALTO = 1080f;
-    private static final float ZOOM_JUEGO = 1.7f;
+    //zoom dinamico <3
+    private static final float MAX_DISTANCIA_PARA_ZOOM = 1500f;
+    private static final float MIN_ZOOM = 1.0f; // Más alejado (muestra más mapa)
+    private static final float MID_ZOOM = 1.2f;
+    private static final float MAX_ZOOM = 1.5f;
 
     private final Viewport viewportJuego;
     private final Viewport viewportUI;
@@ -21,7 +26,7 @@ public class GestorViewport {
     public GestorViewport() {
         camaraJuego = new OrthographicCamera();
         camaraJuego.setToOrtho(false, 1920, 1080);
-        camaraJuego.zoom = ZOOM_JUEGO;
+        camaraJuego.zoom = MID_ZOOM;
 
         camaraUI = new OrthographicCamera();
         camaraUI.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -30,8 +35,32 @@ public class GestorViewport {
         viewportUI = new ScreenViewport(camaraUI);
     }
 
-    public void actualizarCamaraJuego(Vector2 posicionJugador) {
-        camaraJuego.position.set(posicionJugador.x, posicionJugador.y, 0);
+    public void actualizarCamaraDinamica(Jugador jugador1, Jugador jugador2) {
+        float centerX = jugador1.getPosicion().x;
+        float centerY = jugador1.getPosicion().y;
+        float zoom = MAX_ZOOM;
+
+        // Comprobación de si existe un segundo jugador
+        if (jugador2 != null) {
+            // 1. Calcular punto central
+            centerX = (jugador1.getPosicion().x + jugador2.getPosicion().x) / 2f;
+            centerY = (jugador1.getPosicion().y + jugador2.getPosicion().y) / 2f;
+
+            // 2. Calcular la distancia máxima
+            float dist_x = Math.abs(jugador1.getPosicion().x - jugador2.getPosicion().x);
+            float dist_y = Math.abs(jugador1.getPosicion().y - jugador2.getPosicion().y);
+            float max_dist = Math.max(dist_x, dist_y);
+
+            // 3. Normalizar la distancia para obtener un factor de zoom entre 0 y 1
+            float normalized_dist = Math.min(max_dist, MAX_DISTANCIA_PARA_ZOOM) / MAX_DISTANCIA_PARA_ZOOM;
+
+            // 4. Interpolación: cuanto mayor la distancia, menor el zoom (más alejado)
+            zoom = MIN_ZOOM + (MAX_ZOOM - MIN_ZOOM) * normalized_dist;
+        }
+
+        // Aplicar la posición y el zoom
+        camaraJuego.zoom = zoom;
+        camaraJuego.position.set(centerX, centerY, 0);
         camaraJuego.update();
     }
 
