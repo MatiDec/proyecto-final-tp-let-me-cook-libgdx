@@ -14,6 +14,14 @@ public class Pedido {
         this.estadoPedido = EstadoPedido.EN_ESPERA;
     }
 
+    public EstadoPedido getEstadoPedido() {
+        return this.estadoPedido;
+    }
+
+    public void setEstadoPedido(EstadoPedido estado) {
+        this.estadoPedido = estado;
+    }
+
     public Producto getProductoSolicitado() {
         return this.productoSolicitado;
     }

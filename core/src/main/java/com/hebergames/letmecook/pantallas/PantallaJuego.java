@@ -13,7 +13,9 @@ import com.hebergames.letmecook.entidades.GestorClientes;
 import com.hebergames.letmecook.entidades.Jugador;
 import com.hebergames.letmecook.eventos.HiloClientes;
 import com.hebergames.letmecook.mapa.Mapa;
+import com.hebergames.letmecook.maquinas.CajaRegistradora;
 import com.hebergames.letmecook.maquinas.EstacionTrabajo;
+import com.hebergames.letmecook.maquinas.MesaRetiro;
 import com.hebergames.letmecook.pedidos.Pedido;
 import com.hebergames.letmecook.utiles.*;
 
@@ -58,6 +60,8 @@ public class PantallaJuego extends Pantalla {
 
     //pedidos
     private ArrayList<Pedido> pedidosEnEspera;
+    private ArrayList<CajaRegistradora> cajasRegistradoras;
+    private ArrayList<MesaRetiro> mesasRetiro;
 
     @Override
     public void show() {
@@ -156,6 +160,28 @@ public class PantallaJuego extends Pantalla {
         gestorClientes.setTiempoToleranciaCliente(20f);
         gestorClientes.setMaxClientesSimultaneos(5);
 
+        cajasRegistradoras = new ArrayList<>();
+        mesasRetiro = new ArrayList<>();
+
+        for (EstacionTrabajo estacion : estaciones) {
+            if (estacion instanceof CajaRegistradora) {
+                cajasRegistradoras.add((CajaRegistradora) estacion);
+            } else if (estacion instanceof MesaRetiro) {
+                mesasRetiro.add((MesaRetiro) estacion);
+            }
+        }
+
+        gestorClientes.registrarCajasRegistradoras(cajasRegistradoras);
+        gestorClientes.registrarMesasRetiro(mesasRetiro);
+
+        for (CajaRegistradora caja : cajasRegistradoras) {
+            caja.setGestorClientes(gestorClientes);
+        }
+
+        for (MesaRetiro mesa : mesasRetiro) {
+            mesa.setGestorClientes(gestorClientes);
+        }
+
         hiloClientes = new HiloClientes(gestorClientes);
         hiloClientes.start();
 
@@ -228,8 +254,8 @@ public class PantallaJuego extends Pantalla {
         gestorViewport.actualizarCamaraUI();
 
         gestorUI.actualizarTiempo(gestorTiempo.getSegundos());
+        gestorUI.actualizarPedidos(gestorClientes.getGestorPedidos().getPedidosActivos());
 
-        // CAMBIO: Mostrar inventarios de ambos jugadores
         String itemJ2 = (jugador2 != null) ? jugador2.getNombreItemInventario() : null;
         gestorUI.actualizarInventario(
             jugador1.getNombreItemInventario(),

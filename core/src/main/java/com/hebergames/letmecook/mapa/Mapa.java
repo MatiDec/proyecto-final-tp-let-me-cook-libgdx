@@ -110,6 +110,12 @@ public class Mapa {
                 case "Heladera":
                     estaciones.add(new Heladera(rect));
                     break;
+                case "CajaRegistradora":
+                    estaciones.add(new CajaRegistradora(rect));
+                    break;
+                case "MesaRetiro":
+                    estaciones.add(new MesaRetiro(rect));
+                    break;
             }
         }
 

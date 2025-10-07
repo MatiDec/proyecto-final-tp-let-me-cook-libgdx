@@ -3,6 +3,8 @@ package com.hebergames.letmecook.entidades;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.hebergames.letmecook.maquinas.CajaRegistradora;
+import com.hebergames.letmecook.maquinas.MesaRetiro;
 import com.hebergames.letmecook.utiles.Render;
 
 public class Cliente {
@@ -17,6 +19,8 @@ public class Cliente {
     protected Rectangle ubicacion;
     protected SpriteBatch BATCH;
     protected boolean pedidoAsignado;
+    private CajaRegistradora cajaAsignada;
+    private MesaRetiro mesaRetiroAsignada;
 
     //cliente presencial
     private boolean visible;
@@ -122,6 +126,39 @@ public class Cliente {
         }
     }
 
+    public void setCajaAsignada(CajaRegistradora caja) {
+        this.cajaAsignada = caja;
+    }
+
+    public CajaRegistradora getCajaAsignada() {
+        return cajaAsignada;
+    }
+
+    public void setMesaRetiroAsignada(MesaRetiro mesa) {
+        this.mesaRetiroAsignada = mesa;
+    }
+
+    public MesaRetiro getMesaRetiroAsignada() {
+        return mesaRetiroAsignada;
+    }
+
+    public void moverAMesaRetiro(Rectangle ubicacionMesa) {
+        this.ubicacion = ubicacionMesa;
+    }
+
+    public void setRecienAparecido(boolean recienAparecido) {
+        if (tipo == TipoCliente.PRESENCIAL) {
+            this.recienAparecido = recienAparecido;
+        }
+    }
+
+    public boolean isVisible() {
+        if (tipo == TipoCliente.PRESENCIAL) {
+            return this.visible;
+        }
+        return false;
+    }
+
     public boolean isActivo() {
         return activo;
     }
@@ -154,16 +191,4 @@ public class Cliente {
         return tipo;
     }
 
-    public void setRecienAparecido(boolean recienAparecido) {
-        if (tipo == TipoCliente.PRESENCIAL) {
-            this.recienAparecido = recienAparecido;
-        }
-    }
-
-    public boolean isVisible() {
-        if (tipo == TipoCliente.PRESENCIAL) {
-            return this.visible;
-        }
-        return false;
-    }
 }

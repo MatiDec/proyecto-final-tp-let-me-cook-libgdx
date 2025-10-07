@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.entidades.Jugador;
+import com.hebergames.letmecook.pedidos.Pedido;
+import com.hebergames.letmecook.pedidos.PedidoConTiempo;
 import com.hebergames.letmecook.utiles.Recursos;
 
 import java.util.ArrayList;
@@ -17,6 +19,9 @@ public class GestorUIJuego {
     private final Texto textoInventario2;
 
     private static final float MARGEN = 50f;
+    private ArrayList<Texto> textosPedidos;
+    private final float MARGEN_PEDIDOS = 100f;
+    private final int MAX_PEDIDOS_VISIBLES = 5;
 
     public GestorUIJuego() {
         objetosUI = new ArrayList<>();
@@ -29,6 +34,8 @@ public class GestorUIJuego {
 
         textoInventario2 = new Texto(Recursos.FUENTE_MENU, 32, Color.BLUE, true); // J2 en azul
         textoInventario2.setTexto("J2 Inventario: Vacío");
+
+        textosPedidos = new ArrayList<>();
 
         objetosUI.add(textoContador);
         objetosUI.add(textoInventario1);
@@ -54,6 +61,34 @@ public class GestorUIJuego {
 
     }
 
+    public void actualizarPedidos(ArrayList<PedidoConTiempo> pedidos) {
+        // Limpiar textos anteriores
+        for (Texto texto : textosPedidos) {
+            objetosUI.remove(texto);
+        }
+        textosPedidos.clear();
+
+        // Crear textos para cada pedido activo
+        int contador = 0;
+        for (PedidoConTiempo pedidoConTiempo : pedidos) {
+            if (contador >= MAX_PEDIDOS_VISIBLES) break;
+
+            Pedido pedido = pedidoConTiempo.getPedido();
+            String nombreProducto = pedido.getProductoSolicitado().getNombre();
+            int segundosRestantes = (int) pedidoConTiempo.getTiempoRestante();
+
+            String textoPedido = String.format("Pedido #%d: %s - %ds",
+                pedido.getIdClienteSolicitante(), nombreProducto, segundosRestantes);
+
+            Texto texto = new Texto(Recursos.FUENTE_MENU, 20, Color.YELLOW, true);
+            texto.setTexto(textoPedido);
+
+            textosPedidos.add(texto);
+            objetosUI.add(texto);
+            contador++;
+        }
+    }
+
     public void dibujar(SpriteBatch batch) {
         for (ObjetoVisualizable obj : objetosUI) {
             obj.dibujarEnUi(batch);
@@ -67,5 +102,11 @@ public class GestorUIJuego {
         textoInventario1.setPosition(MARGEN, altoUI - MARGEN);
         // Inventario Jugador 2 (Arriba, derecha)
         textoInventario2.setPosition(anchoUI - textoInventario2.getAncho() - MARGEN, altoUI - MARGEN);
+        float yInicial = altoUI - MARGEN_PEDIDOS;
+        for (int i = 0; i < textosPedidos.size(); i++) {
+            Texto texto = textosPedidos.get(i);
+            float yPos = yInicial - (i * 30);
+            texto.setPosition(anchoUI - texto.getAncho() - MARGEN, yPos);
+        }
     }
 }
