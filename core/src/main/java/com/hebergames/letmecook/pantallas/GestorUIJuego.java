@@ -3,9 +3,12 @@ package com.hebergames.letmecook.pantallas;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.entidades.Cliente;
 import com.hebergames.letmecook.pedidos.Pedido;
+import com.hebergames.letmecook.pedidos.TarjetaPedido;
+import com.hebergames.letmecook.utiles.GestorTexturas;
 import com.hebergames.letmecook.utiles.Recursos;
 
 import java.util.ArrayList;
@@ -19,6 +22,8 @@ public class GestorUIJuego {
 
     private static final float MARGEN = 50f;
     private ArrayList<Texto> textosPedidos;
+    private ArrayList<TarjetaPedido> tarjetasPedidos;
+
     private Texto textoPuntaje;
     private final float MARGEN_PEDIDOS = 100f;
     private final int MAX_PEDIDOS_VISIBLES = 5;
@@ -41,6 +46,8 @@ public class GestorUIJuego {
 
         textosPedidos = new ArrayList<>();
 
+        tarjetasPedidos = new ArrayList<>();
+
         objetosUI.add(textoContador);
         objetosUI.add(textoInventario1);
         objetosUI.add(textoInventario2);
@@ -50,21 +57,11 @@ public class GestorUIJuego {
 
     public void actualizarPedidosActivos(ArrayList<Cliente> clientes) {
         textosPedidos.clear();
+        tarjetasPedidos.clear();
 
-        int count = 0;
-        for (Cliente cliente : clientes) {
-            if (count >= MAX_PEDIDOS_VISIBLES) break;
-
-            Pedido pedido = cliente.getPedido();
-            int segundosRestantes = (int) cliente.getTiempoRestante();
-            String texto = String.format("%s - %ds",
-                pedido.getProductoSolicitado().getNombre(),
-                segundosRestantes);
-
-            Texto textoPedido = new Texto(Recursos.FUENTE_MENU, 24, Color.WHITE, true);
-            textoPedido.setTexto(texto);
-            textosPedidos.add(textoPedido);
-            count++;
+        for (int i = 0; i < Math.min(clientes.size(), MAX_PEDIDOS_VISIBLES); i++) {
+            TarjetaPedido tarjeta = new TarjetaPedido();
+            tarjetasPedidos.add(tarjeta);
         }
     }
 
@@ -98,6 +95,24 @@ public class GestorUIJuego {
         }
     }
 
+    public void dibujarPedidos(SpriteBatch batch, ArrayList<Cliente> clientes, float anchoUI, float altoUI) {
+        float yInicial = altoUI / 2f;
+        float x = anchoUI - 220f; // 200 (ancho tarjeta) + 20 (margen)
+
+        for (int i = 0; i < Math.min(clientes.size(), MAX_PEDIDOS_VISIBLES); i++) {
+            Cliente cliente = clientes.get(i);
+            float y = yInicial - (i * 120f); // 100 (alto tarjeta) + 20 (espaciado)
+
+            TextureRegion texturaCliente = GestorTexturas.getInstance().getTexturaCliente();
+            TextureRegion texturaProducto = GestorTexturas.getInstance()
+                .getTexturaProducto(cliente.getPedido().getProductoSolicitado().getNombre());
+
+            if (i < tarjetasPedidos.size()) {
+                tarjetasPedidos.get(i).dibujar(batch, cliente, x, y, texturaCliente, texturaProducto);
+            }
+        }
+    }
+
     public void actualizarPosiciones(float anchoUI, float altoUI) {
         // Contador de tiempo (Arriba, centro)
         textoContador.setPosition(anchoUI / 2f - textoContador.getAncho() / 2f, altoUI - MARGEN);
@@ -112,6 +127,12 @@ public class GestorUIJuego {
             Texto texto = textosPedidos.get(i);
             float yPos = yInicialPedidos - (i * 30);
             texto.setPosition(anchoUI - texto.getAncho() - MARGEN, yPos);
+        }
+    }
+
+    public void dispose() {
+        for (TarjetaPedido tarjeta : tarjetasPedidos) {
+            tarjeta.dispose();
         }
     }
 }

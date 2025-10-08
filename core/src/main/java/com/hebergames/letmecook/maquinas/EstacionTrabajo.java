@@ -1,15 +1,11 @@
 package com.hebergames.letmecook.maquinas;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.entidades.Jugador;
 import com.hebergames.letmecook.entregables.ObjetoAlmacenable;
 import com.hebergames.letmecook.entregables.ingredientes.Ingrediente;
 import com.hebergames.letmecook.entregables.productos.Producto;
-import com.hebergames.letmecook.pedidos.EstadoPedido;
-import com.hebergames.letmecook.pedidos.GestorPedidos;
 import com.hebergames.letmecook.pedidos.ResultadoEntrega;
 import com.hebergames.letmecook.utiles.Recursos;
 

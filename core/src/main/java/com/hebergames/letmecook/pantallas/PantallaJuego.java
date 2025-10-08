@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.hebergames.letmecook.entidades.Cliente;
 import com.hebergames.letmecook.entidades.GestorClientes;
 import com.hebergames.letmecook.entidades.Jugador;
 import com.hebergames.letmecook.entregables.productos.Producto;
@@ -73,9 +74,13 @@ public class PantallaJuego extends Pantalla {
         configurarJugadorYMapa();
         GestorJugadores.getInstancia().setJugadores(jugadores);
         configurarEntradaJugadores();
-        inicializarSistemaPedidos();
-        inicializarAudio();
         inicializarClientes();
+        inicializarAudio();
+        inicializarSistemaPedidos();
+    }
+
+    private void inicializarClientes() {
+        GestorTexturas.getInstance().cargarTexturas();
     }
 
     private void inicializarCore() {
@@ -147,24 +152,21 @@ public class PantallaJuego extends Pantalla {
         gestorOverlays = new GestorPantallasOverlay(pantallaPausa, gestorAudio);
     }
 
-    private void inicializarClientes() {
-        texturaClientes = new Texture(Gdx.files.internal("core/src/main/java/com/hebergames/letmecook/recursos/imagenes/clientes.jpg"));
-        TextureRegion[][] tmpClientes = TextureRegion.split(texturaClientes, 32, 32);
-        texturaClientePresencial = tmpClientes[0][0];
-        texturaVirtualInactiva = tmpClientes[0][1];
-        texturaVirtualActiva = tmpClientes[0][2];
-    }
-
     private void inicializarSistemaPedidos() {
-        // Filtrar cajas y mesasRetiro de las estaciones
+        // Asegurarse de que las texturas estén cargadas
+        if (!GestorTexturas.getInstance().estanTexturasListas()) {
+            GestorTexturas.getInstance().cargarTexturas();
+        }
+
+        // Filtrar cajas y mesas de las estaciones
         ArrayList<CajaRegistradora> cajas = new ArrayList<>();
-        ArrayList<MesaRetiro> mesasRetiro = new ArrayList<>();
+        ArrayList<MesaRetiro> mesas = new ArrayList<>();
 
         for (EstacionTrabajo estacion : estaciones) {
             if (estacion instanceof CajaRegistradora) {
                 cajas.add((CajaRegistradora) estacion);
             } else if (estacion instanceof MesaRetiro) {
-                mesasRetiro.add((MesaRetiro) estacion);
+                mesas.add((MesaRetiro) estacion);
             }
         }
 
@@ -177,20 +179,20 @@ public class PantallaJuego extends Pantalla {
         }
 
         gestorClientes = new GestorClientes(cajas, productosDisponibles, 15f);
-        gestorPedidos = new GestorPedidos(gestorClientes, mesasRetiro);
+        gestorPedidos = new GestorPedidos(gestorClientes, mesas);
 
         // Asignar gestor a las cajas
         for (CajaRegistradora caja : cajas) {
             caja.setGestorPedidos(gestorPedidos);
         }
 
-        // Asignar gestor y callback a las mesasRetiro
-        for (MesaRetiro mesaRetiro : mesasRetiro) {
-            mesaRetiro.setGestorPedidos(gestorPedidos);
-            mesaRetiro.setCallbackPuntaje(gestorPuntaje); // Usar el gestor de puntaje
+        // Asignar gestor y callback a las mesas
+        for (MesaRetiro mesa : mesas) {
+            mesa.setGestorPedidos(gestorPedidos);
+            mesa.setCallbackPuntaje(gestorPuntaje);
         }
 
-        // Iniciar hilo de clientes
+        // Iniciar hilo de clientes DESPUÉS de cargar texturas
         hiloClientes = new HiloClientes(gestorClientes);
         hiloClientes.start();
     }
@@ -244,6 +246,12 @@ public class PantallaJuego extends Pantalla {
             jugador.dibujar(batch);
         }
 
+        if (gestorClientes != null) {
+            for (Cliente cliente : gestorClientes.getClientesActivos()) {
+                cliente.dibujar(batch);
+            }
+        }
+
         for (EstacionTrabajo estacion : estaciones) {
             estacion.actualizar(delta);
             estacion.dibujarIndicador(batch);
@@ -270,6 +278,12 @@ public class PantallaJuego extends Pantalla {
         batch.setProjectionMatrix(gestorViewport.getCamaraUI().combined);
         batch.begin();
         gestorUI.dibujar(batch);
+
+        if (gestorPedidos != null) {
+            gestorUI.dibujarPedidos(batch, gestorPedidos.getPedidosActivos(),
+                gestorViewport.getViewportUI().getWorldWidth(),
+                gestorViewport.getViewportUI().getWorldHeight());
+        }
         for (Jugador jugador : jugadores) {
             if (jugador.estaEnMenu()) {
                 EstacionTrabajo estacion = jugador.getEstacionActual();
@@ -393,6 +407,10 @@ public class PantallaJuego extends Pantalla {
         }
 
         gestorOverlays.dispose();
+
+        if (gestorUI != null) {
+            gestorUI.dispose(); // Agregar esta línea
+        }
 
         if (gestorAudio != null) {
             gestorAudio.dispose();
