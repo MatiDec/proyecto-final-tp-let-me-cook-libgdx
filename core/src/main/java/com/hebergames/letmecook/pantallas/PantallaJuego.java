@@ -7,15 +7,19 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.hebergames.letmecook.entidades.GestorClientes;
 import com.hebergames.letmecook.entidades.Jugador;
+import com.hebergames.letmecook.entregables.productos.Producto;
+import com.hebergames.letmecook.entregables.recetas.GestorRecetas;
+import com.hebergames.letmecook.entregables.recetas.Receta;
+import com.hebergames.letmecook.eventos.GestorPuntaje;
 import com.hebergames.letmecook.eventos.HiloClientes;
 import com.hebergames.letmecook.mapa.Mapa;
 import com.hebergames.letmecook.maquinas.CajaRegistradora;
 import com.hebergames.letmecook.maquinas.EstacionTrabajo;
 import com.hebergames.letmecook.maquinas.MesaRetiro;
+import com.hebergames.letmecook.pedidos.GestorPedidos;
 import com.hebergames.letmecook.pedidos.Pedido;
 import com.hebergames.letmecook.utiles.*;
 
@@ -35,6 +39,10 @@ public class PantallaJuego extends Pantalla {
     private ArrayList<Jugador> jugadores;
     private Mapa mapaJuego;
     private ArrayList<EstacionTrabajo> estaciones;
+    private GestorClientes gestorClientes;
+    private GestorPedidos gestorPedidos;
+    private HiloClientes hiloClientes;
+    private GestorPuntaje gestorPuntaje;
 
     //gestores
     private GestorViewport gestorViewport;
@@ -42,12 +50,9 @@ public class PantallaJuego extends Pantalla {
     private GestorEntradaJuego gestorEntrada;
     private GestorPantallasOverlay gestorOverlays;
     private GestorAudio gestorAudio;
-    private GestorClientes gestorClientes;
     private GestorAnimacion gestorAnimacionJ1;
     private GestorAnimacion gestorAnimacionJ2;
     private GestorTiempoJuego gestorTiempo;
-
-    private HiloClientes hiloClientes;
 
     //texturas y animaciones
     private Texture jugadorSheet;
@@ -60,8 +65,6 @@ public class PantallaJuego extends Pantalla {
 
     //pedidos
     private ArrayList<Pedido> pedidosEnEspera;
-    private ArrayList<CajaRegistradora> cajasRegistradoras;
-    private ArrayList<MesaRetiro> mesasRetiro;
 
     @Override
     public void show() {
@@ -70,6 +73,7 @@ public class PantallaJuego extends Pantalla {
         configurarJugadorYMapa();
         GestorJugadores.getInstancia().setJugadores(jugadores);
         configurarEntradaJugadores();
+        inicializarSistemaPedidos();
         inicializarAudio();
         inicializarClientes();
     }
@@ -84,6 +88,7 @@ public class PantallaJuego extends Pantalla {
         gestorViewport = new GestorViewport();
         gestorUI = new GestorUIJuego();
         gestorAudio = GestorAudio.getInstance();
+        gestorPuntaje = new GestorPuntaje();
     }
 
     private void configurarJugadorYMapa() {
@@ -98,7 +103,7 @@ public class PantallaJuego extends Pantalla {
 
         // Crear Jugador 2 si está en modo multijugador
         if (MODO_MULTIJUGADOR) {
-            jugador2 = new Jugador(1000, 1000, gestorAnimacionJ2);
+            jugador2 = new Jugador(1000, 872, gestorAnimacionJ2);
             jugador2.setColisionables(mapaJuego.getRectangulosColision());
             jugador2.setInteractuables(mapaJuego.getRectangulosInteractuables());
             jugadores.add(jugador2);
@@ -148,55 +153,55 @@ public class PantallaJuego extends Pantalla {
         texturaClientePresencial = tmpClientes[0][0];
         texturaVirtualInactiva = tmpClientes[0][1];
         texturaVirtualActiva = tmpClientes[0][2];
+    }
 
-        ArrayList<Rectangle> ubicacionesClientes = mapaJuego.getRectangulosClientes();
-
-        gestorClientes = new GestorClientes(ubicacionesClientes,
-            texturaClientePresencial,
-            texturaVirtualInactiva,
-            texturaVirtualActiva);
-
-        gestorClientes.setIntervalosSpawn(6f);
-        gestorClientes.setTiempoToleranciaCliente(20f);
-        gestorClientes.setMaxClientesSimultaneos(5);
-
-        cajasRegistradoras = new ArrayList<>();
-        mesasRetiro = new ArrayList<>();
+    private void inicializarSistemaPedidos() {
+        // Filtrar cajas y mesasRetiro de las estaciones
+        ArrayList<CajaRegistradora> cajas = new ArrayList<>();
+        ArrayList<MesaRetiro> mesasRetiro = new ArrayList<>();
 
         for (EstacionTrabajo estacion : estaciones) {
             if (estacion instanceof CajaRegistradora) {
-                cajasRegistradoras.add((CajaRegistradora) estacion);
+                cajas.add((CajaRegistradora) estacion);
             } else if (estacion instanceof MesaRetiro) {
                 mesasRetiro.add((MesaRetiro) estacion);
             }
         }
 
-        gestorClientes.registrarCajasRegistradoras(cajasRegistradoras);
-        gestorClientes.registrarMesasRetiro(mesasRetiro);
+        // Usar GestorRecetas para obtener productos disponibles
+        GestorRecetas gestorRecetas = GestorRecetas.getInstance();
+        ArrayList<Producto> productosDisponibles = new ArrayList<>();
 
-        for (CajaRegistradora caja : cajasRegistradoras) {
-            caja.setGestorClientes(gestorClientes);
+        for (Receta receta : gestorRecetas.getRecetas()) {
+            productosDisponibles.add(receta.preparar());
         }
 
-        for (MesaRetiro mesa : mesasRetiro) {
-            mesa.setGestorClientes(gestorClientes);
+        gestorClientes = new GestorClientes(cajas, productosDisponibles, 15f);
+        gestorPedidos = new GestorPedidos(gestorClientes, mesasRetiro);
+
+        // Asignar gestor a las cajas
+        for (CajaRegistradora caja : cajas) {
+            caja.setGestorPedidos(gestorPedidos);
         }
 
+        // Asignar gestor y callback a las mesasRetiro
+        for (MesaRetiro mesaRetiro : mesasRetiro) {
+            mesaRetiro.setGestorPedidos(gestorPedidos);
+            mesaRetiro.setCallbackPuntaje(gestorPuntaje); // Usar el gestor de puntaje
+        }
+
+        // Iniciar hilo de clientes
         hiloClientes = new HiloClientes(gestorClientes);
         hiloClientes.start();
-
-        pedidosEnEspera = gestorClientes.getPedidosActivos();
     }
 
     @Override
     public void render(float delta) {
         limpiarPantalla();
         manejarInput();
-
         renderizarJuego(delta);
         renderizarUI();
         renderizarOverlays(delta);
-
         verificarFinDeJuego();
     }
 
@@ -239,9 +244,6 @@ public class PantallaJuego extends Pantalla {
             jugador.dibujar(batch);
         }
 
-
-        gestorClientes.dibujar(batch);
-
         for (EstacionTrabajo estacion : estaciones) {
             estacion.actualizar(delta);
             estacion.dibujarIndicador(batch);
@@ -254,13 +256,16 @@ public class PantallaJuego extends Pantalla {
         gestorViewport.actualizarCamaraUI();
 
         gestorUI.actualizarTiempo(gestorTiempo.getSegundos());
-        gestorUI.actualizarPedidos(gestorClientes.getGestorPedidos().getPedidosActivos());
 
         String itemJ2 = (jugador2 != null) ? jugador2.getNombreItemInventario() : null;
         gestorUI.actualizarInventario(
             jugador1.getNombreItemInventario(),
             itemJ2 // Pasa null si jugador2 no existe
         );
+        if (gestorPedidos != null) {
+            gestorUI.actualizarPedidosActivos(gestorPedidos.getPedidosActivos());
+        }
+        gestorUI.actualizarPuntaje(gestorPuntaje.getPuntajeActual());
 
         batch.setProjectionMatrix(gestorViewport.getCamaraUI().combined);
         batch.begin();
@@ -276,6 +281,10 @@ public class PantallaJuego extends Pantalla {
         batch.end();
     }
 
+    public void agregarPuntos(int puntos) {
+        gestorPuntaje.agregarPuntos(puntos);
+    }
+
     private void renderizarOverlays(float delta) {
         batch.setProjectionMatrix(gestorViewport.getCamaraUI().combined);
         gestorOverlays.renderOverlays(delta, batch);
@@ -288,8 +297,7 @@ public class PantallaJuego extends Pantalla {
     }
 
     private int calcularPuntajeFinal() {
-        //cálculo de puntos
-        return 1000;
+        return gestorPuntaje.getPuntajeActual();
     }
 
     public void togglePausa() {
@@ -404,6 +412,8 @@ public class PantallaJuego extends Pantalla {
 
     public void detenerHilos() {
         gestorTiempo.detener();
-        hiloClientes.detener();
+        if(hiloClientes != null) {
+            hiloClientes.detener();
+        }
     }
 }

@@ -3,95 +3,81 @@ package com.hebergames.letmecook.maquinas;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.entidades.Cliente;
-import com.hebergames.letmecook.entidades.GestorClientes;
 import com.hebergames.letmecook.entidades.Jugador;
-import com.hebergames.letmecook.entregables.ObjetoAlmacenable;
 import com.hebergames.letmecook.entregables.productos.Producto;
-
-import java.util.ArrayList;
+import com.hebergames.letmecook.eventos.CallbackPuntaje;
+import com.hebergames.letmecook.pedidos.GestorPedidos;
+import com.hebergames.letmecook.pedidos.ResultadoEntrega;
 
 public class MesaRetiro extends EstacionTrabajo {
-
-    private Cliente clienteEsperando;
-    private GestorClientes gestorClientes; // Referencia local
+    private Cliente clienteAsignado;
+    private GestorPedidos gestorPedidos;
+    private CallbackPuntaje callbackPuntaje;
 
     public MesaRetiro(Rectangle area) {
         super(area);
-        this.clienteEsperando = null;
     }
 
-    public void setGestorClientes(GestorClientes gestor) {
-        this.gestorClientes = gestor;
+    public void asignarCliente(Cliente cliente) {
+        this.clienteAsignado = cliente;
     }
 
-    public void agregarClienteEsperando(Cliente cliente) {
-        if (clienteEsperando == null) {
-            this.clienteEsperando = cliente;
+    public boolean tieneCliente() {
+        return clienteAsignado != null;
+    }
+
+    public Cliente getCliente() {
+        return clienteAsignado;
+    }
+
+    public void setGestorPedidos(GestorPedidos gestor) {
+        this.gestorPedidos = gestor;
+    }
+
+    public void setCallbackPuntaje(CallbackPuntaje callback) {
+        this.callbackPuntaje = callback;
+    }
+
+    public ResultadoEntrega entregarProducto(Producto producto) {
+        if (gestorPedidos != null && tieneCliente() && producto != null) {
+            ResultadoEntrega resultado = gestorPedidos.entregarPedido(this, producto);
+
+            // Notificar puntos mediante callback
+            if (callbackPuntaje != null) {
+                callbackPuntaje.onPuntosObtenidos(resultado.getPuntos());
+            }
+
+            return resultado;
         }
+        return new ResultadoEntrega(false, 0, "No se puede entregar el pedido");
     }
 
-    public void removerCliente(Cliente cliente) {
-        if (clienteEsperando == cliente) {
-            clienteEsperando = null;
-        }
-    }
-
-    public Cliente buscarClientePorId(int idCliente) {
-        if (clienteEsperando != null && clienteEsperando.getIdCliente() == idCliente) {
-            return clienteEsperando;
-        }
-        return null;
-    }
-
-    public ArrayList<Cliente> getClientesEsperando() {
-        ArrayList<Cliente> lista = new ArrayList<>();
-        if (clienteEsperando != null) {
-            lista.add(clienteEsperando);
-        }
-        return lista;
-    }
-
-    public boolean tieneClienteEsperando() {
-        return clienteEsperando != null;
+    public void liberarCliente() {
+        this.clienteAsignado = null;
     }
 
     @Override
     public void alInteractuar() {
-        Jugador jugador = getJugadorOcupante();
-        if (jugador == null || gestorClientes == null) return;
-
-        ObjetoAlmacenable item = jugador.getInventario();
-
-        if (item == null || !(item instanceof Producto)) {
-            System.out.println("Necesitas tener un producto para entregar");
-            jugador.salirDeMenu();
-            return;
-        }
-
-        boolean entregado = gestorClientes.entregarPedidoEnMesa(this, (Producto)item, jugador);
-
-        if (entregado) {
-            System.out.println("¡Pedido entregado correctamente!");
-            jugador.sacarDeInventario();
-        } else {
-            System.out.println("Este pedido no corresponde a ningún cliente esperando aquí");
-        }
-
-        jugador.salirDeMenu();
+        // Se maneja en EstacionTrabajo
     }
 
     @Override
     protected void iniciarMenu(Jugador jugador) {
-        // Opcional
+        // No necesita menú
     }
 
     @Override
     public void manejarSeleccionMenu(Jugador jugador, int numeroSeleccion) {
-        // No aplica
+        // No necesita menú
     }
 
     @Override
     protected void dibujarMenu(SpriteBatch batch, Jugador jugador) {
-        // Opcional
+        // Aquí dibujar info del cliente esperando
+    }
+
+    @Override
+    protected void alLiberar() {
+        // El cliente se libera cuando se entrega el pedido
     }
 }

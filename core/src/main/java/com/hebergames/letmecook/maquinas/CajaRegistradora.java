@@ -3,73 +3,68 @@ package com.hebergames.letmecook.maquinas;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.entidades.Cliente;
-import com.hebergames.letmecook.entidades.GestorClientes;
 import com.hebergames.letmecook.entidades.Jugador;
+import com.hebergames.letmecook.pedidos.EstadoPedido;
+import com.hebergames.letmecook.pedidos.GestorPedidos;
 
 public class CajaRegistradora extends EstacionTrabajo {
-
     private Cliente clienteAsignado;
-    private boolean pedidoTomado;
-    private GestorClientes gestorClientes; // Referencia local
+    private GestorPedidos gestorPedidos;
 
     public CajaRegistradora(Rectangle area) {
         super(area);
-        this.clienteAsignado = null;
-        this.pedidoTomado = false;
     }
 
-    public void setGestorClientes(GestorClientes gestor) {
-        this.gestorClientes = gestor;
+    public void setGestorPedidos(GestorPedidos gestor) {
+        this.gestorPedidos = gestor;
     }
 
     public void asignarCliente(Cliente cliente) {
         this.clienteAsignado = cliente;
-        this.pedidoTomado = false;
     }
 
-    public boolean tieneClienteEsperando() {
-        return clienteAsignado != null && !pedidoTomado;
+    public boolean tieneCliente() {
+        return clienteAsignado != null;
     }
 
-    public Cliente getClienteAsignado() {
+    public Cliente getCliente() {
         return clienteAsignado;
-    }
-
-    public void marcarPedidoTomado() {
-        this.pedidoTomado = true;
     }
 
     public void liberarCliente() {
         this.clienteAsignado = null;
-        this.pedidoTomado = false;
+    }
+
+    public boolean tomarPedido() {
+        if (gestorPedidos != null && tieneCliente() &&
+                clienteAsignado.getPedido().getEstadoPedido() == EstadoPedido.EN_ESPERA) {
+            return gestorPedidos.tomarPedido(this);
+        }
+        return false;
     }
 
     @Override
     public void alInteractuar() {
-        Jugador jugador = getJugadorOcupante();
-        if (jugador == null || gestorClientes == null) return;
-
-        if (!tieneClienteEsperando()) {
-            System.out.println("No hay cliente esperando en esta caja");
-            return;
-        }
-
-        gestorClientes.tomarPedidoEnCaja(this, jugador);
-        jugador.salirDeMenu();
+        // Se maneja en manejarSeleccionMenu
     }
 
     @Override
     protected void iniciarMenu(Jugador jugador) {
-        // No necesita menú
+        // No se usa menú numérico aquí
     }
 
     @Override
     public void manejarSeleccionMenu(Jugador jugador, int numeroSeleccion) {
-        // No aplica
+        // No se usa menú numérico aquí
     }
 
     @Override
     protected void dibujarMenu(SpriteBatch batch, Jugador jugador) {
-        // No necesita menú visual
+        // Aquí se dibuja info del pedido del cliente si existe
+    }
+
+    @Override
+    protected void alLiberar() {
+        // Mantener el cliente asignado hasta que se tome el pedido
     }
 }

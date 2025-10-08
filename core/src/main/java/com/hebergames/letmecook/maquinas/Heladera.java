@@ -29,11 +29,16 @@ public class Heladera extends EstacionTrabajo {
     private void inicializarOpciones() {
         opcionesMenu = new ArrayList<>();
 
-        // Agregar opciones de ingredientes disponibles en la heladera
-        // Estas son escalables - solo agrega más líneas para más opciones
         opcionesMenu.add(new OpcionMenu(1, "Pan", () -> new Pan(Recursos.INGREDIENTES)));
         opcionesMenu.add(new OpcionMenu(2, "Carne", () -> new Carne(Recursos.INGREDIENTES)));
-        // Puedes agregar hasta 9 opciones (limitado por las teclas numéricas)
+        // se pueden agregar hasta 9 opciones (limitado por las teclas numéricas)
+    }
+
+    @Override
+    protected void alLiberar() {
+        // Limpiar los textos del menú para que se inicialicen de nuevo al interactuar
+        textosMenu = null;
+        System.out.println("DEBUG Heladera: Menú limpiado al liberar");
     }
 
     @Override
@@ -49,10 +54,15 @@ public class Heladera extends EstacionTrabajo {
 
     @Override
     public void manejarSeleccionMenu(Jugador jugador, int numeroSeleccion) {
-        // Buscar la opción seleccionada
-        for (OpcionMenu opcion : opcionesMenu) {
+        int i = 0;
+        boolean encontrado = false;
+
+        while (i < opcionesMenu.size() && !encontrado) {
+            OpcionMenu opcion = opcionesMenu.get(i);
+
             if (opcion.getNumero() == numeroSeleccion) {
-                // Verificar que el jugador tenga espacio en el inventario
+                encontrado = true;
+
                 if (!jugador.tieneInventarioLleno()) {
                     ObjetoAlmacenable objeto = opcion.crearObjeto();
                     if (objeto != null) {
@@ -62,14 +72,18 @@ public class Heladera extends EstacionTrabajo {
                 } else {
                     System.out.println("Inventario lleno, no puedes tomar más items");
                 }
-                break;
             }
+
+            i++;
         }
     }
 
     @Override
     protected void dibujarMenu(SpriteBatch batch, Jugador jugador) {
-        if (textosMenu == null || textosMenu.isEmpty()) return;
+        if (textosMenu == null || textosMenu.isEmpty()) {
+            System.out.println("DEBUG Heladera: Saliendo porque textosMenu está vacío");
+            return;
+        }
 
         // Determinar si es jugador 1 o 2 para posicionar el menú
         List<Jugador> jugadores = GestorJugadores.getInstancia().getJugadores();
@@ -93,7 +107,15 @@ public class Heladera extends EstacionTrabajo {
 
     @Override
     public void alInteractuar() {
-        System.out.println("Interactuando con heladera");
-        iniciarMenu(getJugadorOcupante());
+        Jugador jugador = getJugadorOcupante();
+        if (jugador == null) {
+            System.out.println("ERROR: Jugador ocupante es null en Heladera");
+            return;
+        }
+
+        // Llamar a iniciarMenu solo si aún no se ha hecho (si textosMenu es null)
+        if (textosMenu == null) {
+            iniciarMenu(jugador);
+        }
     }
 }

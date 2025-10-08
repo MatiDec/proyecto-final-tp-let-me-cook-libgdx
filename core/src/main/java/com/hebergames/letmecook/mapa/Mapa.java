@@ -70,8 +70,6 @@ public class Mapa {
         ArrayList<EstacionTrabajo> estaciones = new ArrayList<>();
         MapObjects objetos = mapa.getLayers().get("Interactuables").getObjects();
 
-
-
         for (MapObject objeto : objetos) {
             String tipo = objeto.getName();
 
@@ -116,7 +114,6 @@ public class Mapa {
                 case "MesaRetiro":
                     estaciones.add(new MesaRetiro(rect));
                     break;
-                    
             }
         }
 

@@ -3,7 +3,6 @@ package com.hebergames.letmecook.pantallas;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.hebergames.letmecook.entidades.GestorClientes;
 import com.hebergames.letmecook.entidades.Jugador;
 import com.hebergames.letmecook.eventos.DatosEntrada;
 import com.hebergames.letmecook.eventos.Entrada;

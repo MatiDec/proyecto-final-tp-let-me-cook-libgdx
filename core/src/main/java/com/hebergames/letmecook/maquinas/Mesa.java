@@ -38,6 +38,11 @@ public class Mesa extends EstacionTrabajo {
         inicializarOpciones();
     }
 
+    @Override
+    protected void alLiberar() {
+
+    }
+
     private void inicializarOpciones() {
         opcionesMenu = new ArrayList<>();
 

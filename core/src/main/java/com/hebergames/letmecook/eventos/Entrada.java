@@ -5,12 +5,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.hebergames.letmecook.entidades.GestorClientes;
 import com.hebergames.letmecook.entidades.Jugador;
 import com.hebergames.letmecook.entregables.productos.Producto;
-import com.hebergames.letmecook.maquinas.CajaRegistradora;
 import com.hebergames.letmecook.maquinas.EstacionTrabajo;
-import com.hebergames.letmecook.maquinas.MesaRetiro;
+import com.hebergames.letmecook.maquinas.Heladera;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -123,7 +121,6 @@ public class Entrada implements InputProcessor {
 
     private void interactuarConEstacionCercana(Jugador jugador) {
         Vector2 posJugador = jugador.getPosicion();
-        float radioInteraccion = 100f;
 
         System.out.println("DEBUG: Buscando estación cerca de: " + posJugador);
 
@@ -132,7 +129,8 @@ public class Entrada implements InputProcessor {
 
         // Buscar la estación MÁS CERCANA dentro del radio
         for (EstacionTrabajo estacion : ESTACIONES) {
-            if (estacion.estaCerca(posJugador.x, posJugador.y, radioInteraccion)) {
+
+            if (estacion.estaCerca(posJugador.x, posJugador.y)) {
                 float distancia = estacion.calcularDistanciaA(posJugador.x, posJugador.y);
 
                 if (distancia < distanciaMasCercana) {

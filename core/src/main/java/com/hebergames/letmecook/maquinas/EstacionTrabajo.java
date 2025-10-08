@@ -7,13 +7,17 @@ import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.entidades.Jugador;
 import com.hebergames.letmecook.entregables.ObjetoAlmacenable;
 import com.hebergames.letmecook.entregables.ingredientes.Ingrediente;
+import com.hebergames.letmecook.entregables.productos.Producto;
+import com.hebergames.letmecook.pedidos.EstadoPedido;
+import com.hebergames.letmecook.pedidos.GestorPedidos;
+import com.hebergames.letmecook.pedidos.ResultadoEntrega;
 import com.hebergames.letmecook.utiles.Recursos;
 
 public abstract class EstacionTrabajo {
     public Rectangle area;
     protected MaquinaProcesadora procesadora;
 
-    private final static int DIFERENCIA = 256;
+    private final static float DIFERENCIA = 150f;
 
     private Jugador jugadorOcupante = null;
 
@@ -25,19 +29,21 @@ public abstract class EstacionTrabajo {
         return area.contains(x, y);
     }
 
-    public boolean estaCerca(float x, float y, float radioInteraccion) {
+    public boolean estaCerca(float jugadorX, float jugadorY) {
         float centroMaquinaX = area.x + area.width / 2f;
         float centroMaquinaY = area.y + area.height / 2f;
 
-        float dx = x - centroMaquinaX;
-        float dy = y - centroMaquinaY;
+        float centroJugadorX = jugadorX + Recursos.MEDIDA_TILE / 2f;
+        float centroJugadorY = jugadorY + Recursos.MEDIDA_TILE / 2f;
+
+        float dx = centroJugadorX - centroMaquinaX;
+        float dy = centroJugadorY - centroMaquinaY;
 
         double distancia = Math.sqrt(dx * dx + dy * dy);
 
-        return distancia <= radioInteraccion;
+        return distancia <= DIFERENCIA;
     }
 
-    // Modificar para que NO salga del menú automáticamente cuando ya está interactuando:
 
     public final void interactuarConJugador(Jugador jugador) {
         if (jugador == null) {
@@ -56,35 +62,60 @@ public abstract class EstacionTrabajo {
             return;
         }
 
-        // Si el jugador no está ocupando esta estación, ocuparla
+        // Si el jugador no está ocupando esta estación, ocuparla Y entrar en menú
         if (jugadorOcupante != jugador) {
             ocupar(jugador);
-            if (!jugador.estaEnMenu()) {
-                jugador.entrarEnMenu(this);
-            }
+        }
+
+        // SIEMPRE asegurar que el jugador esté en menú cuando interactúa
+        if (!jugador.estaEnMenu()) {
+            jugador.entrarEnMenu(this);
         }
 
         // Ejecutar la interacción específica de cada máquina
         alInteractuar();
+
+        if (this instanceof CajaRegistradora) {
+            CajaRegistradora caja = (CajaRegistradora) this;
+            if (caja.tomarPedido()) {
+                jugador.salirDeMenu();
+                alLiberar();
+                jugadorOcupante = null;
+            }
+        }
+
+        // Lógica específica para MesaRetiro
+        if (this instanceof MesaRetiro) {
+            MesaRetiro mesa = (MesaRetiro) this;
+            if (mesa.tieneCliente() && jugador.getInventario() instanceof Producto) {
+                Producto productoJugador = (Producto) jugador.getInventario();
+                ResultadoEntrega resultado = mesa.entregarProducto(productoJugador);
+                jugador.sacarDeInventario();
+                System.out.println(resultado.getMensaje());
+
+                jugador.salirDeMenu();
+                alLiberar();
+                jugadorOcupante = null;
+            }
+        }
     }
 
     private boolean puedeInteractuar(Jugador jugador) {
-        float centroMaquinaX = area.x + area.width / 2f;
-        float centroMaquinaY = area.y + area.height / 2f;
-
-        float centroJugadorX = jugador.getPosicion().x + Recursos.MEDIDA_TILE / 2f;
-        float centroJugadorY = jugador.getPosicion().y + Recursos.MEDIDA_TILE / 2f; //sacar numeros magicos
-
-        float dx = centroJugadorX - centroMaquinaX;
-        float dy = centroJugadorY - centroMaquinaY;
-        float radioInteraccion = 128f;
+//        float centroMaquinaX = area.x + area.width / 2f;
+//        float centroMaquinaY = area.y + area.height / 2f;
+//
+//        float centroJugadorX = jugador.getPosicion().x + Recursos.MEDIDA_TILE / 2f;
+//        float centroJugadorY = jugador.getPosicion().y + Recursos.MEDIDA_TILE / 2f; //sacar numeros magicos
+//
+//        float dx = centroJugadorX - centroMaquinaX;
+//        float dy = centroJugadorY - centroMaquinaY;
 
         //double distancia = Math.sqrt(dx * dx + dy * dy);
 
         //return distancia <= DIFERENCIA;
         //mi logica de esto, si la maquina mide 128 y el jugador mide 128 sus centros estan a 64px de sus bordes, entonces la suma ya te da 128
         //lo que es una tile entonces le tengo que sumar 128 de la tile para que funque
-        return estaCerca(jugador.getPosicion().x, jugador.getPosicion().y, radioInteraccion);
+        return estaCerca(jugador.getPosicion().x, jugador.getPosicion().y);
     }
 
     public float calcularDistanciaA(float x, float y) {
@@ -178,19 +209,18 @@ public abstract class EstacionTrabajo {
 
     public void verificarDistanciaYLiberar() {
         if (jugadorOcupante != null) {
-            // Aumentar un poco la distancia de liberación para evitar liberaciones accidentales
-            float distanciaLiberacion = 120f; // Mayor que el radio de interacción
 
             if (!estaCerca(jugadorOcupante.getPosicion().x,
-                jugadorOcupante.getPosicion().y,
-                distanciaLiberacion)) {
+                jugadorOcupante.getPosicion().y)) {
                 System.out.println("DEBUG: Liberando estación, jugador se alejó");
                 jugadorOcupante.salirDeMenu();
+                alLiberar();
                 jugadorOcupante = null;
             }
         }
     }
 
+    protected abstract void alLiberar();
     protected abstract void iniciarMenu(Jugador jugador);
     public abstract void manejarSeleccionMenu(Jugador jugador, int numeroSeleccion);
     protected abstract void dibujarMenu(SpriteBatch batch, Jugador jugador);

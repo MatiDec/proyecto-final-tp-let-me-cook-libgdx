@@ -12,6 +12,11 @@ public class Horno extends EstacionTrabajo {
     }
 
     @Override
+    protected void alLiberar() {
+
+    }
+
+    @Override
     protected void iniciarMenu(Jugador jugador) {
 
     }
