@@ -91,7 +91,7 @@ public class PantallaJuego extends Pantalla {
         mapaJuego = new Mapa("core/src/main/java/com/hebergames/letmecook/recursos/mapas/Prueba.tmx");
 
         // Crear Jugador 1
-        jugador1 = new Jugador(1000, 1000, gestorAnimacionJ1);
+        jugador1 = new Jugador(1000, 872, gestorAnimacionJ1);
         jugador1.setColisionables(mapaJuego.getRectangulosColision());
         jugador1.setInteractuables(mapaJuego.getRectangulosInteractuables());
         jugadores.add(jugador1);

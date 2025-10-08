@@ -116,6 +116,7 @@ public class Mapa {
                 case "MesaRetiro":
                     estaciones.add(new MesaRetiro(rect));
                     break;
+                    
             }
         }
 
