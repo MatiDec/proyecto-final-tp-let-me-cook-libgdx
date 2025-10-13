@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.hebergames.letmecook.entidades.Cliente;
 import com.hebergames.letmecook.entidades.GestorClientes;
@@ -31,7 +32,7 @@ import java.util.Map;
 
 public class PantallaJuego extends Pantalla {
 
-    private static final int TIEMPO_OBJETIVO = 90; // 3 minutos
+    private static final int TIEMPO_OBJETIVO = 190; // 3 minutos
     private static final boolean MODO_MULTIJUGADOR = true; // Cambiar a false para un solo jugador
 
     private SpriteBatch batch;
@@ -66,6 +67,10 @@ public class PantallaJuego extends Pantalla {
 
     //pedidos
     private ArrayList<Pedido> pedidosEnEspera;
+
+
+    //borrar
+    private boolean debug_temporal = true;
 
     @Override
     public void show() {
@@ -197,6 +202,8 @@ public class PantallaJuego extends Pantalla {
         hiloClientes.start();
     }
 
+
+
     @Override
     public void render(float delta) {
         limpiarPantalla();
@@ -259,6 +266,40 @@ public class PantallaJuego extends Pantalla {
         batch.end();
     }
 
+    private void cambiarMapa(String ruta) {
+
+        if (hiloClientes != null) {
+            hiloClientes.detener();
+            hiloClientes = null;
+        }
+
+
+        mapaJuego.dispose();
+        mapaJuego = new Mapa(ruta);
+
+
+        jugador1.setColisionables(mapaJuego.getRectangulosColision());
+        jugador1.setInteractuables(mapaJuego.getRectangulosInteractuables());
+
+        if (MODO_MULTIJUGADOR && jugador2 != null) {
+            jugador2.setColisionables(mapaJuego.getRectangulosColision());
+            jugador2.setInteractuables(mapaJuego.getRectangulosInteractuables());
+        }
+
+
+        estaciones = mapaJuego.getEstacionesTrabajo();
+
+
+        inicializarSistemaPedidos();
+
+        hiloClientes = new HiloClientes(gestorClientes);
+        hiloClientes.start();
+
+
+    }
+
+
+
     private void renderizarUI() {
         gestorViewport.getViewportUI().apply();
         gestorViewport.actualizarCamaraUI();
@@ -307,6 +348,10 @@ public class PantallaJuego extends Pantalla {
     private void verificarFinDeJuego() {
         if (gestorTiempo.haTerminadoTiempo()) {
             terminarJuego(calcularPuntajeFinal());
+            if(!debug_temporal) {
+                cambiarMapa("core/src/main/java/com/hebergames/letmecook/recursos/mapas/PruebaMoral.tmx");
+                debug_temporal = true;
+            }
         }
     }
 
