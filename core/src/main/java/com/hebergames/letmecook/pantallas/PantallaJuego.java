@@ -32,7 +32,7 @@ import java.util.Map;
 
 public class PantallaJuego extends Pantalla {
 
-    private static final int TIEMPO_OBJETIVO = 190; // 3 minutos
+    private static final int TIEMPO_OBJETIVO = 30; // 3 minutos
     private static final boolean MODO_MULTIJUGADOR = true; // Cambiar a false para un solo jugador
 
     private SpriteBatch batch;
@@ -70,7 +70,7 @@ public class PantallaJuego extends Pantalla {
 
 
     //borrar
-    private boolean debug_temporal = true;
+    private boolean debug_temporal = false;
 
     @Override
     public void show() {
@@ -274,9 +274,12 @@ public class PantallaJuego extends Pantalla {
         }
 
 
+
         mapaJuego.dispose();
         mapaJuego = new Mapa(ruta);
 
+        inicializarClientes();
+        inicializarSistemaPedidos();
 
         jugador1.setColisionables(mapaJuego.getRectangulosColision());
         jugador1.setInteractuables(mapaJuego.getRectangulosInteractuables());
@@ -290,7 +293,7 @@ public class PantallaJuego extends Pantalla {
         estaciones = mapaJuego.getEstacionesTrabajo();
 
 
-        inicializarSistemaPedidos();
+
 
         hiloClientes = new HiloClientes(gestorClientes);
         hiloClientes.start();
@@ -347,7 +350,7 @@ public class PantallaJuego extends Pantalla {
 
     private void verificarFinDeJuego() {
         if (gestorTiempo.haTerminadoTiempo()) {
-            terminarJuego(calcularPuntajeFinal());
+            //terminarJuego(calcularPuntajeFinal());
             if(!debug_temporal) {
                 cambiarMapa("core/src/main/java/com/hebergames/letmecook/recursos/mapas/PruebaMoral.tmx");
                 debug_temporal = true;
