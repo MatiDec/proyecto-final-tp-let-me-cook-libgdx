@@ -89,6 +89,13 @@ public class GestorPedidos {
         return null;
     }
 
+    public void limpiar() {
+        for (MesaRetiro mesa : mesasRetiro) {
+            mesa.liberarCliente();
+        }
+    }
+
+
     public ArrayList<Cliente> getPedidosActivos() {
         return gestorClientes.getClientesEnPreparacion();
     }

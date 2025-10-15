@@ -105,4 +105,14 @@ public class GestorClientes {
         }
         return enPreparacion;
     }
+
+    public void limpiar() {
+        for (Cliente cliente : new ArrayList<>(clientesActivos)) {
+            liberarEstacion(cliente);
+        }
+        clientesActivos.clear();
+        tiempoParaSiguienteCliente = intervaloSpawn;
+    }
+
+
 }

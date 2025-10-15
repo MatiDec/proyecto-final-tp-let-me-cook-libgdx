@@ -17,6 +17,7 @@ import com.hebergames.letmecook.entregables.recetas.GestorRecetas;
 import com.hebergames.letmecook.entregables.recetas.Receta;
 import com.hebergames.letmecook.eventos.GestorPuntaje;
 import com.hebergames.letmecook.eventos.HiloClientes;
+import com.hebergames.letmecook.mapa.GestorMapa;
 import com.hebergames.letmecook.mapa.Mapa;
 import com.hebergames.letmecook.maquinas.CajaRegistradora;
 import com.hebergames.letmecook.maquinas.EstacionTrabajo;
@@ -32,15 +33,17 @@ import java.util.Map;
 
 public class PantallaJuego extends Pantalla {
 
-    private static final int TIEMPO_OBJETIVO = 30; // 3 minutos
+    private static final int TIEMPO_OBJETIVO = 190; // 3 minutos
     private static final boolean MODO_MULTIJUGADOR = true; // Cambiar a false para un solo jugador
 
     private SpriteBatch batch;
     private Jugador jugador1;
     private Jugador jugador2;
     private ArrayList<Jugador> jugadores;
+    private GestorMapa gestorMapa;
     private Mapa mapaJuego;
     private ArrayList<EstacionTrabajo> estaciones;
+
     private GestorClientes gestorClientes;
     private GestorPedidos gestorPedidos;
     private HiloClientes hiloClientes;
@@ -70,7 +73,7 @@ public class PantallaJuego extends Pantalla {
 
 
     //borrar
-    private boolean debug_temporal = false;
+    private boolean debug_temporal = true;
 
     @Override
     public void show() {
@@ -103,23 +106,28 @@ public class PantallaJuego extends Pantalla {
 
     private void configurarJugadorYMapa() {
         configurarTexturasJugadores();
-        mapaJuego = new Mapa("core/src/main/java/com/hebergames/letmecook/recursos/mapas/Prueba.tmx");
 
-        // Crear Jugador 1
+        gestorMapa = new GestorMapa("core/src/main/java/com/hebergames/letmecook/recursos/mapas/Prueba.tmx");
+
+        estaciones = gestorMapa.getEstaciones();
+
         jugador1 = new Jugador(1000, 872, gestorAnimacionJ1);
-        jugador1.setColisionables(mapaJuego.getRectangulosColision());
-        jugador1.setInteractuables(mapaJuego.getRectangulosInteractuables());
+        gestorMapa.asignarColisionesYInteracciones(jugador1);
         jugadores.add(jugador1);
 
-        // Crear Jugador 2 si está en modo multijugador
         if (MODO_MULTIJUGADOR) {
             jugador2 = new Jugador(1000, 872, gestorAnimacionJ2);
-            jugador2.setColisionables(mapaJuego.getRectangulosColision());
-            jugador2.setInteractuables(mapaJuego.getRectangulosInteractuables());
+            gestorMapa.asignarColisionesYInteracciones(jugador2);
             jugadores.add(jugador2);
         }
 
-        estaciones = mapaJuego.getEstacionesTrabajo();
+
+        GestorJugadores.getInstancia().setJugadores(jugadores);
+
+        inicializarSistemaPedidos();
+
+        hiloClientes = new HiloClientes(gestorClientes);
+        hiloClientes.start();
     }
 
     private void configurarTexturasJugadores() {
@@ -232,7 +240,8 @@ public class PantallaJuego extends Pantalla {
         Vector2 posicionJugador = jugador1.getPosicion();
         gestorViewport.actualizarCamaraDinamica(jugador1, jugador2);
 
-        mapaJuego.render(gestorViewport.getCamaraJuego());
+        gestorMapa.renderizar(gestorViewport.getCamaraJuego());
+
 
         if (!gestorOverlays.isJuegoEnPausa()) {
             for (Jugador jugador : jugadores) {
@@ -259,48 +268,30 @@ public class PantallaJuego extends Pantalla {
             }
         }
 
-        for (EstacionTrabajo estacion : estaciones) {
-            estacion.actualizar(delta);
-            estacion.dibujarIndicador(batch);
-        }
+        gestorMapa.actualizarEstaciones(delta);
+        gestorMapa.dibujarIndicadores(batch);
+
         batch.end();
     }
 
     private void cambiarMapa(String ruta) {
-
         if (hiloClientes != null) {
             hiloClientes.detener();
             hiloClientes = null;
         }
 
-
-
-        mapaJuego.dispose();
-        mapaJuego = new Mapa(ruta);
-
-        inicializarClientes();
-        inicializarSistemaPedidos();
-
-        jugador1.setColisionables(mapaJuego.getRectangulosColision());
-        jugador1.setInteractuables(mapaJuego.getRectangulosInteractuables());
+        gestorMapa.cargarMapa(ruta);
+        gestorMapa.asignarColisionesYInteracciones(jugador1);
 
         if (MODO_MULTIJUGADOR && jugador2 != null) {
-            jugador2.setColisionables(mapaJuego.getRectangulosColision());
-            jugador2.setInteractuables(mapaJuego.getRectangulosInteractuables());
+            gestorMapa.asignarColisionesYInteracciones(jugador2);
         }
 
-
-        estaciones = mapaJuego.getEstacionesTrabajo();
-
-
-
+        inicializarSistemaPedidos();
 
         hiloClientes = new HiloClientes(gestorClientes);
         hiloClientes.start();
-
-
     }
-
 
 
     private void renderizarUI() {
@@ -350,7 +341,7 @@ public class PantallaJuego extends Pantalla {
 
     private void verificarFinDeJuego() {
         if (gestorTiempo.haTerminadoTiempo()) {
-            //terminarJuego(calcularPuntajeFinal());
+            terminarJuego(calcularPuntajeFinal());
             if(!debug_temporal) {
                 cambiarMapa("core/src/main/java/com/hebergames/letmecook/recursos/mapas/PruebaMoral.tmx");
                 debug_temporal = true;
@@ -464,9 +455,10 @@ public class PantallaJuego extends Pantalla {
             gestorAudio.dispose();
         }
 
-        if (mapaJuego != null) {
-            mapaJuego.dispose();
+        if (gestorMapa != null) {
+            gestorMapa.dispose();
         }
+
     }
 
     public void terminarJuego(int puntaje) {
