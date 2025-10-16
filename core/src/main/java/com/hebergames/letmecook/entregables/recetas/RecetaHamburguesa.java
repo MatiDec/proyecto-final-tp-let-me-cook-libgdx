@@ -3,6 +3,7 @@ package com.hebergames.letmecook.entregables.recetas;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.hebergames.letmecook.entregables.productos.CategoriaProducto;
 import com.hebergames.letmecook.entregables.productos.Producto;
 import com.hebergames.letmecook.entregables.productos.Hamburguesa;
 
@@ -10,9 +11,10 @@ import java.util.ArrayList;
 
 public class RecetaHamburguesa extends Receta {
     private TextureRegion texturaHamburguesa;
+    private CategoriaProducto categoria;
 
     public RecetaHamburguesa() {
-        super("Hamburguesa", crearListaIngredientes());
+        super("Hamburguesa", crearListaIngredientes(), CategoriaProducto.ALMUERZO);
         cargarTextura();
     }
 
@@ -31,6 +33,6 @@ public class RecetaHamburguesa extends Receta {
 
     @Override
     public Producto preparar() {
-        return new Hamburguesa(texturaHamburguesa);
+        return new Hamburguesa(texturaHamburguesa, categoria);
     }
 }

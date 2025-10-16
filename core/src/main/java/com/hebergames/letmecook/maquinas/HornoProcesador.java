@@ -7,7 +7,7 @@ import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.entregables.ingredientes.CoccionListener;
 import com.hebergames.letmecook.entregables.ingredientes.EstadoCoccion;
 import com.hebergames.letmecook.entregables.ingredientes.Ingrediente;
-import com.hebergames.letmecook.utiles.GestorAudio;
+import com.hebergames.letmecook.sonido.GestorAudio;
 import com.hebergames.letmecook.utiles.Recursos;
 
 public class HornoProcesador implements MaquinaProcesadora, CoccionListener {

@@ -16,11 +16,13 @@ public class Mapa {
 
     private TiledMap mapa;
     private OrthogonalTiledMapRenderer renderer;
+    private String nombreSucursal;
 
-    public Mapa(String ruta) {
+    public Mapa(String ruta, String nombreSucursal) {
         TmxMapLoader loader = new TmxMapLoader();
-        mapa = loader.load(ruta);
-        renderer = new OrthogonalTiledMapRenderer(mapa);
+        this.mapa = loader.load(ruta);
+        this.renderer = new OrthogonalTiledMapRenderer(mapa);
+        this.nombreSucursal = nombreSucursal;
     }
 
     private ArrayList<Rectangle> obtenerRectangulosDeCapa(String nombreCapa) {
@@ -35,6 +37,8 @@ public class Mapa {
 
         return rectangulos;
     }
+
+    public String getNombreSucursal() { return this.nombreSucursal; }
 
     public ArrayList<Rectangle> getRectangulosColision() {
         return obtenerRectangulosDeCapa("Colisionables");
@@ -120,4 +124,5 @@ public class Mapa {
         return estaciones;
     }
 
+    public String getNombre() { return this.nombreSucursal; }
 }

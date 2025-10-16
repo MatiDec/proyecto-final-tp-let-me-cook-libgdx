@@ -14,15 +14,23 @@ public class GestorMapa {
     private Mapa mapaActual;
     private ArrayList<EstacionTrabajo> estaciones;
 
-    public GestorMapa(String rutaInicial) {
-        cargarMapa(rutaInicial);
+    public GestorMapa() {
+        this.estaciones = new ArrayList<>();
     }
 
-    public void cargarMapa(String ruta) {
+    public void setMapaActual(Mapa mapa) {
+        if (this.mapaActual != null && this.mapaActual != mapa) {
+            this.mapaActual.dispose();
+        }
+        this.mapaActual = mapa;
+        this.estaciones = mapa.getEstacionesTrabajo();
+    }
+
+    public void cargarMapa(String ruta, String nombreSucursal) {
         if (mapaActual != null) {
             mapaActual.dispose();
         }
-        mapaActual = new Mapa(ruta);
+        mapaActual = new Mapa(ruta, nombreSucursal);
         estaciones = mapaActual.getEstacionesTrabajo();
     }
 

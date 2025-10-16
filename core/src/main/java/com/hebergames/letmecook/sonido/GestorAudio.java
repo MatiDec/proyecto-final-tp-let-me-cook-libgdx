@@ -1,4 +1,4 @@
-package com.hebergames.letmecook.utiles;
+package com.hebergames.letmecook.sonido;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
@@ -35,6 +35,20 @@ public class GestorAudio implements Disposable {
         return instancia;
     }
 
+    public void cargarTodasLasMusicasNiveles() {
+        for (CancionNivel cancion : CancionNivel.values()) {
+            cargarMusica(cancion.getIdentificador(), cancion.getRuta());
+        }
+        System.out.println("Todas las músicas de niveles cargadas");
+    }
+
+    public void cargarTodosLosSonidos() {
+        for (SonidoJuego sonido : SonidoJuego.values()) {
+            cargarSonido(sonido.getIdentificador(), sonido.getRuta());
+        }
+        System.out.println("Todos los sonidos del juego cargados");
+    }
+
     public void cargarMusica(String nombre, String rutaArchivo) {
         try {
             Music musica = Gdx.audio.newMusic(Gdx.files.internal(rutaArchivo));
@@ -53,6 +67,10 @@ public class GestorAudio implements Disposable {
         } catch (Exception e) {
             System.err.println("Error al cargar sonido: " + nombre + " - " + e.getMessage());
         }
+    }
+
+    public void reproducirMusicaNivel(CancionNivel musica) {
+        reproducirCancion(musica.getIdentificador(), true);
     }
 
     public void reproducirCancion(String nombre) {
@@ -95,6 +113,14 @@ public class GestorAudio implements Disposable {
         }
         musicaActual = null;
         nombreMusicaActual = null;
+    }
+
+    public void reproducirSonido(SonidoJuego sonido) {
+        reproducirSonido(sonido.getIdentificador());
+    }
+
+    public void reproducirSonido(SonidoJuego sonido, float volumen) {
+        reproducirSonido(sonido.getIdentificador(), volumen);
     }
 
     public void reproducirSonido(String nombre) {

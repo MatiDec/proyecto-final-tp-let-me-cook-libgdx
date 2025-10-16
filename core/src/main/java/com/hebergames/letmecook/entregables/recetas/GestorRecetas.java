@@ -1,6 +1,8 @@
 package com.hebergames.letmecook.entregables.recetas;
 
 import com.hebergames.letmecook.entregables.ingredientes.Ingrediente;
+import com.hebergames.letmecook.entregables.productos.CategoriaProducto;
+
 import java.util.ArrayList;
 
 public class GestorRecetas {
@@ -31,6 +33,16 @@ public class GestorRecetas {
             }
         }
         return null;
+    }
+
+    public ArrayList<Receta> getRecetasPorCategoria(CategoriaProducto categoria) {
+        ArrayList<Receta> recetasFiltradas = new ArrayList<>();
+        for (Receta receta : recetas) {
+            if (receta.getCategoria() == categoria) {
+                recetasFiltradas.add(receta);
+            }
+        }
+        return recetasFiltradas;
     }
 
     public ArrayList<Receta> getRecetas() {

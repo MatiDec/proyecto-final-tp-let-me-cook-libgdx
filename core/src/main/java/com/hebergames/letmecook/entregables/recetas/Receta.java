@@ -1,6 +1,7 @@
 package com.hebergames.letmecook.entregables.recetas;
 
 import com.hebergames.letmecook.entregables.ingredientes.Ingrediente;
+import com.hebergames.letmecook.entregables.productos.CategoriaProducto;
 import com.hebergames.letmecook.entregables.productos.Producto;
 
 import java.util.ArrayList;
@@ -8,10 +9,12 @@ import java.util.ArrayList;
 public abstract class Receta {
     protected ArrayList<String> ingredientesRequeridos;
     protected String nombre;
+    protected CategoriaProducto categoria;
 
-    public Receta(String nombre, ArrayList<String> ingredientesRequeridos) {
+    public Receta(String nombre, ArrayList<String> ingredientesRequeridos, CategoriaProducto categoria) {
         this.nombre = nombre;
         this.ingredientesRequeridos = ingredientesRequeridos;
+        this.categoria = categoria;
     }
 
     public boolean puedePreparar(ArrayList<Ingrediente> ingredientesDisponibles) {
@@ -37,4 +40,6 @@ public abstract class Receta {
 
     public String getNombre() { return nombre; }
     public ArrayList<String> getIngredientesRequeridos() { return ingredientesRequeridos; }
+
+    public CategoriaProducto getCategoria() { return this.categoria; }
 }

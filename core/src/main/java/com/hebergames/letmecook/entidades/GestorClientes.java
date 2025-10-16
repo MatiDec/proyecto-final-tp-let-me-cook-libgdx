@@ -1,6 +1,8 @@
 package com.hebergames.letmecook.entidades;
 
+import com.hebergames.letmecook.entregables.productos.CategoriaProducto;
 import com.hebergames.letmecook.entregables.productos.Producto;
+import com.hebergames.letmecook.mapa.TurnoTrabajo;
 import com.hebergames.letmecook.maquinas.CajaRegistradora;
 import com.hebergames.letmecook.maquinas.EstacionTrabajo;
 import com.hebergames.letmecook.maquinas.MesaRetiro;
@@ -16,14 +18,16 @@ public class GestorClientes {
     private float intervaloSpawn;
     private Random random;
     private ArrayList<Producto> productosDisponibles;
+    private TurnoTrabajo turnoActual;
 
-    public GestorClientes(ArrayList<CajaRegistradora> cajas, ArrayList<Producto> productos, float intervaloSpawn) {
+    public GestorClientes(ArrayList<CajaRegistradora> cajas, ArrayList<Producto> productos, float intervaloSpawn, TurnoTrabajo turno) {
         this.clientesActivos = new ArrayList<>();
         this.cajasDisponibles = cajas;
         this.productosDisponibles = productos;
         this.intervaloSpawn = intervaloSpawn;
         this.tiempoParaSiguienteCliente = intervaloSpawn;
         this.random = new Random();
+        this.turnoActual = turno;
     }
 
     public void actualizar(float delta) {
@@ -53,19 +57,29 @@ public class GestorClientes {
     private void generarNuevoCliente() {
         CajaRegistradora cajaLibre = buscarCajaLibre();
         if (cajaLibre != null && !productosDisponibles.isEmpty()) {
-            Producto productoAleatorio = productosDisponibles.get(
-                    random.nextInt(productosDisponibles.size())
+            ArrayList<Producto> productosFiltrados = new ArrayList<>();
+            CategoriaProducto categoriaActual = turnoActual.getCategoriaProductos();
+
+            for (Producto p : productosDisponibles) {
+                if (p.getCategoria() == categoriaActual) {
+                    productosFiltrados.add(p);
+                }
+            }
+
+            if (productosFiltrados.isEmpty()) {
+                productosFiltrados = productosDisponibles;
+            }
+
+            Producto productoAleatorio = productosFiltrados.get(
+                random.nextInt(productosFiltrados.size())
             );
 
-            float tiempoMaximo = 60f + random.nextFloat() * 30f; // 60-90 segundos
+            float tiempoMaximo = 60f + random.nextFloat() * 30f;
             Cliente nuevoCliente = new Cliente(productoAleatorio, tiempoMaximo);
             nuevoCliente.setEstacionAsignada(cajaLibre);
 
             cajaLibre.asignarCliente(nuevoCliente);
             clientesActivos.add(nuevoCliente);
-
-            System.out.println("Nuevo cliente generado en caja. Producto: " +
-                    productoAleatorio.getNombre());
         }
     }
 

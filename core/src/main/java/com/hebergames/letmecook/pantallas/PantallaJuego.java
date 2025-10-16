@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.hebergames.letmecook.entidades.Cliente;
 import com.hebergames.letmecook.entidades.GestorClientes;
@@ -17,13 +16,15 @@ import com.hebergames.letmecook.entregables.recetas.GestorRecetas;
 import com.hebergames.letmecook.entregables.recetas.Receta;
 import com.hebergames.letmecook.eventos.GestorPuntaje;
 import com.hebergames.letmecook.eventos.HiloClientes;
-import com.hebergames.letmecook.mapa.GestorMapa;
-import com.hebergames.letmecook.mapa.Mapa;
+import com.hebergames.letmecook.mapa.*;
 import com.hebergames.letmecook.maquinas.CajaRegistradora;
 import com.hebergames.letmecook.maquinas.EstacionTrabajo;
 import com.hebergames.letmecook.maquinas.MesaRetiro;
 import com.hebergames.letmecook.pedidos.GestorPedidos;
 import com.hebergames.letmecook.pedidos.Pedido;
+import com.hebergames.letmecook.sonido.CancionNivel;
+import com.hebergames.letmecook.sonido.GestorAudio;
+import com.hebergames.letmecook.sonido.SonidoJuego;
 import com.hebergames.letmecook.utiles.*;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ import java.util.Map;
 
 public class PantallaJuego extends Pantalla {
 
-    private static final int TIEMPO_OBJETIVO = 190; // 3 minutos
+    private static final int TIEMPO_OBJETIVO = 5; // 3 minutos
     private static final boolean MODO_MULTIJUGADOR = true; // Cambiar a false para un solo jugador
 
     private SpriteBatch batch;
@@ -41,7 +42,6 @@ public class PantallaJuego extends Pantalla {
     private Jugador jugador2;
     private ArrayList<Jugador> jugadores;
     private GestorMapa gestorMapa;
-    private Mapa mapaJuego;
     private ArrayList<EstacionTrabajo> estaciones;
 
     private GestorClientes gestorClientes;
@@ -58,6 +58,9 @@ public class PantallaJuego extends Pantalla {
     private GestorAnimacion gestorAnimacionJ1;
     private GestorAnimacion gestorAnimacionJ2;
     private GestorTiempoJuego gestorTiempo;
+    private GestorPartida gestorPartida;
+    private NivelPartida nivelActual;
+    private PantallaCalendario pantallaCalendario;
 
     //texturas y animaciones
     private Texture jugadorSheet;
@@ -71,12 +74,21 @@ public class PantallaJuego extends Pantalla {
     //pedidos
     private ArrayList<Pedido> pedidosEnEspera;
 
-
-    //borrar
-    private boolean debug_temporal = true;
-
     @Override
     public void show() {
+        gestorPartida = GestorPartida.getInstancia();
+
+        if(gestorPartida.getNivelActual() == null) {
+            ArrayList<String> rutasMapas = new ArrayList<>();
+            rutasMapas.add("core/src/main/java/com/hebergames/letmecook/recursos/mapas/Prueba.tmx");
+            rutasMapas.add("core/src/main/java/com/hebergames/letmecook/recursos/mapas/PruebaMoral.tmx");
+            //Acá van a tener q ir añadiendose todos los mapas
+
+            gestorPartida.generarNuevaPartida(rutasMapas, rutasMapas.size());
+        }
+
+        nivelActual = gestorPartida.getNivelActual();
+
         inicializarCore();
         inicializarGestores();
         configurarJugadorYMapa();
@@ -107,7 +119,8 @@ public class PantallaJuego extends Pantalla {
     private void configurarJugadorYMapa() {
         configurarTexturasJugadores();
 
-        gestorMapa = new GestorMapa("core/src/main/java/com/hebergames/letmecook/recursos/mapas/Prueba.tmx");
+        gestorMapa = new GestorMapa();
+        gestorMapa.setMapaActual(nivelActual.getMapa());
 
         estaciones = gestorMapa.getEstaciones();
 
@@ -155,14 +168,16 @@ public class PantallaJuego extends Pantalla {
     }
 
     private void inicializarAudio() {
-        gestorAudio.cargarMusica("musica_fondo", Recursos.CANCION_FONDO);
-        gestorAudio.reproducirCancion("musica_fondo", true);
+        gestorAudio.cargarTodasLasMusicasNiveles();
+        gestorAudio.cargarTodosLosSonidos();
+
+        CancionNivel cancionNivel = nivelActual.getCancionNivel();
+        gestorAudio.reproducirMusicaNivel(cancionNivel);
         gestorAudio.pausarMusica();
-        gestorAudio.cargarSonido("temporizador", "core/src/main/java/com/hebergames/letmecook/recursos/audio/sonidos/tictac.ogg");
-        gestorAudio.cargarSonido("coccion_perfecta", "core/src/main/java/com/hebergames/letmecook/recursos/audio/sonidos/coccion_completa.ogg");
 
         PantallaPausa pantallaPausa = new PantallaPausa(this);
-        gestorOverlays = new GestorPantallasOverlay(pantallaPausa, gestorAudio);
+        pantallaCalendario = new PantallaCalendario(this);
+        gestorOverlays = new GestorPantallasOverlay(pantallaPausa, pantallaCalendario, gestorAudio);
     }
 
     private void inicializarSistemaPedidos() {
@@ -191,7 +206,9 @@ public class PantallaJuego extends Pantalla {
             productosDisponibles.add(receta.preparar());
         }
 
-        gestorClientes = new GestorClientes(cajas, productosDisponibles, 15f);
+        TurnoTrabajo turnoActual = nivelActual.getTurno();
+
+        gestorClientes = new GestorClientes(cajas, productosDisponibles, 15f, turnoActual);
         gestorPedidos = new GestorPedidos(gestorClientes, mesas);
 
         // Asignar gestor a las cajas
@@ -229,7 +246,25 @@ public class PantallaJuego extends Pantalla {
 
     private void manejarInput() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            togglePausa();
+            if (gestorOverlays.isCalendarioVisible()) {
+                gestorOverlays.toggleCalendario();
+            } else {
+                togglePausa();
+            }
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
+            if (gestorOverlays.isJuegoEnPausa()) {
+                togglePausa();
+            }
+            gestorOverlays.toggleCalendario();
+
+            if (!gestorOverlays.isCalendarioVisible()) {
+                gestorEntrada.configurarEntrada(
+                    gestorViewport.getViewportJuego(),
+                    gestorViewport.getViewportUI()
+                );
+            }
         }
     }
 
@@ -243,7 +278,7 @@ public class PantallaJuego extends Pantalla {
         gestorMapa.renderizar(gestorViewport.getCamaraJuego());
 
 
-        if (!gestorOverlays.isJuegoEnPausa()) {
+        if (!gestorOverlays.isJuegoEnPausa() && !gestorOverlays.isCalendarioVisible()) {
             for (Jugador jugador : jugadores) {
                 jugador.actualizar(delta);
             }
@@ -273,26 +308,6 @@ public class PantallaJuego extends Pantalla {
 
         batch.end();
     }
-
-    private void cambiarMapa(String ruta) {
-        if (hiloClientes != null) {
-            hiloClientes.detener();
-            hiloClientes = null;
-        }
-
-        gestorMapa.cargarMapa(ruta);
-        gestorMapa.asignarColisionesYInteracciones(jugador1);
-
-        if (MODO_MULTIJUGADOR && jugador2 != null) {
-            gestorMapa.asignarColisionesYInteracciones(jugador2);
-        }
-
-        inicializarSistemaPedidos();
-
-        hiloClientes = new HiloClientes(gestorClientes);
-        hiloClientes.start();
-    }
-
 
     private void renderizarUI() {
         gestorViewport.getViewportUI().apply();
@@ -342,10 +357,6 @@ public class PantallaJuego extends Pantalla {
     private void verificarFinDeJuego() {
         if (gestorTiempo.haTerminadoTiempo()) {
             terminarJuego(calcularPuntajeFinal());
-            if(!debug_temporal) {
-                cambiarMapa("core/src/main/java/com/hebergames/letmecook/recursos/mapas/PruebaMoral.tmx");
-                debug_temporal = true;
-            }
         }
     }
 
@@ -463,9 +474,19 @@ public class PantallaJuego extends Pantalla {
 
     public void terminarJuego(int puntaje) {
         detenerHilos();
-        gestorAudio.pausarMusica();
+        gestorAudio.detenerMusica();
+        gestorAudio.reproducirSonido(SonidoJuego.NIVEL_COMPLETADO);
 
-        Pantalla.cambiarPantalla(new PantallaFinal(gestorTiempo.getTiempoFormateado(), puntaje));
+        boolean hayMasNiveles = gestorPartida.avanzarNivel(puntaje);
+
+        if (hayMasNiveles) {
+            Pantalla.cambiarPantalla(new PantallaJuego());
+        } else {
+            gestorAudio.detenerMusica();
+            int puntajeTotal = gestorPartida.getPuntajeTotalPartida();
+            Pantalla.cambiarPantalla(new PantallaFinal(gestorTiempo.getTiempoFormateado(), puntajeTotal));
+            gestorPartida.resetearPartida();
+        }
     }
 
     public void detenerHilos() {
