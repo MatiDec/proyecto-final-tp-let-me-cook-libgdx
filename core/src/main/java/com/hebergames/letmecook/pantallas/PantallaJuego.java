@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.hebergames.letmecook.entidades.Cliente;
 import com.hebergames.letmecook.entidades.GestorClientes;
@@ -34,7 +35,7 @@ import java.util.Map;
 
 public class PantallaJuego extends Pantalla {
 
-    private static final int TIEMPO_OBJETIVO = 5; // 3 minutos
+    private static final int TIEMPO_OBJETIVO = 90; // 3 minutos
     private static final boolean MODO_MULTIJUGADOR = true; // Cambiar a false para un solo jugador
 
     private SpriteBatch batch;
@@ -133,7 +134,6 @@ public class PantallaJuego extends Pantalla {
             gestorMapa.asignarColisionesYInteracciones(jugador2);
             jugadores.add(jugador2);
         }
-
 
         GestorJugadores.getInstancia().setJugadores(jugadores);
 

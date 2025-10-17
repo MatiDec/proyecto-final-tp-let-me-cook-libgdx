@@ -38,6 +38,22 @@ public class Mapa {
         return rectangulos;
     }
 
+    public ArrayList<Rectangle> obtenerLimites() {
+        ArrayList<Rectangle> limites = new ArrayList<>();
+        MapObjects objetos = mapa.getLayers().get("Colisionables").getObjects();
+
+        for (MapObject objeto : objetos) {
+            if (objeto instanceof RectangleMapObject) {
+                String tipo = objeto.getProperties().get("tipo", String.class);
+                if (tipo != null && tipo.equalsIgnoreCase("Limite")) {
+                    limites.add(((RectangleMapObject) objeto).getRectangle());
+                }
+            }
+        }
+
+        return limites;
+    }
+
     public String getNombreSucursal() { return this.nombreSucursal; }
 
     public ArrayList<Rectangle> getRectangulosColision() {
