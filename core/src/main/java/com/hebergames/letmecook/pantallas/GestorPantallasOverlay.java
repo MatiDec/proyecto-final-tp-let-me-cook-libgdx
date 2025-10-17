@@ -26,10 +26,7 @@ public class GestorPantallasOverlay {
             if (juegoEnPausa) {
                 juegoEnPausa = false;
             }
-            gestorAudio.pausarMusica();
             pantallaCalendario.show();
-        } else {
-            gestorAudio.reanudarMusica();
         }
     }
 
