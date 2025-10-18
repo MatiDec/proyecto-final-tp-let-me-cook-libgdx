@@ -29,7 +29,6 @@ public class GestorTexturas {
         return instancia;
     }
 
-    // Este método DEBE llamarse desde el hilo principal (render thread)
     public void cargarTexturas() {
         if (texturasListas) return;
 
@@ -49,6 +48,8 @@ public class GestorTexturas {
             System.err.println("ADVERTENCIA: Texturas no cargadas aún");
             return null;
         }
+
+
         return texturaClientePresencial;
     }
 

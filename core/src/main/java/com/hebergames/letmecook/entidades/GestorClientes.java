@@ -31,22 +31,25 @@ public class GestorClientes {
     }
 
     public void actualizar(float delta) {
-        // Actualizar clientes existentes
         for (int i = clientesActivos.size() - 1; i >= 0; i--) {
             Cliente cliente = clientesActivos.get(i);
             cliente.actualizar(delta);
 
-            // Si el tiempo expiro, cancelar pedido
-            if (cliente.haExpiradoTiempo() &&
-                    cliente.getPedido().getEstadoPedido() == EstadoPedido.EN_PREPARACION) {
+            EstadoPedido estado = cliente.getPedido().getEstadoPedido();
+
+            if (estado == EstadoPedido.COMPLETADO) {
+                liberarEstacion(cliente);
+                clientesActivos.remove(i);
+            } else if (cliente.haExpiradoTiempo() && estado == EstadoPedido.EN_PREPARACION) {
+
                 cliente.getPedido().setEstadoPedido(EstadoPedido.CANCELADO);
                 liberarEstacion(cliente);
                 clientesActivos.remove(i);
-                // Aquí se puede restar puntos
+
             }
         }
 
-        // Spawn de nuevos clientes
+
         tiempoParaSiguienteCliente -= delta;
         if (tiempoParaSiguienteCliente <= 0) {
             generarNuevoCliente();
@@ -76,6 +79,7 @@ public class GestorClientes {
 
             float tiempoMaximo = 60f + random.nextFloat() * 30f;
             Cliente nuevoCliente = new Cliente(productoAleatorio, tiempoMaximo);
+            nuevoCliente.inicializarVisualizador();
             nuevoCliente.setEstacionAsignada(cajaLibre);
 
             cajaLibre.asignarCliente(nuevoCliente);
@@ -99,6 +103,8 @@ public class GestorClientes {
         } else if (estacion instanceof MesaRetiro) {
             ((MesaRetiro) estacion).liberarCliente();
         }
+        cliente.setEstacionAsignada(null);
+        cliente.liberarRecursos();
     }
 
     public void removerCliente(Cliente cliente) {

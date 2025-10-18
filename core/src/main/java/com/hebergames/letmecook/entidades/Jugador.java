@@ -22,6 +22,12 @@ public class Jugador {
     protected Animation<TextureRegion> animacion;
     protected float estadoTiempo;
     protected float anguloRotacion = 0f;
+    private Rectangle hitbox;
+    private final float ANCHO_HITBOX = 128;
+    private final float ALTO_HITBOX = 128;
+    private final float OFFSET_HITBOX_X = 0;
+    private final float OFFSET_HITBOX_Y = 0;
+
 
     private boolean interactuarPresionado = false;
     private boolean estaEnMenu = false;
@@ -55,37 +61,59 @@ public class Jugador {
         this.gestorAnimacion = gestorAnimacion;
         this.animacion = gestorAnimacion.getAnimacionPorObjeto(objetoEnMano);
         this.estadoTiempo = 0;
+        this.hitbox = new Rectangle(x + OFFSET_HITBOX_X, y + OFFSET_HITBOX_Y, ANCHO_HITBOX, ALTO_HITBOX);
     }
 
     public void actualizar(float delta) {
-        // Actualizar deslizamiento si está activo
+        // Actualizar animación/estadoTiempo (se hace siempre)
+        if (velocidad.x != 0 || velocidad.y != 0 || estaDeslizando) {
+            estadoTiempo += delta;
+        } else {
+            estadoTiempo = 0;
+        }
+        frameActual = animacion.getKeyFrame(estadoTiempo, true);
+
         if (estaDeslizando) {
             tiempoDeslizamiento += delta;
 
             // Reducir gradualmente la velocidad de deslizamiento
             float progreso = tiempoDeslizamiento / DURACION_DESLIZAMIENTO;
-            float factorReduccion = 1f - progreso;
+            float factorReduccion = Math.max(0f, 1f - progreso);
 
-            velocidad.set(
-                velocidadDeslizamiento.x * factorReduccion,
-                velocidadDeslizamiento.y * factorReduccion
-            );
+            // actualizar velocidad actual (unidad: px/seg)
+            velocidad.set(velocidadDeslizamiento.x * factorReduccion,
+                velocidadDeslizamiento.y * factorReduccion);
 
-            // Terminar deslizamiento
-            if (tiempoDeslizamiento >= DURACION_DESLIZAMIENTO) {
+            // desplazamiento para este frame
+            float desplazamientoX = velocidad.x * delta;
+            float desplazamientoY = velocidad.y * delta;
+
+            // comprobar colisión a lo largo del desplazamiento (evita tunneling)
+            if (colisionMovimiento(desplazamientoX, desplazamientoY)) {
+                // al chocar, detener deslizamiento y cancelar movimiento
                 estaDeslizando = false;
+                tiempoDeslizamiento = 0f;
                 velocidad.set(0, 0);
+                velocidadDeslizamiento.set(0, 0);
+            } else {
+                // no hay colisión, aplicar movimiento
+                posicion.add(desplazamientoX, desplazamientoY);
+                hitbox.setPosition(posicion.x + OFFSET_HITBOX_X, posicion.y + OFFSET_HITBOX_Y);
+
+                // terminar deslizamiento si se acabó la duración
+                if (tiempoDeslizamiento >= DURACION_DESLIZAMIENTO) {
+                    estaDeslizando = false;
+                    tiempoDeslizamiento = 0f;
+                    velocidad.set(0, 0);
+                    velocidadDeslizamiento.set(0, 0);
+                }
             }
+            return;
         }
 
-        if (velocidad.x != 0 || velocidad.y != 0) {
-            estadoTiempo += delta;
-        } else {
-            estadoTiempo = 0;
-        }
-
-        frameActual = animacion.getKeyFrame(estadoTiempo, true);
+        // comportamiento normal (sin deslizamiento)
         posicion.add(velocidad.x * delta, velocidad.y * delta);
+        hitbox.setPosition(posicion.x + OFFSET_HITBOX_X, posicion.y + OFFSET_HITBOX_Y);
     }
 
     public void dibujar(SpriteBatch batch) {
@@ -128,9 +156,10 @@ public class Jugador {
         if (dx != 0 || dy != 0) {
             float angulo = (float) Math.toDegrees(Math.atan2(dy, dx)) - 90f;
             setAnguloRotacion(angulo);
+            moverSiNoColisiona(dx, dy, datosEntrada.correr);
+        } else {
+            velocidad.set(0, 0);
         }
-
-        moverSiNoColisiona(dx, dy, datosEntrada.correr);
     }
 
     private boolean colisiona(Rectangle rect) {
@@ -143,17 +172,14 @@ public class Jugador {
     }
 
     private void moverSiNoColisiona(float dx, float dy, boolean estaCorriendo) {
-        float anchoSprite = 128;
-        float altoSprite = 128;
-
         float deltaTime = Gdx.graphics.getDeltaTime();
         float desplazamientoX = dx * deltaTime;
         float desplazamientoY = dy * deltaTime;
 
-        float nuevaX = posicion.x + desplazamientoX;
-        float nuevaY = posicion.y + desplazamientoY;
+        float nuevaX = hitbox.x + desplazamientoX;
+        float nuevaY = hitbox.y + desplazamientoY;
 
-        Rectangle areaFutura = new Rectangle(nuevaX, nuevaY, anchoSprite, altoSprite);
+        Rectangle areaFutura = new Rectangle(nuevaX, nuevaY, hitbox.width, hitbox.height);
 
         if (!colisiona(areaFutura)) {
             velocidad.set(dx, dy);
@@ -164,12 +190,12 @@ public class Jugador {
         boolean puedeMoverY = false;
 
         if (dx != 0) {
-            Rectangle areaFuturaX = new Rectangle(nuevaX, posicion.y, anchoSprite, altoSprite);
+            Rectangle areaFuturaX = new Rectangle(hitbox.x + desplazamientoX, hitbox.y, hitbox.width, hitbox.height);
             puedeMoverX = !colisiona(areaFuturaX);
         }
 
         if (dy != 0) {
-            Rectangle areaFuturaY = new Rectangle(posicion.x, nuevaY, anchoSprite, altoSprite);
+            Rectangle areaFuturaY = new Rectangle(hitbox.x, hitbox.y + desplazamientoY, hitbox.width, hitbox.height);
             puedeMoverY = !colisiona(areaFuturaY);
         }
 
@@ -185,6 +211,30 @@ public class Jugador {
             velocidad.y = 0;
         }
     }
+
+    private boolean colisionMovimiento(float dx, float dy) {
+        float distancia = Math.max(Math.abs(dx), Math.abs(dy));
+        int pasos = Math.max(2, (int)((distancia + (ANCHO_HITBOX / 4f) - 1) / (ANCHO_HITBOX / 4f)));
+
+        float pasoX = dx / pasos;
+        float pasoY = dy / pasos;
+
+        float px = hitbox.x;
+        float py = hitbox.y;
+
+        for (int i = 0; i < pasos; i++) {
+            px += pasoX;
+            py += pasoY;
+            Rectangle area = new Rectangle(px, py, hitbox.width, hitbox.height);
+            if (colisiona(area)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
 
     /**
      * Inicia el deslizamiento del jugador en la dirección actual

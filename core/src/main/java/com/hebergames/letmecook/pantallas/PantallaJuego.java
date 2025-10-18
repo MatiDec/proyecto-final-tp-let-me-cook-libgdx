@@ -137,10 +137,6 @@ public class PantallaJuego extends Pantalla {
 
         GestorJugadores.getInstancia().setJugadores(jugadores);
 
-        inicializarSistemaPedidos();
-
-        hiloClientes = new HiloClientes(gestorClientes);
-        hiloClientes.start();
     }
 
     private void configurarTexturasJugadores() {
@@ -182,9 +178,7 @@ public class PantallaJuego extends Pantalla {
 
     private void inicializarSistemaPedidos() {
         // Asegurarse de que las texturas estén cargadas
-        if (!GestorTexturas.getInstance().estanTexturasListas()) {
-            GestorTexturas.getInstance().cargarTexturas();
-        }
+
 
         // Filtrar cajas y mesas de las estaciones
         ArrayList<CajaRegistradora> cajas = new ArrayList<>();

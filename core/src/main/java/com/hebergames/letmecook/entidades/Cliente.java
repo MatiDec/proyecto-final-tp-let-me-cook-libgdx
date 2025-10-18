@@ -41,14 +41,16 @@ public class Cliente {
     }
 
     public void dibujar(SpriteBatch batch) {
-        if (visualizador == null) {
-            inicializarVisualizador();
-        }
-
         if (visualizador != null && estacionAsignada != null) {
             visualizador.dibujar(batch, this);
         }
     }
+
+    public void liberarRecursos() {
+        this.visualizador = null;
+        this.pedido = null;
+    }
+
 
     public boolean haExpiradoTiempo() {
         return tiempoEspera >= tiempoMaximoEspera;
