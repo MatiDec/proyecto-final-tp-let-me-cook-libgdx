@@ -33,6 +33,14 @@ public class Jugador {
     private ObjetoAlmacenable inventario;
 
     public final int DISTANCIA_MOVIMIENTO = 400;
+    public final int DISTANCIA_CORRIENDO = 800; // Velocidad al correr (doble)
+
+    // Variables para el sistema de deslizamiento
+    private boolean estaDeslizando = false;
+    private Vector2 velocidadDeslizamiento = new Vector2(0, 0);
+    private float tiempoDeslizamiento = 0f;
+    private final float DURACION_DESLIZAMIENTO = 0.3f; // 0.3 segundos de deslizamiento
+    private final float FACTOR_DESLIZAMIENTO = 1.5f; // Multiplicador de velocidad al deslizar
 
     protected GestorAnimacion gestorAnimacion;
     private String objetoEnMano = "vacio";
@@ -50,15 +58,33 @@ public class Jugador {
     }
 
     public void actualizar(float delta) {
+        // Actualizar deslizamiento si está activo
+        if (estaDeslizando) {
+            tiempoDeslizamiento += delta;
+
+            // Reducir gradualmente la velocidad de deslizamiento
+            float progreso = tiempoDeslizamiento / DURACION_DESLIZAMIENTO;
+            float factorReduccion = 1f - progreso;
+
+            velocidad.set(
+                velocidadDeslizamiento.x * factorReduccion,
+                velocidadDeslizamiento.y * factorReduccion
+            );
+
+            // Terminar deslizamiento
+            if (tiempoDeslizamiento >= DURACION_DESLIZAMIENTO) {
+                estaDeslizando = false;
+                velocidad.set(0, 0);
+            }
+        }
+
         if (velocidad.x != 0 || velocidad.y != 0) {
             estadoTiempo += delta;
         } else {
-            estadoTiempo = 0; // si no se mueve, vuelve al primer frame
+            estadoTiempo = 0;
         }
 
         frameActual = animacion.getKeyFrame(estadoTiempo, true);
-
-        // actualizar posición
         posicion.add(velocidad.x * delta, velocidad.y * delta);
     }
 
@@ -80,20 +106,31 @@ public class Jugador {
     }
 
     public void manejarEntrada(DatosEntrada datosEntrada) {
+        // No permitir control manual durante el deslizamiento
+        if (estaDeslizando) {
+            return;
+        }
+
         float dx = 0, dy = 0;
 
-        // Usar los flags booleanos directos en lugar de buscar teclas específicas
         if (datosEntrada.arriba) dy += DISTANCIA_MOVIMIENTO;
         if (datosEntrada.abajo) dy -= DISTANCIA_MOVIMIENTO;
         if (datosEntrada.izquierda) dx -= DISTANCIA_MOVIMIENTO;
         if (datosEntrada.derecha) dx += DISTANCIA_MOVIMIENTO;
+
+        // Aplicar velocidad de carrera si está corriendo
+        if (datosEntrada.correr && (dx != 0 || dy != 0)) {
+            float multiplicador = (float) DISTANCIA_CORRIENDO / DISTANCIA_MOVIMIENTO;
+            dx *= multiplicador;
+            dy *= multiplicador;
+        }
 
         if (dx != 0 || dy != 0) {
             float angulo = (float) Math.toDegrees(Math.atan2(dy, dx)) - 90f;
             setAnguloRotacion(angulo);
         }
 
-        moverSiNoColisiona(dx, dy);
+        moverSiNoColisiona(dx, dy, datosEntrada.correr);
     }
 
     private boolean colisiona(Rectangle rect) {
@@ -105,7 +142,7 @@ public class Jugador {
         return false;
     }
 
-    private void moverSiNoColisiona(float dx, float dy) {
+    private void moverSiNoColisiona(float dx, float dy, boolean estaCorriendo) {
         float anchoSprite = 128;
         float altoSprite = 128;
 
@@ -146,6 +183,19 @@ public class Jugador {
             velocidad.y = dy;
         } else {
             velocidad.y = 0;
+        }
+    }
+
+    /**
+     * Inicia el deslizamiento del jugador en la dirección actual
+     */
+    public void iniciarDeslizamiento() {
+        if (velocidad.len() > 0 && !estaDeslizando) {
+            estaDeslizando = true;
+            tiempoDeslizamiento = 0f;
+
+            // Guardar la dirección y velocidad actual con un multiplicador
+            velocidadDeslizamiento.set(velocidad).scl(FACTOR_DESLIZAMIENTO);
         }
     }
 
@@ -230,4 +280,7 @@ public class Jugador {
         return objetoEnMano;
     }
 
+    public boolean estaDeslizando() {
+        return estaDeslizando;
+    }
 }

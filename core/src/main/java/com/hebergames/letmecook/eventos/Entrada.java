@@ -44,6 +44,7 @@ public class Entrada implements InputProcessor {
         MAPA_TECLAS_JUGADOR.put(config.getIzquierda(), jugador);
         MAPA_TECLAS_JUGADOR.put(config.getDerecha(), jugador);
         MAPA_TECLAS_JUGADOR.put(config.getInteractuar(), jugador);
+        MAPA_TECLAS_JUGADOR.put(config.getCorrer(), jugador);
     }
 
     public void actualizarEntradas() {
@@ -57,6 +58,7 @@ public class Entrada implements InputProcessor {
                 datos.abajo = Gdx.input.isKeyPressed(config.getAbajo());
                 datos.izquierda = Gdx.input.isKeyPressed(config.getIzquierda());
                 datos.derecha = Gdx.input.isKeyPressed(config.getDerecha());
+                datos.correr = Gdx.input.isKeyPressed(config.getCorrer());
             }
 
             jugador.manejarEntrada(datos);
@@ -153,6 +155,13 @@ public class Entrada implements InputProcessor {
     public boolean keyUp(int keycode) {
         Jugador jugador = MAPA_TECLAS_JUGADOR.get(keycode);
         if(jugador != null) {
+            ConfiguracionTeclas config = CONFIG_TECLAS_JUGADOR.get(jugador);
+
+            // Si se suelta la tecla de correr, iniciar deslizamiento
+            if (config != null && keycode == config.getCorrer()) {
+                jugador.iniciarDeslizamiento();
+            }
+
             ENTRADAS_POR_JUGADOR.get(jugador).soltar(keycode);
             return true;
         }

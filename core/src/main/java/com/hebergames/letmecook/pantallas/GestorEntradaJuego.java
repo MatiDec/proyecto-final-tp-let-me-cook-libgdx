@@ -19,22 +19,24 @@ public class GestorEntradaJuego {
     private final ArrayList<EstacionTrabajo> estaciones;
     private static GestorEntradaJuego instancia;
 
-    // Configuración de teclas para Jugador 1 (WASD + E)
+    // Configuración de teclas para Jugador 1 (WASD + E + Left Shift)
     private static final ConfiguracionTeclas CONFIG_JUGADOR_1 = new ConfiguracionTeclas(
-        Input.Keys.W,    // arriba
-        Input.Keys.S,    // abajo
-        Input.Keys.A,    // izquierda
-        Input.Keys.D,    // derecha
-        Input.Keys.E     // interactuar
+        Input.Keys.W,           // arriba
+        Input.Keys.S,           // abajo
+        Input.Keys.A,           // izquierda
+        Input.Keys.D,           // derecha
+        Input.Keys.E,           // interactuar
+        Input.Keys.SHIFT_LEFT   // correr
     );
 
-    // Configuración de teclas para Jugador 2 (Flechas + Enter/Espacio)
+    // Configuración de teclas para Jugador 2 (Flechas + Enter + Right Shift)
     private static final ConfiguracionTeclas CONFIG_JUGADOR_2 = new ConfiguracionTeclas(
-        Input.Keys.UP,      // arriba
-        Input.Keys.DOWN,    // abajo
-        Input.Keys.LEFT,    // izquierda
-        Input.Keys.RIGHT,   // derecha
-        Input.Keys.ENTER    // interactuar (puedes usar Input.Keys.SPACE si prefieres)
+        Input.Keys.UP,          // arriba
+        Input.Keys.DOWN,        // abajo
+        Input.Keys.LEFT,        // izquierda
+        Input.Keys.RIGHT,       // derecha
+        Input.Keys.ENTER,       // interactuar
+        Input.Keys.SHIFT_RIGHT  // correr
     );
 
     public static final int[] TECLAS_MENU_JUGADOR_1 = {

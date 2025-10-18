@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DatosEntrada {
 
     private final Set<Integer> TECLAS_PRESIONADAS = ConcurrentHashMap.newKeySet();
-    public boolean arriba, abajo, izquierda, derecha;
+    public boolean arriba, abajo, izquierda, derecha, correr;
 
     public void presionar(int keycode) {
         this.TECLAS_PRESIONADAS.add(keycode);

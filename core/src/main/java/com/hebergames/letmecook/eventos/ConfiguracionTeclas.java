@@ -1,37 +1,38 @@
 package com.hebergames.letmecook.eventos;
 
 public class ConfiguracionTeclas {
-    private final int arriba;
-    private final int abajo;
-    private final int izquierda;
-    private final int derecha;
-    private final int interactuar;
+    private final int arriba, abajo, izquierda, derecha, interactuar, correr;
 
-    public ConfiguracionTeclas(int arriba, int abajo, int izquierda, int derecha, int interactuar) {
+    public ConfiguracionTeclas(int arriba, int abajo, int izquierda, int derecha, int interactuar, int correr) {
         this.arriba = arriba;
         this.abajo = abajo;
         this.izquierda = izquierda;
         this.derecha = derecha;
         this.interactuar = interactuar;
+        this.correr = correr;
     }
 
     public int getArriba() {
-        return arriba;
+        return this.arriba;
     }
 
     public int getAbajo() {
-        return abajo;
+        return this.abajo;
     }
 
     public int getIzquierda() {
-        return izquierda;
+        return this.izquierda;
     }
 
     public int getDerecha() {
-        return derecha;
+        return this.derecha;
     }
 
     public int getInteractuar() {
-        return interactuar;
+        return this.interactuar;
+    }
+
+    public int getCorrer() {
+        return this.correr;
     }
 }
