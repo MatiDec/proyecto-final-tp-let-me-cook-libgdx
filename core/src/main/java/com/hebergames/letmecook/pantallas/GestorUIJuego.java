@@ -56,14 +56,19 @@ public class GestorUIJuego {
     }
 
     public void actualizarPedidosActivos(ArrayList<Cliente> clientes) {
-        textosPedidos.clear();
+        // Liberar tarjetas anteriores antes de limpiar
+        for (TarjetaPedido t : tarjetasPedidos) {
+            t.dispose();
+        }
         tarjetasPedidos.clear();
+        textosPedidos.clear();
 
         for (int i = 0; i < Math.min(clientes.size(), MAX_PEDIDOS_VISIBLES); i++) {
             TarjetaPedido tarjeta = new TarjetaPedido();
             tarjetasPedidos.add(tarjeta);
         }
     }
+
 
     public void actualizarTiempo(int segundos) {
         int minutos = segundos / 60;
@@ -134,5 +139,7 @@ public class GestorUIJuego {
         for (TarjetaPedido tarjeta : tarjetasPedidos) {
             tarjeta.dispose();
         }
+        tarjetasPedidos.clear();
     }
+
 }

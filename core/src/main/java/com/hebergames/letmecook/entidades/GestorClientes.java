@@ -19,6 +19,8 @@ public class GestorClientes {
     private Random random;
     private ArrayList<Producto> productosDisponibles;
     private TurnoTrabajo turnoActual;
+    private int ultimaCantidadClientes = 0;
+
 
     public GestorClientes(ArrayList<CajaRegistradora> cajas, ArrayList<Producto> productos, float intervaloSpawn, TurnoTrabajo turno) {
         this.clientesActivos = new ArrayList<>();
@@ -124,6 +126,14 @@ public class GestorClientes {
             }
         }
         return enPreparacion;
+    }
+
+    public int getUltimaCantidadClientes() {
+        return ultimaCantidadClientes;
+    }
+
+    public void actualizarUltimaCantidadClientes() {
+        this.ultimaCantidadClientes = clientesActivos.size();
     }
 
     public void limpiar() {

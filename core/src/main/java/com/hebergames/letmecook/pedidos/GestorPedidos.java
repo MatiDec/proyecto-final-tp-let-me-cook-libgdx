@@ -23,6 +23,8 @@ public class GestorPedidos {
             return false;
         }
 
+
+
         MesaRetiro mesaLibre = buscarMesaLibre();
         if (mesaLibre == null) {
             System.out.println("No hay mesas de retiro disponibles");
@@ -30,18 +32,30 @@ public class GestorPedidos {
         }
 
         // Cambiar estado del pedido
+        logMem("antes setEstado");
         cliente.getPedido().setEstadoPedido(EstadoPedido.EN_PREPARACION);
+        logMem("despues setEstado");
+
         cliente.resetearTiempo();
+        logMem("despues resetearTiempo");
 
-        // Mover cliente a mesa de retiro
         cliente.setEstacionAsignada(mesaLibre);
-        mesaLibre.asignarCliente(cliente);
+        logMem("despues setEstacionAsignada");
 
-        // Liberar caja
+        mesaLibre.asignarCliente(cliente);
+        logMem("despues asignarCliente");
+
         caja.liberarCliente();
+        logMem("despues liberarCaja");
 
         System.out.println("Pedido tomado. Cliente movido a mesa de retiro");
         return true;
+    }
+
+    //BORRAME MDYT SI LO VES, PENSA EN TAPIA, PENSA EN SULCA, PENSA EN TUS NOVIOS
+    private void logMem(String tag) {
+        long used = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024*1024);
+        System.out.println(tag + " - MemUsed: " + used + " MB");
     }
 
     public ResultadoEntrega entregarPedido(MesaRetiro mesa, Producto productoEntregado) {

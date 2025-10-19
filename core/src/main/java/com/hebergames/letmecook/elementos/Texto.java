@@ -30,6 +30,7 @@ public class Texto implements ObjetoVisualizable {
         }
 
         fuente = generator.generateFont(parametro);
+        generator.dispose();
         layout = new GlyphLayout();
     }
     public boolean fueClickeado(float x, float y){

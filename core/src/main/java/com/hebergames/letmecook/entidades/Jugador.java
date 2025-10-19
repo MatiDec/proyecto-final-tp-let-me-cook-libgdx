@@ -37,6 +37,7 @@ public class Jugador {
 
     private List<Rectangle> colisionables = new ArrayList<>();
     private List<Rectangle> interactuables = new ArrayList<>();
+    private List<Jugador> otrosJugadores = new ArrayList<>();
 
     private ObjetoAlmacenable inventario;
 
@@ -177,6 +178,13 @@ public class Jugador {
     private boolean colisiona(Rectangle rect) {
         for (Rectangle obstaculo : colisionables) {
             if (obstaculo.overlaps(rect)) {
+                return true;
+            }
+        }
+
+        for (Jugador otro : otrosJugadores) {
+            if (otro != this && otro.getHitbox().overlaps(rect)) //programacion negativa jasinski
+            {
                 return true;
             }
         }
@@ -326,6 +334,8 @@ public class Jugador {
         return "Vacío";
     }
 
+    public void setOtrosJugadores(List<Jugador> otrosJugadores) { this.otrosJugadores = otrosJugadores; }
+
     public void setColisionables(List<Rectangle> colisionables) {
         this.colisionables = colisionables;
     }
@@ -345,6 +355,8 @@ public class Jugador {
             this.estadoTiempo = 0;
         }
     }
+
+    public Rectangle getHitbox() { return this.hitbox; }
 
     public String getObjetoEnMano() {
         return objetoEnMano;

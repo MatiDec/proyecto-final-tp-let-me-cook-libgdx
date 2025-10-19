@@ -124,7 +124,7 @@ public class PantallaJuego extends Pantalla {
 
         estaciones = gestorMapa.getEstaciones();
 
-        jugador1 = new Jugador(1000, 872, gestorAnimacionJ1);
+        jugador1 = new Jugador(1000, 672, gestorAnimacionJ1);
         gestorMapa.asignarColisionesYInteracciones(jugador1);
         jugadores.add(jugador1);
 
@@ -132,6 +132,10 @@ public class PantallaJuego extends Pantalla {
             jugador2 = new Jugador(1000, 872, gestorAnimacionJ2);
             gestorMapa.asignarColisionesYInteracciones(jugador2);
             jugadores.add(jugador2);
+        }
+
+        for (Jugador j : jugadores) {
+            j.setOtrosJugadores(jugadores);
         }
 
         GestorJugadores.getInstancia().setJugadores(jugadores);
@@ -330,9 +334,14 @@ public class PantallaJuego extends Pantalla {
             jugador1.getNombreItemInventario(),
             itemJ2 // Pasa null si jugador2 no existe
         );
-        if (gestorPedidos != null) {
-            gestorUI.actualizarPedidosActivos(gestorPedidos.getPedidosActivos());
+        if (gestorClientes != null) {
+            int cantidadActual = gestorClientes.getClientesActivos().size();
+            if (cantidadActual != gestorClientes.getUltimaCantidadClientes()) {
+                gestorUI.actualizarPedidosActivos(gestorClientes.getClientesActivos());
+                gestorClientes.actualizarUltimaCantidadClientes();
+            }
         }
+
         gestorUI.actualizarPuntaje(gestorPuntaje.getPuntajeActual());
 
         batch.setProjectionMatrix(gestorViewport.getCamaraUI().combined);
