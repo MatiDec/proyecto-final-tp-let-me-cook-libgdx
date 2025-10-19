@@ -8,6 +8,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.hebergames.letmecook.entregables.ObjetoAlmacenable;
 import com.hebergames.letmecook.eventos.DatosEntrada;
+import com.hebergames.letmecook.eventos.EventoPisoMojado;
+import com.hebergames.letmecook.eventos.GestorEventosAleatorios;
 import com.hebergames.letmecook.maquinas.EstacionTrabajo;
 import com.hebergames.letmecook.utiles.GestorJugadores;
 import com.hebergames.letmecook.utiles.GestorAnimacion;
@@ -87,6 +89,16 @@ public class Jugador {
             // desplazamiento para este frame
             float desplazamientoX = velocidad.x * delta;
             float desplazamientoY = velocidad.y * delta;
+
+            // Verificar si está sobre piso mojado
+            GestorEventosAleatorios gestorEventos = GestorEventosAleatorios.getInstancia();
+            EventoPisoMojado eventoPiso = gestorEventos.getEventoPisoMojado();
+
+            if (eventoPiso != null && eventoPiso.estaSobrePisoMojado(posicion.x, posicion.y)) {
+                // Duplicar velocidad de deslizamiento en piso mojado
+                desplazamientoX *= 2f;
+                desplazamientoY *= 2f;
+            }
 
             // comprobar colisión a lo largo del desplazamiento (evita tunneling)
             if (colisionMovimiento(desplazamientoX, desplazamientoY)) {
@@ -172,6 +184,14 @@ public class Jugador {
     }
 
     private void moverSiNoColisiona(float dx, float dy, boolean estaCorriendo) {
+        // Verificar si está sobre piso mojado
+        GestorEventosAleatorios gestorEventos = GestorEventosAleatorios.getInstancia();
+        EventoPisoMojado eventoPiso = gestorEventos.getEventoPisoMojado();
+
+        if (eventoPiso != null && eventoPiso.estaSobrePisoMojado(posicion.x, posicion.y)) {
+            dx *= 2f; // Duplicar velocidad en piso mojado
+            dy *= 2f;
+        }
         float deltaTime = Gdx.graphics.getDeltaTime();
         float desplazamientoX = dx * deltaTime;
         float desplazamientoY = dy * deltaTime;

@@ -38,6 +38,39 @@ public class Mapa {
         return rectangulos;
     }
 
+    public ArrayList<Rectangle> getTilesCaminables() {
+        ArrayList<Rectangle> tiles = new ArrayList<>();
+
+        // Obtener dimensiones del mapa
+        int mapWidth = mapa.getProperties().get("width", Integer.class);
+        int mapHeight = mapa.getProperties().get("height", Integer.class);
+        int tileWidth = mapa.getProperties().get("tilewidth", Integer.class);
+        int tileHeight = mapa.getProperties().get("tileheight", Integer.class);
+
+        ArrayList<Rectangle> colisionables = getRectangulosColision();
+
+        // Generar tiles caminables (excluir colisionables)
+        for (int x = 0; x < mapWidth; x++) {
+            for (int y = 0; y < mapHeight; y++) {
+                Rectangle tile = new Rectangle(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
+
+                boolean esColisionable = false;
+                for (Rectangle colision : colisionables) {
+                    if (colision.overlaps(tile)) {
+                        esColisionable = true;
+                        break;
+                    }
+                }
+
+                if (!esColisionable) {
+                    tiles.add(tile);
+                }
+            }
+        }
+
+        return tiles;
+    }
+
     public ArrayList<Rectangle> obtenerLimites() {
         ArrayList<Rectangle> limites = new ArrayList<>();
         MapObjects objetos = mapa.getLayers().get("Colisionables").getObjects();

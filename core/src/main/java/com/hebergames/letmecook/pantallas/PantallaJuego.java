@@ -15,8 +15,7 @@ import com.hebergames.letmecook.entidades.Jugador;
 import com.hebergames.letmecook.entregables.productos.Producto;
 import com.hebergames.letmecook.entregables.recetas.GestorRecetas;
 import com.hebergames.letmecook.entregables.recetas.Receta;
-import com.hebergames.letmecook.eventos.GestorPuntaje;
-import com.hebergames.letmecook.eventos.HiloClientes;
+import com.hebergames.letmecook.eventos.*;
 import com.hebergames.letmecook.mapa.*;
 import com.hebergames.letmecook.maquinas.CajaRegistradora;
 import com.hebergames.letmecook.maquinas.EstacionTrabajo;
@@ -177,9 +176,6 @@ public class PantallaJuego extends Pantalla {
     }
 
     private void inicializarSistemaPedidos() {
-        // Asegurarse de que las texturas estén cargadas
-
-
         // Filtrar cajas y mesas de las estaciones
         ArrayList<CajaRegistradora> cajas = new ArrayList<>();
         ArrayList<MesaRetiro> mesas = new ArrayList<>();
@@ -219,6 +215,26 @@ public class PantallaJuego extends Pantalla {
         // Iniciar hilo de clientes DESPUÉS de cargar texturas
         hiloClientes = new HiloClientes(gestorClientes);
         hiloClientes.start();
+
+        GestorEventosAleatorios gestorEventos = GestorEventosAleatorios.getInstancia();
+        gestorEventos.reset();
+
+        // Registrar eventos de máquinas rotas
+        for (EstacionTrabajo estacion : estaciones) {
+            // No aplicar a cajas ni mesas de retiro
+            if (!(estacion instanceof CajaRegistradora) && !(estacion instanceof MesaRetiro)) {
+                gestorEventos.registrarEventoPosible(new EventoMaquinaRota(estacion));
+            }
+        }
+
+        // Registrar evento de piso mojado
+        ArrayList<Rectangle> tilesCaminables = gestorMapa.getTilesCaminables();
+        if (!tilesCaminables.isEmpty()) {
+            gestorEventos.registrarEventoPosible(new EventoPisoMojado(tilesCaminables));
+        }
+
+        // Activar eventos para la primera ronda
+        gestorEventos.iniciarRonda();
     }
 
 
@@ -286,6 +302,9 @@ public class PantallaJuego extends Pantalla {
         batch.setProjectionMatrix(gestorViewport.getCamaraJuego().combined);
         batch.begin();
 
+        gestorMapa.actualizarEstaciones(delta);
+        gestorMapa.dibujarIndicadores(batch);
+
         // Dibujar todos los jugadores
         for (Jugador jugador : jugadores) {
             jugador.dibujar(batch);
@@ -296,9 +315,6 @@ public class PantallaJuego extends Pantalla {
                 cliente.dibujar(batch);
             }
         }
-
-        gestorMapa.actualizarEstaciones(delta);
-        gestorMapa.dibujarIndicadores(batch);
 
         batch.end();
     }
@@ -464,10 +480,14 @@ public class PantallaJuego extends Pantalla {
             gestorMapa.dispose();
         }
 
+        EstacionTrabajo.disposeTexturaError();
+        GestorEventosAleatorios.getInstancia().reset();
+
     }
 
     public void terminarJuego(int puntaje) {
         detenerHilos();
+        GestorEventosAleatorios.getInstancia().finalizarRonda();
         gestorAudio.detenerMusica();
         gestorAudio.reproducirSonido(SonidoJuego.NIVEL_COMPLETADO);
 

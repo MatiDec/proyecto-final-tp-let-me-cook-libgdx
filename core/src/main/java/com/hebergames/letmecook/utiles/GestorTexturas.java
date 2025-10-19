@@ -14,6 +14,8 @@ public class GestorTexturas {
     private Texture texturaClientes;
     private TextureRegion texturaClientePresencial;
     private TextureRegion texturaClienteVirtual;
+    private Texture texturaPisoMojado;
+    private TextureRegion regionPisoMojado;
 
     private Map<String, TextureRegion> texturasProductos;
     private boolean texturasListas = false;
@@ -38,6 +40,15 @@ public class GestorTexturas {
         TextureRegion[][] tmpClientes = TextureRegion.split(texturaClientes, 32, 32);
         texturaClientePresencial = tmpClientes[0][0];
         texturaClienteVirtual = tmpClientes[0][1];
+
+        //carga texturas del piso mojado y la region
+        try {
+            texturaPisoMojado = new Texture(Gdx.files.internal(
+                "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/piso_mojado.png"));
+            regionPisoMojado = new TextureRegion(texturaPisoMojado);
+        } catch (Exception e) {
+            System.err.println("No se pudo cargar textura de piso mojado: " + e.getMessage());
+        }
 
         texturasListas = true;
         System.out.println("Texturas cargadas correctamente");
@@ -66,6 +77,14 @@ public class GestorTexturas {
         return textura;
     }
 
+    public TextureRegion getTexturaPisoMojado() {
+        if (!texturasListas) {
+            System.err.println("ADVERTENCIA: Texturas no cargadas aún");
+            return null;
+        }
+        return regionPisoMojado;
+    }
+
     public void registrarTexturaProducto(String nombreProducto, TextureRegion textura) {
         texturasProductos.put(nombreProducto, textura);
     }
@@ -77,6 +96,9 @@ public class GestorTexturas {
     public void dispose() {
         if (texturaClientes != null) {
             texturaClientes.dispose();
+        }
+        if (texturaPisoMojado != null) {
+            texturaPisoMojado.dispose();
         }
         texturasListas = false;
     }

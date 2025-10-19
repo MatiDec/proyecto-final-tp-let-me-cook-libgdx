@@ -1,6 +1,9 @@
 package com.hebergames.letmecook.maquinas;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.entidades.Jugador;
 import com.hebergames.letmecook.entregables.ObjetoAlmacenable;
@@ -17,8 +20,26 @@ public abstract class EstacionTrabajo {
 
     private Jugador jugadorOcupante = null;
 
+    private boolean fueraDeServicio = false;
+    private static Texture texturaError;
+    private static TextureRegion iconoError;
+    private static boolean texturaErrorCargada = false;
+
     public EstacionTrabajo(Rectangle area) {
         this.area = area;
+    }
+
+    // esto es una de las cosas que después voy a cambiar al refactorizar y limpiar el código
+    private static void cargarTexturaError() {
+        if (!texturaErrorCargada) {
+            try {
+                texturaError = new Texture(Gdx.files.internal("core/src/main/java/com/hebergames/letmecook/recursos/imagenes/error_icon.png"));
+                iconoError = new TextureRegion(texturaError);
+                texturaErrorCargada = true;
+            } catch (Exception e) {
+                System.err.println("No se pudo cargar icono de error: " + e.getMessage());
+            }
+        }
     }
 
     public boolean fueClickeada(float x, float y) {
@@ -44,6 +65,11 @@ public abstract class EstacionTrabajo {
     public final void interactuarConJugador(Jugador jugador) {
         if (jugador == null) {
             System.out.println("ERROR: Jugador es null");
+            return;
+        }
+
+        if (fueraDeServicio) {
+            System.out.println("¡Esta máquina está fuera de servicio!");
             return;
         }
 
@@ -187,6 +213,19 @@ public abstract class EstacionTrabajo {
         }
     }
 
+    public void dibujarIndicadorError(SpriteBatch batch) {
+        if (fueraDeServicio) {
+            if (!texturaErrorCargada) {
+                cargarTexturaError();
+            }
+            if (iconoError != null) {
+                float x = area.x + area.width / 2 - 16;
+                float y = area.y + area.height + 10;
+                batch.draw(iconoError, x, y, 32, 32);
+            }
+        }
+    }
+
     public void dibujar(SpriteBatch batch, Jugador jugador) {
         if (jugadorOcupante == jugador && jugador.estaEnMenu()) {
             dibujarMenu(batch, jugador);
@@ -213,6 +252,21 @@ public abstract class EstacionTrabajo {
                 alLiberar();
                 jugadorOcupante = null;
             }
+        }
+    }
+
+    public void setFueraDeServicio(boolean fuera) {
+        this.fueraDeServicio = fuera;
+    }
+
+    public boolean estaFueraDeServicio() {
+        return fueraDeServicio;
+    }
+
+    public static void disposeTexturaError() {
+        if (texturaError != null) {
+            texturaError.dispose();
+            texturaErrorCargada = false;
         }
     }
 

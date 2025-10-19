@@ -3,7 +3,10 @@ package com.hebergames.letmecook.mapa;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.entidades.Jugador;
+import com.hebergames.letmecook.eventos.EventoPisoMojado;
+import com.hebergames.letmecook.eventos.GestorEventosAleatorios;
 import com.hebergames.letmecook.maquinas.CajaRegistradora;
 import com.hebergames.letmecook.maquinas.EstacionTrabajo;
 import com.hebergames.letmecook.maquinas.MesaRetiro;
@@ -48,8 +51,16 @@ public class GestorMapa {
     }
 
     public void dibujarIndicadores(SpriteBatch batch) {
+        GestorEventosAleatorios gestorEventos = GestorEventosAleatorios.getInstancia();
+        EventoPisoMojado eventoPiso = gestorEventos.getEventoPisoMojado();
+        if (eventoPiso != null) {
+            eventoPiso.dibujar(batch);
+        }
+
+        // Luego dibujar indicadores de estaciones
         for (EstacionTrabajo estacion : estaciones) {
             estacion.dibujarIndicador(batch);
+            estacion.dibujarIndicadorError(batch);
         }
     }
 
@@ -86,6 +97,13 @@ public class GestorMapa {
             }
         }
         return mesas;
+    }
+
+    public ArrayList<Rectangle> getTilesCaminables() {
+        if (mapaActual != null) {
+            return mapaActual.getTilesCaminables();
+        }
+        return new ArrayList<>();
     }
 
     public void dispose() {
