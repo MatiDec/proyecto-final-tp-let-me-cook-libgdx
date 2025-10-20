@@ -8,7 +8,12 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
-import com.hebergames.letmecook.maquinas.*;
+import com.hebergames.letmecook.estaciones.*;
+import com.hebergames.letmecook.estaciones.bebidas.Cafetera;
+import com.hebergames.letmecook.estaciones.bebidas.Fuente;
+import com.hebergames.letmecook.estaciones.procesadoras.Freidora;
+import com.hebergames.letmecook.estaciones.procesadoras.Horno;
+import com.hebergames.letmecook.estaciones.procesadoras.Tostadora;
 
 import java.util.ArrayList;
 

@@ -11,7 +11,14 @@ public class GestorRecetas {
 
     private GestorRecetas() {
         recetas = new ArrayList<>();
-        inicializarRecetas();
+        cargarRecetas();
+    }
+
+    public void cargarRecetas() {
+        recetas.clear();
+        for (TipoReceta tipo : TipoReceta.values()) {
+            recetas.add(tipo.crear());
+        }
     }
 
     public static GestorRecetas getInstance() {

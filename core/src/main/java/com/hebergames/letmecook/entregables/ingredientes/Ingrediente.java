@@ -2,6 +2,7 @@ package com.hebergames.letmecook.entregables.ingredientes;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.hebergames.letmecook.entregables.ObjetoAlmacenable;
+import com.hebergames.letmecook.estaciones.procesadoras.MetodoCoccion;
 
 public abstract class Ingrediente implements ObjetoAlmacenable {
     protected String nombre;
@@ -14,19 +15,26 @@ public abstract class Ingrediente implements ObjetoAlmacenable {
     protected float tiempoCoccionMinimo;
     protected float tiempoCoccionMaximo;
     protected CoccionListener coccionListener;
+    protected MetodoCoccion metodoCoccion;
 
     public Ingrediente(String nombre, TextureRegion textura) {
-        this(nombre, textura, false, 0f, 0f);
-    }
-
-    public Ingrediente(String nombre, TextureRegion textura, boolean esCocinableInterna, float tiempoCoccionMinimo, float tiempoCoccionMaximo) {
         this.nombre = nombre;
         this.textura = textura;
-        this.esCocinableInterna = esCocinableInterna;
+        this.metodoCoccion = null;
+        this.estadoCoccion = EstadoCoccion.CRUDO;
+        this.tiempoCoccionActual = 0f;
+    }
+
+    public Ingrediente(String nombre, TextureRegion textura, MetodoCoccion metodoCoccion,
+                       float tiempoCoccionMinimo, float tiempoCoccionMaximo) {
+        this.nombre = nombre;
+        this.textura = textura;
+        this.metodoCoccion = metodoCoccion;
         this.estadoCoccion = EstadoCoccion.CRUDO;
         this.tiempoCoccionActual = 0f;
         this.tiempoCoccionMinimo = tiempoCoccionMinimo;
         this.tiempoCoccionMaximo = tiempoCoccionMaximo;
+        this.esCocinableInterna = (metodoCoccion != null);
     }
 
     public void actualizarCoccion(float delta) {
@@ -56,7 +64,11 @@ public abstract class Ingrediente implements ObjetoAlmacenable {
     }
 
     public boolean esCocinableInterna() {
-        return esCocinableInterna;
+        return this.metodoCoccion != null;
+    }
+
+    public MetodoCoccion getMetodoCoccion() {
+        return metodoCoccion;
     }
 
     public EstadoCoccion getEstadoCoccion() {

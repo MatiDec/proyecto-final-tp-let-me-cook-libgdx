@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.hebergames.letmecook.elementos.Texto;
-import com.hebergames.letmecook.entidades.Cliente;
+import com.hebergames.letmecook.entidades.clientes.Cliente;
 import com.hebergames.letmecook.utiles.Recursos;
 
 public class TarjetaPedido {

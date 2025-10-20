@@ -5,11 +5,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.entidades.Jugador;
-import com.hebergames.letmecook.eventos.EventoPisoMojado;
-import com.hebergames.letmecook.eventos.GestorEventosAleatorios;
-import com.hebergames.letmecook.maquinas.CajaRegistradora;
-import com.hebergames.letmecook.maquinas.EstacionTrabajo;
-import com.hebergames.letmecook.maquinas.MesaRetiro;
+import com.hebergames.letmecook.eventos.eventosaleatorios.EventoPisoMojado;
+import com.hebergames.letmecook.eventos.eventosaleatorios.GestorEventosAleatorios;
+import com.hebergames.letmecook.estaciones.CajaRegistradora;
+import com.hebergames.letmecook.estaciones.EstacionTrabajo;
+import com.hebergames.letmecook.estaciones.MesaRetiro;
 import java.util.ArrayList;
 
 public class GestorMapa {

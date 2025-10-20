@@ -8,8 +8,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hebergames.letmecook.elementos.Texto;
-import com.hebergames.letmecook.eventos.Entrada;
-import com.hebergames.letmecook.eventos.TextoInteractuable;
+import com.hebergames.letmecook.eventos.entrada.Entrada;
+import com.hebergames.letmecook.eventos.entrada.TextoInteractuable;
+import com.hebergames.letmecook.pantallas.juego.PantallaJuego;
 import com.hebergames.letmecook.utiles.Recursos;
 import com.hebergames.letmecook.utiles.Render;
 

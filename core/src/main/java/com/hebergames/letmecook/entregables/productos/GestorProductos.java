@@ -2,6 +2,7 @@ package com.hebergames.letmecook.entregables.productos;
 
 import com.hebergames.letmecook.entregables.recetas.Receta;
 import com.hebergames.letmecook.entregables.recetas.RecetaHamburguesa;
+import com.hebergames.letmecook.entregables.recetas.TipoReceta;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -14,8 +15,13 @@ public class GestorProductos {
     public GestorProductos() {
         recetasDisponibles = new ArrayList<>();
         random = new Random();
+        cargarRecetas();
+    }
 
-        recetasDisponibles.add(new RecetaHamburguesa());
+    private void cargarRecetas() {
+        for (TipoReceta tipo : TipoReceta.values()) {
+            recetasDisponibles.add(tipo.crear());
+        }
     }
 
     public Producto obtenerProductoAleatorio() {

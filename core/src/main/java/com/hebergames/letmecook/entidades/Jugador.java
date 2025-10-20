@@ -7,11 +7,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.hebergames.letmecook.entregables.ObjetoAlmacenable;
-import com.hebergames.letmecook.eventos.DatosEntrada;
-import com.hebergames.letmecook.eventos.EventoPisoMojado;
-import com.hebergames.letmecook.eventos.GestorEventosAleatorios;
-import com.hebergames.letmecook.maquinas.EstacionTrabajo;
-import com.hebergames.letmecook.utiles.GestorJugadores;
+import com.hebergames.letmecook.eventos.entrada.DatosEntrada;
+import com.hebergames.letmecook.eventos.eventosaleatorios.EventoPisoMojado;
+import com.hebergames.letmecook.eventos.eventosaleatorios.GestorEventosAleatorios;
+import com.hebergames.letmecook.estaciones.EstacionTrabajo;
 import com.hebergames.letmecook.utiles.GestorAnimacion;
 
 import java.util.ArrayList;

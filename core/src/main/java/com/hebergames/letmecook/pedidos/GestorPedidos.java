@@ -1,10 +1,10 @@
 package com.hebergames.letmecook.pedidos;
 
-import com.hebergames.letmecook.entidades.Cliente;
-import com.hebergames.letmecook.entidades.GestorClientes;
+import com.hebergames.letmecook.entidades.clientes.Cliente;
+import com.hebergames.letmecook.entidades.clientes.GestorClientes;
 import com.hebergames.letmecook.entregables.productos.Producto;
-import com.hebergames.letmecook.maquinas.CajaRegistradora;
-import com.hebergames.letmecook.maquinas.MesaRetiro;
+import com.hebergames.letmecook.estaciones.CajaRegistradora;
+import com.hebergames.letmecook.estaciones.MesaRetiro;
 
 import java.util.ArrayList;
 

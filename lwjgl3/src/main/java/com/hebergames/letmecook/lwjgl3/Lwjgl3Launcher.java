@@ -3,7 +3,7 @@ package com.hebergames.letmecook.lwjgl3;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.hebergames.letmecook.LetMeCookPrincipal;
-import com.hebergames.letmecook.pantallas.GestorConfiguracion;
+import com.hebergames.letmecook.pantallas.juego.GestorConfiguracion;
 
 /** Launches the desktop (LWJGL3) application. */
 public class Lwjgl3Launcher {

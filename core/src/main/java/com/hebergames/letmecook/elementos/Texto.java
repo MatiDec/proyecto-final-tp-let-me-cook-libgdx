@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.hebergames.letmecook.pantallas.ObjetoVisualizable;
+import com.hebergames.letmecook.pantallas.juego.ObjetoVisualizable;
 import com.hebergames.letmecook.utiles.Render;
 
 public class Texto implements ObjetoVisualizable {

@@ -8,8 +8,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hebergames.letmecook.elementos.Texto;
-import com.hebergames.letmecook.mapa.GestorPartida;
-import com.hebergames.letmecook.mapa.NivelPartida;
+import com.hebergames.letmecook.mapa.niveles.GestorPartida;
+import com.hebergames.letmecook.mapa.niveles.NivelPartida;
+import com.hebergames.letmecook.pantallas.juego.InfoDiaNivel;
+import com.hebergames.letmecook.pantallas.juego.PantallaJuego;
 import com.hebergames.letmecook.utiles.Recursos;
 import com.hebergames.letmecook.utiles.Render;
 
