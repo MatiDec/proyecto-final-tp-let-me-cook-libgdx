@@ -24,8 +24,8 @@ public class Jugador {
     protected float estadoTiempo;
     protected float anguloRotacion = 0f;
     private Rectangle hitbox;
-    private final float ANCHO_HITBOX = 128;
-    private final float ALTO_HITBOX = 128;
+    private final float ANCHO_HITBOX = 120;
+    private final float ALTO_HITBOX = 120;
     private final float OFFSET_HITBOX_X = 0;
     private final float OFFSET_HITBOX_Y = 0;
 
@@ -294,6 +294,11 @@ public class Jugador {
         this.inventario = null;
         setObjetoEnMano("vacio");
         return item;
+    }
+
+    public void descartarInventario(){
+        this.inventario = null;
+        setObjetoEnMano("vacio");
     }
 
     public boolean isInteractuarPresionado() {
