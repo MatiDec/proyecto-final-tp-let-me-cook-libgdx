@@ -100,12 +100,14 @@ public class Cliente {
     }
 
     public float getPorcentajeToleranciaActual() {
-        // Retorna el porcentaje según el estado del pedido
         if (pedido.getEstadoPedido() == EstadoPedido.EN_ESPERA) {
+            // En caja: tolerancia disminuye con el tiempo en caja
             return 1f - getPorcentajeTiempoCaja();
-        } else {
+        } else if (pedido.getEstadoPedido() == EstadoPedido.EN_PREPARACION) {
+            // En preparación: tolerancia disminuye con el tiempo de espera
             return 1f - getPorcentajeTiempo();
         }
+        return 1f;
     }
 
     public void resetearTiempo() {

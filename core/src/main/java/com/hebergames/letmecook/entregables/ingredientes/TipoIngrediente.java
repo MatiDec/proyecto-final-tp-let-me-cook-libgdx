@@ -29,4 +29,6 @@ public enum TipoIngrediente {
     }
 
     public String getNombre() { return nombre; }
+    public MetodoCoccion getMetodoCoccion() { return metodoCoccion; }
+    public boolean esCocinableInterna() { return metodoCoccion != null; }
 }

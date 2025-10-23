@@ -1,6 +1,7 @@
 package com.hebergames.letmecook.entidades.clientes;
 
 import com.hebergames.letmecook.entregables.productos.CategoriaProducto;
+import com.hebergames.letmecook.entregables.productos.GestorProductos;
 import com.hebergames.letmecook.entregables.productos.Producto;
 import com.hebergames.letmecook.mapa.niveles.TurnoTrabajo;
 import com.hebergames.letmecook.estaciones.CajaRegistradora;
@@ -19,7 +20,6 @@ public class GestorClientes {
     private float tiempoParaSiguienteCliente;
     private float intervaloSpawn;
     private Random random;
-    private ArrayList<Producto> productosDisponibles;
     private TurnoTrabajo turnoActual;
     private CallbackPenalizacion callbackPenalizacion;
     private int ultimaCantidadClientes = 0;
@@ -27,12 +27,13 @@ public class GestorClientes {
     private int clientesPerdidos; // Clientes que se fueron sin atender o por timeout
     private static final int MAX_CLIENTES_SIMULTANEOS = 5; // Máximo de clientes al mismo tiempo
     private static final int MAX_CLIENTES_TOTALES = 15; // Total de clientes antes de cambiar nivel
+    private GestorProductos gestorProductos;
 
 
     public GestorClientes(ArrayList<CajaRegistradora> cajas, ArrayList<Producto> productos, float intervaloSpawn, TurnoTrabajo turno) {
         this.clientesActivos = new ArrayList<>();
         this.cajasDisponibles = cajas;
-        this.productosDisponibles = productos;
+        this.gestorProductos = new GestorProductos(); // Crear gestor interno
         this.intervaloSpawn = intervaloSpawn;
         this.tiempoParaSiguienteCliente = intervaloSpawn;
         this.random = new Random();
@@ -84,34 +85,31 @@ public class GestorClientes {
     private void generarNuevoCliente() {
         // Verificar límites de clientes
         if (clientesActivos.size() >= MAX_CLIENTES_SIMULTANEOS) {
-            return; // No generar más clientes si ya hay demasiados simultáneos
+            return;
         }
 
         int totalClientesProcesados = clientesAtendidos + clientesPerdidos;
         if (totalClientesProcesados >= MAX_CLIENTES_TOTALES) {
-            return; // No generar más clientes, nivel debe terminar
+            return;
         }
+
         CajaRegistradora cajaLibre = buscarCajaLibre();
-        if (cajaLibre != null && !productosDisponibles.isEmpty()) {
-            ArrayList<Producto> productosFiltrados = new ArrayList<>();
-            CategoriaProducto categoriaActual = turnoActual.getCategoriaProductos();
-
-            for (Producto p : productosDisponibles) {
-                if (p.getCategoria() == categoriaActual) {
-                    productosFiltrados.add(p);
-                }
-            }
-
-            if (productosFiltrados.isEmpty()) {
-                productosFiltrados = productosDisponibles;
-            }
+        if (cajaLibre != null) {
+            CategoriaProducto[] categoriasActuales = turnoActual.getCategoriasProductos();
 
             int cantidadProductos = Pedido.getCantidadProductosAleatorios(random);
             ArrayList<Producto> productosDelPedido = new ArrayList<>();
 
+            // Generar productos según las categorías del turno
             for (int i = 0; i < cantidadProductos; i++) {
-                Producto productoAleatorio = productosFiltrados.get(random.nextInt(productosFiltrados.size()));
-                productosDelPedido.add(productoAleatorio);
+                Producto productoAleatorio = gestorProductos.obtenerProductoAleatorioPorCategorias(categoriasActuales);
+                if (productoAleatorio != null) {
+                    productosDelPedido.add(productoAleatorio);
+                }
+            }
+
+            if (productosDelPedido.isEmpty()) {
+                return; // No generar cliente si no hay productos
             }
 
             float tiempoMaximo = 60f + random.nextFloat() * 30f;

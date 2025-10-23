@@ -36,6 +36,9 @@ public class TarjetaPedido {
             return;
         }
 
+        // Obtener porcentaje de tolerancia (mismo que usa el cliente)
+        float porcentajeTolerancia = cliente.getPorcentajeToleranciaActual();
+
         // Terminar el batch para dibujar formas
         batch.end();
 
@@ -47,11 +50,10 @@ public class TarjetaPedido {
         shapeRenderer.setColor(0.2f, 0.2f, 0.2f, 0.8f);
         shapeRenderer.rect(x, y, ANCHO_TARJETA, ALTO_TARJETA);
 
-        // Barra de progreso del tiempo
-        float porcentaje = 1f - cliente.getPorcentajeTiempo();
-        Color colorBarra = getColorPorcentaje(porcentaje);
+        // Barra de progreso del tiempo (usa el mismo porcentaje de tolerancia)
+        Color colorBarra = getColorPorcentaje(porcentajeTolerancia);
         shapeRenderer.setColor(colorBarra);
-        shapeRenderer.rect(x, y, ANCHO_TARJETA * porcentaje, 5f);
+        shapeRenderer.rect(x, y, ANCHO_TARJETA * porcentajeTolerancia, 5f);
 
         shapeRenderer.end();
 
@@ -64,20 +66,18 @@ public class TarjetaPedido {
             y + ALTO_TARJETA - TAMANO_IMAGEN - PADDING,
             TAMANO_IMAGEN, TAMANO_IMAGEN);
 
-        // Dibujar cara de tolerancia encima de la imagen del cliente
-        float porcentajeTolerancia = cliente.getPorcentajeToleranciaActual();
+        // Dibujar cara de tolerancia (usa el mismo porcentaje)
         TextureRegion cara = GestorTexturas.getInstance().getCaraPorTolerancia(porcentajeTolerancia);
         if (cara != null) {
             batch.draw(cara,
-                x + PADDING + (TAMANO_IMAGEN / 2f) - 12f, // Ajustado para centrar con nuevo tamaño
-                y + ALTO_TARJETA - PADDING - 12f, // Ajustado para centrar con nuevo tamaño
-                24f, 24f); // Aumentado de 16x16 a 24x24
+                x + PADDING + (TAMANO_IMAGEN / 2f) - 12f,
+                y + ALTO_TARJETA - PADDING - 12f,
+                24f, 24f);
         }
 
         // Dibujar imagen del producto
         ArrayList<Producto> productos = cliente.getPedido().getProductosSolicitados();
         int cantidadAMostrar = Math.min(productos.size(), 3);
-        float espacioProducto = TAMANO_IMAGEN + 5f;
 
         for (int i = 0; i < cantidadAMostrar; i++) {
             TextureRegion texturaProductoActual = GestorTexturas.getInstance()
@@ -85,8 +85,8 @@ public class TarjetaPedido {
 
             batch.draw(texturaProductoActual,
                 x + ANCHO_TARJETA - TAMANO_IMAGEN - PADDING,
-                y + ALTO_TARJETA - TAMANO_IMAGEN - PADDING - (i * 30f), // Apilar verticalmente
-                TAMANO_IMAGEN * 0.8f, TAMANO_IMAGEN * 0.8f); // Ligeramente más pequeños
+                y + ALTO_TARJETA - TAMANO_IMAGEN - PADDING - (i * 30f),
+                TAMANO_IMAGEN * 0.8f, TAMANO_IMAGEN * 0.8f);
         }
 
         // Dibujar tiempo restante
@@ -99,13 +99,17 @@ public class TarjetaPedido {
         textoTiempo.dibujarEnUi(batch);
     }
 
+    /**
+     * Define los umbrales de color para la barra de tolerancia.
+     * IMPORTANTE: Estos umbrales deben coincidir con los de GestorTexturas.getCaraPorTolerancia()
+     */
     private Color getColorPorcentaje(float porcentaje) {
         if (porcentaje > 0.6f) {
-            return Color.GREEN;
+            return Color.GREEN;  // Cliente contento
         } else if (porcentaje > 0.3f) {
-            return Color.YELLOW;
+            return Color.YELLOW; // Cliente impaciente
         } else {
-            return Color.RED;
+            return Color.RED;    // Cliente enojado
         }
     }
 

@@ -16,6 +16,7 @@ public class GestorRecetas {
 
     public void cargarRecetas() {
         recetas.clear();
+        // Cargar todas las recetas desde el enum
         for (TipoReceta tipo : TipoReceta.values()) {
             recetas.add(tipo.crear());
         }
@@ -26,11 +27,6 @@ public class GestorRecetas {
             instancia = new GestorRecetas();
         }
         return instancia;
-    }
-
-    private void inicializarRecetas() {
-        recetas.add(new RecetaHamburguesa());
-        // desde acá se añaden más recetas
     }
 
     public Receta buscarReceta(ArrayList<Ingrediente> ingredientes) {

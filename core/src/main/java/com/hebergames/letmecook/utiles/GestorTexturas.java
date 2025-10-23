@@ -52,6 +52,21 @@ public class GestorTexturas {
         caraImpaciente = tmpCaras[0][1];
         caraEnojada = tmpCaras[0][2];
 
+        // Cargar texturas de productos
+        try {
+            Texture texturaProductos = new Texture(Gdx.files.internal(
+                "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/productos.png"));
+            TextureRegion[][] tmpProductos = TextureRegion.split(texturaProductos, 32, 32);
+
+            // Registrar productos con nombre y región correspondiente
+            texturasProductos.put("hamburguesa", tmpProductos[0][0]);
+            texturasProductos.put("gaseosa", tmpProductos[0][1]);
+            texturasProductos.put("cafe", tmpProductos[0][2]);
+
+        } catch (Exception e) {
+            System.err.println("No se pudieron cargar las texturas de productos: " + e.getMessage());
+        }
+
         //carga texturas del piso mojado y la region
         try {
             texturaPisoMojado = new Texture(Gdx.files.internal(
@@ -60,6 +75,8 @@ public class GestorTexturas {
         } catch (Exception e) {
             System.err.println("No se pudo cargar textura de piso mojado: " + e.getMessage());
         }
+
+
 
         texturasListas = true;
         System.out.println("Texturas cargadas correctamente");
@@ -104,13 +121,13 @@ public class GestorTexturas {
         return texturasListas;
     }
 
-    public TextureRegion getCaraPorTolerancia(float porcentaje) {
-        if (porcentaje > 0.6f) {
-            return caraFeliz;
-        } else if (porcentaje > 0.3f) {
-            return caraImpaciente;
+    public TextureRegion getCaraPorTolerancia(float porcentajeTolerancia) {
+        if (porcentajeTolerancia > 0.6f) {
+            return caraFeliz;    // Verde
+        } else if (porcentajeTolerancia > 0.3f) {
+            return caraImpaciente; // Amarillo
         } else {
-            return caraEnojada;
+            return caraEnojada;   // Rojo
         }
     }
 

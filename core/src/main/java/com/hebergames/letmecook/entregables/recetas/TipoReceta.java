@@ -4,7 +4,6 @@ import com.hebergames.letmecook.entregables.productos.TipoProducto;
 
 import java.util.ArrayList;
 
-// Nuevo archivo: TipoReceta.java
 public enum TipoReceta {
     HAMBURGUESA("Hamburguesa",
         TipoProducto.HAMBURGUESA,
@@ -30,4 +29,5 @@ public enum TipoReceta {
 
     public String getNombre() { return nombre; }
     public TipoProducto getTipoProducto() { return tipoProducto; }
+    public String[] getIngredientesRequeridos() { return ingredientesRequeridos; }
 }
