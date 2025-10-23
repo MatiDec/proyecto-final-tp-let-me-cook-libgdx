@@ -155,6 +155,11 @@ public class Fuente extends EstacionTrabajo {
 
     @Override
     public void alInteractuar() {
+        // Si hay refresco listo, intentar retirarlo
+        if (estadoMenu == EstadoMenuBebida.LISTO && refrescoEnPreparacion != null) {
+            return; // iniciarMenu se llamará desde EstacionTrabajo
+        }
+
         // Forzar actualización del estado del menú si no está visible
         if (estadoMenu == null) {
             estadoMenu = EstadoMenuBebida.SELECCION_TAMANO;

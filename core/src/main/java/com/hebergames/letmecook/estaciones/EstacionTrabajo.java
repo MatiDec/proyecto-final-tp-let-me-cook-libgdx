@@ -98,6 +98,8 @@ public abstract class EstacionTrabajo {
         // Ejecutar la interacción específica de cada máquina
         alInteractuar();
 
+        iniciarMenu(jugador);
+
         if (this instanceof CajaRegistradora) {
             CajaRegistradora caja = (CajaRegistradora) this;
             if (caja.tomarPedido()) {

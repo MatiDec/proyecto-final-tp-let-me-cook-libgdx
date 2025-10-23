@@ -155,6 +155,13 @@ public class Cafetera extends EstacionTrabajo {
 
     @Override
     public void alInteractuar() {
+        // Si hay café listo, intentar retirarlo
+        if (estadoMenu == EstadoMenuBebida.LISTO && cafeEnPreparacion != null) {
+            // La lógica de retiro está en iniciarMenu, pero necesitamos llamarla
+            // cuando el jugador interactúa estando la bebida lista
+            return; // iniciarMenu se llamará desde EstacionTrabajo
+        }
+
         // Forzar actualización del estado del menú si no está visible
         if (estadoMenu == null) {
             estadoMenu = EstadoMenuBebida.SELECCION_TAMANO;
