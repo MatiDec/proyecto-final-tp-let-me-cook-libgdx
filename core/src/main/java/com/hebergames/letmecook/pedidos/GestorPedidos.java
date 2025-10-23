@@ -23,8 +23,6 @@ public class GestorPedidos {
             return false;
         }
 
-
-
         MesaRetiro mesaLibre = buscarMesaLibre();
         if (mesaLibre == null) {
             System.out.println("No hay mesas de retiro disponibles");
@@ -52,7 +50,6 @@ public class GestorPedidos {
         return true;
     }
 
-    //BORRAME MDYT SI LO VES, PENSA EN TAPIA, PENSA EN SULCA, PENSA EN TUS NOVIOS
     private void logMem(String tag) {
         long used = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024*1024);
         System.out.println(tag + " - MemUsed: " + used + " MB");
@@ -65,28 +62,50 @@ public class GestorPedidos {
         }
 
         Pedido pedido = cliente.getPedido();
-        Producto productoEsperado = pedido.getProductoSolicitado();
+        ArrayList<Producto> productosEsperados = pedido.getProductosSolicitados();
 
-        boolean correcto = productoEntregado.getNombre().equals(productoEsperado.getNombre());
+// Verificar si el producto entregado está en la lista de esperados
+        boolean correcto = false;
+        for (Producto esperado : productosEsperados) {
+            if (productoEntregado.getNombre().equals(esperado.getNombre())) {
+                correcto = true;
+                productosEsperados.remove(esperado); // Remover el producto entregado
+                break;
+            }
+        }
+
         int puntos = 0;
 
-        if (correcto) {
-            // Calcular puntos según tiempo restante
+// Si aún quedan productos por entregar, no completar el pedido
+        if (correcto && !productosEsperados.isEmpty()) {
             float porcentajeTiempo = cliente.getPorcentajeTiempo();
             if (porcentajeTiempo < 0.5f) {
-                puntos = 100; // Entrega rápida
+                puntos = 50; // Puntos parciales por producto correcto
             } else if (porcentajeTiempo < 0.8f) {
-                puntos = 75; // Entrega normal
+                puntos = 35;
             } else {
-                puntos = 50; // Entrega justa a tiempo
+                puntos = 25;
+            }
+            String mensaje = "Producto correcto. Faltan " + productosEsperados.size() + " más. +" + puntos;
+            return new ResultadoEntrega(true, puntos, mensaje);
+        }
+
+// Si ya entregó todos o se equivocó, completar el pedido
+        if (correcto && productosEsperados.isEmpty()) {
+            float porcentajeTiempo = cliente.getPorcentajeTiempo();
+            if (porcentajeTiempo < 0.5f) {
+                puntos = 100;
+            } else if (porcentajeTiempo < 0.8f) {
+                puntos = 75;
+            } else {
+                puntos = 50;
             }
             pedido.setEstadoPedido(EstadoPedido.COMPLETADO);
         } else {
-            puntos = -25; // Penalización por producto incorrecto
+            puntos = -25;
             pedido.setEstadoPedido(EstadoPedido.COMPLETADO);
         }
 
-        // Limpiar todo
         mesa.liberarCliente();
         gestorClientes.removerCliente(cliente);
 

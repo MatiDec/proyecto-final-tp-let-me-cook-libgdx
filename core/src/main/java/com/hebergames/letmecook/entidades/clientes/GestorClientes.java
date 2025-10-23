@@ -7,6 +7,7 @@ import com.hebergames.letmecook.estaciones.CajaRegistradora;
 import com.hebergames.letmecook.estaciones.EstacionTrabajo;
 import com.hebergames.letmecook.estaciones.MesaRetiro;
 import com.hebergames.letmecook.pedidos.EstadoPedido;
+import com.hebergames.letmecook.pedidos.Pedido;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -75,12 +76,16 @@ public class GestorClientes {
                 productosFiltrados = productosDisponibles;
             }
 
-            Producto productoAleatorio = productosFiltrados.get(
-                random.nextInt(productosFiltrados.size())
-            );
+            int cantidadProductos = Pedido.getCantidadProductosAleatorios(random);
+            ArrayList<Producto> productosDelPedido = new ArrayList<>();
+
+            for (int i = 0; i < cantidadProductos; i++) {
+                Producto productoAleatorio = productosFiltrados.get(random.nextInt(productosFiltrados.size()));
+                productosDelPedido.add(productoAleatorio);
+            }
 
             float tiempoMaximo = 60f + random.nextFloat() * 30f;
-            Cliente nuevoCliente = new Cliente(productoAleatorio, tiempoMaximo);
+            Cliente nuevoCliente = new Cliente(productosDelPedido, tiempoMaximo);
             nuevoCliente.inicializarVisualizador();
             nuevoCliente.setEstacionAsignada(cajaLibre);
 

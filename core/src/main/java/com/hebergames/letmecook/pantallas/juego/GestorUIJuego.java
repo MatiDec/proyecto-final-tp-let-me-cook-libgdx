@@ -107,12 +107,9 @@ public class GestorUIJuego {
             Cliente cliente = clientes.get(i);
             float y = yInicial - (i * 120f); // 100 (alto tarjeta) + 20 (espaciado)
 
-            TextureRegion texturaCliente = GestorTexturas.getInstance().getTexturaCliente();
-            TextureRegion texturaProducto = GestorTexturas.getInstance()
-                .getTexturaProducto(cliente.getPedido().getProductoSolicitado().getNombre());
-
             if (i < tarjetasPedidos.size()) {
-                tarjetasPedidos.get(i).dibujar(batch, cliente, x, y, texturaCliente, texturaProducto);
+                tarjetasPedidos.get(i).dibujar(batch, cliente, x, y,
+                    GestorTexturas.getInstance().getTexturaCliente(), null);
             }
         }
     }

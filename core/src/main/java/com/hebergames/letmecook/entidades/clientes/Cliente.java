@@ -8,6 +8,8 @@ import com.hebergames.letmecook.pedidos.EstadoPedido;
 import com.hebergames.letmecook.pedidos.Pedido;
 import com.hebergames.letmecook.utiles.GestorTexturas;
 
+import java.util.ArrayList;
+
 public class Cliente {
     private int id;
     private Pedido pedido;
@@ -17,9 +19,9 @@ public class Cliente {
     private VisualizadorCliente visualizador;
     private static int contadorId = 0;
 
-    public Cliente(Producto productoSolicitado, float tiempoMaximoEspera) {
+    public Cliente(ArrayList<Producto> productosSolicitados, float tiempoMaximoEspera) {
         this.id = contadorId++;
-        this.pedido = new Pedido(id, productoSolicitado);
+        this.pedido = new Pedido(id, productosSolicitados);
         this.tiempoMaximoEspera = tiempoMaximoEspera;
         this.tiempoEspera = 0f;
         this.visualizador = null;

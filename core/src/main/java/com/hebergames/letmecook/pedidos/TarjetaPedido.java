@@ -6,7 +6,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.entidades.clientes.Cliente;
+import com.hebergames.letmecook.entregables.productos.Producto;
+import com.hebergames.letmecook.utiles.GestorTexturas;
 import com.hebergames.letmecook.utiles.Recursos;
+
+import java.util.ArrayList;
 
 public class TarjetaPedido {
 
@@ -61,10 +65,19 @@ public class TarjetaPedido {
             TAMAÑO_IMAGEN, TAMAÑO_IMAGEN);
 
         // Dibujar imagen del producto
-        batch.draw(texturaProducto,
-            x + ANCHO_TARJETA - TAMAÑO_IMAGEN - PADDING,
-            y + ALTO_TARJETA - TAMAÑO_IMAGEN - PADDING,
-            TAMAÑO_IMAGEN, TAMAÑO_IMAGEN);
+        ArrayList<Producto> productos = cliente.getPedido().getProductosSolicitados();
+        int cantidadAMostrar = Math.min(productos.size(), 3);
+        float espacioProducto = TAMAÑO_IMAGEN + 5f;
+
+        for (int i = 0; i < cantidadAMostrar; i++) {
+            TextureRegion texturaProductoActual = GestorTexturas.getInstance()
+                .getTexturaProducto(productos.get(i).getNombre());
+
+            batch.draw(texturaProductoActual,
+                x + ANCHO_TARJETA - TAMAÑO_IMAGEN - PADDING,
+                y + ALTO_TARJETA - TAMAÑO_IMAGEN - PADDING - (i * 30f), // Apilar verticalmente
+                TAMAÑO_IMAGEN * 0.8f, TAMAÑO_IMAGEN * 0.8f); // Ligeramente más pequeños
+        }
 
         // Dibujar tiempo restante
         int segundos = (int) cliente.getTiempoRestante();

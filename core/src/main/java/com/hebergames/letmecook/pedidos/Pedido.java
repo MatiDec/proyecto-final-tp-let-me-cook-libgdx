@@ -2,15 +2,19 @@ package com.hebergames.letmecook.pedidos;
 
 import com.hebergames.letmecook.entregables.productos.Producto;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 public class Pedido {
 
-    private Producto productoSolicitado;
+    private ArrayList<Producto> productosSolicitados;
+    private static final int MAX_PRODUCTOS_POR_PEDIDO = 3; // Ajusta este valor según necesites
     private int idClienteSolicitante;
     private EstadoPedido estadoPedido;
 
-    public Pedido (int idClienteSolicitante, Producto productoSolicitado) {
+    public Pedido(int idClienteSolicitante, ArrayList<Producto> productosSolicitados) {
         this.idClienteSolicitante = idClienteSolicitante;
-        this.productoSolicitado = productoSolicitado;
+        this.productosSolicitados = productosSolicitados;
         this.estadoPedido = EstadoPedido.EN_ESPERA;
     }
 
@@ -22,11 +26,14 @@ public class Pedido {
         this.estadoPedido = estado;
     }
 
-    public Producto getProductoSolicitado() {
-        return this.productoSolicitado;
+    public ArrayList<Producto> getProductosSolicitados() {
+        return this.productosSolicitados;
     }
-
     public int getIdClienteSolicitante() {
         return this.idClienteSolicitante;
+    }
+
+    public static int getCantidadProductosAleatorios(Random random) {
+        return 1 + random.nextInt(MAX_PRODUCTOS_POR_PEDIDO); // Genera entre 1 y MAX_PRODUCTOS_POR_PEDIDO
     }
 }
