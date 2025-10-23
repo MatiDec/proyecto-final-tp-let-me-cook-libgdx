@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.entidades.clientes.Cliente;
 import com.hebergames.letmecook.entregables.productos.Producto;
+import com.hebergames.letmecook.entregables.productos.bebidas.Bebida;
 import com.hebergames.letmecook.utiles.GestorTexturas;
 import com.hebergames.letmecook.utiles.Recursos;
 
@@ -80,8 +81,11 @@ public class TarjetaPedido {
         int cantidadAMostrar = Math.min(productos.size(), 3);
 
         for (int i = 0; i < cantidadAMostrar; i++) {
-            TextureRegion texturaProductoActual = GestorTexturas.getInstance()
-                .getTexturaProducto(productos.get(i).getNombre());
+            String claveTextura = obtenerClaveTextura(productos, i);
+
+            // Obtener la textura correspondiente
+            TextureRegion texturaProductoActual = GestorTexturas.getInstance().getTexturaProducto(claveTextura);
+
 
             batch.draw(texturaProductoActual,
                 x + ANCHO_TARJETA - TAMANO_IMAGEN - PADDING,
@@ -97,6 +101,23 @@ public class TarjetaPedido {
             y + (ALTO_TARJETA / 2f) + (textoTiempo.getAlto() / 2f)
         );
         textoTiempo.dibujarEnUi(batch);
+    }
+
+    private static String obtenerClaveTextura(ArrayList<Producto> productos, int i) {
+        Producto producto = productos.get(i);
+        String claveTextura;
+
+        // Si es una bebida, usar nombre + tamaño SIN ESPACIOS
+        if (producto instanceof Bebida) {
+            Bebida bebida = (Bebida) producto;
+            String nombre = bebida.getTipo(); // Usar getTipo() en lugar de getNombre()
+            String tamano = bebida.getTamano().getNombre();
+            claveTextura = (nombre + tamano).toLowerCase().replace(" ", "");
+        } else {
+            // Productos normales (como comida)
+            claveTextura = producto.getNombre().toLowerCase();
+        }
+        return claveTextura;
     }
 
     /**

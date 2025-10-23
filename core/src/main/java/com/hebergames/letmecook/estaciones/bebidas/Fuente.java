@@ -90,8 +90,7 @@ public class Fuente extends EstacionTrabajo {
     }
 
     private void iniciarPreparacion() {
-        refrescoEnPreparacion = new Gaseosa(tipoSeleccionado, tamanoSeleccionado,
-            TipoProducto.GASEOSA.getTextura());
+        refrescoEnPreparacion = new Gaseosa(tipoSeleccionado, tamanoSeleccionado);
         tiempoPreparacion = refrescoEnPreparacion.getTiempoPreparacion();
         tiempoTranscurrido = 0f;
         estadoMenu = EstadoMenuBebida.PREPARANDO;

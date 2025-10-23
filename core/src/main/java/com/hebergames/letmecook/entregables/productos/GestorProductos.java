@@ -4,8 +4,10 @@ import com.hebergames.letmecook.entregables.productos.bebidas.Cafe;
 import com.hebergames.letmecook.entregables.productos.bebidas.Gaseosa;
 import com.hebergames.letmecook.entregables.productos.bebidas.TamanoBebida;
 import com.hebergames.letmecook.entregables.recetas.TipoReceta;
+import com.hebergames.letmecook.utiles.GestorTexturas;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class GestorProductos {
@@ -21,13 +23,12 @@ public class GestorProductos {
         cargarProductos();
     }
 
+
     private void cargarProductos() {
         // Cargar recetas (productos que requieren preparación)
-        for (TipoReceta tipo : TipoReceta.values()) {
-            recetasDisponibles.add(tipo);
-        }
+        recetasDisponibles.addAll(Arrays.asList(TipoReceta.values()));
 
-        // Productos simples que no requieren receta
+        // Cargar productos simples (bebidas)
         productosDisponibles.add(TipoProducto.CAFE);
         productosDisponibles.add(TipoProducto.GASEOSA);
     }
@@ -108,13 +109,13 @@ public class GestorProductos {
             // Seleccionar tipo de café aleatorio
             String[] tiposCafe = Cafe.getTiposCafe().keySet().toArray(new String[0]);
             String tipoCafe = tiposCafe[random.nextInt(tiposCafe.length)];
-            return new Cafe(tipoCafe, tamano, tipo.getTextura());
+            return new Cafe(tipoCafe, tamano);
 
         } else if (tipo == TipoProducto.GASEOSA) {
             // Seleccionar tipo de gaseosa aleatorio
             String[] tiposGaseosa = Gaseosa.getTiposGaseosa().keySet().toArray(new String[0]);
             String tipoGaseosa = tiposGaseosa[random.nextInt(tiposGaseosa.length)];
-            return new Gaseosa(tipoGaseosa, tamano, tipo.getTextura());
+            return new Gaseosa(tipoGaseosa, tamano);
         }
 
         return tipo.crear();

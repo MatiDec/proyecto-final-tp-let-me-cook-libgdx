@@ -5,7 +5,7 @@ import com.hebergames.letmecook.entregables.productos.CategoriaProducto;
 public enum TurnoTrabajo {
     MANANA("Mañana", CategoriaProducto.DESAYUNO, CategoriaProducto.BEBIDAS),
     TARDE("Tarde", CategoriaProducto.ALMUERZO, CategoriaProducto.BEBIDAS),
-    NOCHE("Noche", CategoriaProducto.CENA, CategoriaProducto.BEBIDAS, CategoriaProducto.POSTRE);
+    NOCHE("Noche", CategoriaProducto.ALMUERZO, CategoriaProducto.BEBIDAS);
 
     private String nombre;
     private CategoriaProducto[] categoriasProductos;

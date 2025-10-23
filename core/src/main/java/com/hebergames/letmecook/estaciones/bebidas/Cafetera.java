@@ -90,8 +90,7 @@ public class Cafetera extends EstacionTrabajo {
     }
 
     private void iniciarPreparacion() {
-        cafeEnPreparacion = new Cafe(tipoSeleccionado, tamanoSeleccionado,
-            TipoProducto.CAFE.getTextura());
+        cafeEnPreparacion = new Cafe(tipoSeleccionado, tamanoSeleccionado);
         tiempoPreparacion = cafeEnPreparacion.getTiempoPreparacion();
         tiempoTranscurrido = 0f;
         estadoMenu = EstadoMenuBebida.PREPARANDO;

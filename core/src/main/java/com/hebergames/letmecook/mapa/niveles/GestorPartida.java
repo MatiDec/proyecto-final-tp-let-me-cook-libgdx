@@ -43,7 +43,7 @@ public class GestorPartida {
 
             CancionNivel cancionNivel = cancionesDisponibles[i % cancionesDisponibles.length];
 
-            Mapa mapaGenerado = new Mapa(rutaMapaElegida, "Sucursal " + cantidadSucursales);
+            Mapa mapaGenerado = new Mapa(rutaMapaElegida, "Sucursal " + (i + 1));
             nivelesPartida.add(new NivelPartida(mapaGenerado, turnoAleatorio, cancionNivel));
         }
     }
@@ -77,6 +77,7 @@ public class GestorPartida {
         nivelesPartida.clear();
         nivelActual = 0;
         puntajeTotalPartida = 0;
+        cantidadSucursales = 1;
     }
 
     public int getNivelActualIndex() {

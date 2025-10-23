@@ -13,7 +13,6 @@ import com.hebergames.letmecook.entidades.clientes.Cliente;
 import com.hebergames.letmecook.entidades.clientes.GestorClientes;
 import com.hebergames.letmecook.entidades.Jugador;
 import com.hebergames.letmecook.entregables.productos.Producto;
-import com.hebergames.letmecook.entregables.productos.TipoProducto;
 import com.hebergames.letmecook.entregables.recetas.GestorRecetas;
 import com.hebergames.letmecook.entregables.recetas.Receta;
 import com.hebergames.letmecook.eventos.eventosaleatorios.EventoMaquinaRota;
@@ -74,6 +73,7 @@ public class PantallaJuego extends Pantalla {
     private NivelPartida nivelActual;
 
     //texturas y animaciones
+    private GestorTexturas gestorTexturas;
     private Texture jugadorSheet;
     private Texture texturaClientes;
     private TextureRegion texturaClientePresencial;
@@ -87,6 +87,8 @@ public class PantallaJuego extends Pantalla {
 
     @Override
     public void show() {
+        gestorTexturas = GestorTexturas.getInstance();
+        gestorTexturas.cargarTexturas();
         gestorPartida = GestorPartida.getInstancia();
 
         if(gestorPartida.getNivelActual() == null) {
@@ -105,13 +107,8 @@ public class PantallaJuego extends Pantalla {
         configurarJugadorYMapa();
         GestorJugadores.getInstancia().setJugadores(jugadores);
         configurarEntradaJugadores();
-        inicializarClientes();
         inicializarAudio();
         inicializarSistemaPedidos();
-    }
-
-    private void inicializarClientes() {
-        GestorTexturas.getInstance().cargarTexturas();
     }
 
     private void inicializarCore() {
@@ -188,6 +185,7 @@ public class PantallaJuego extends Pantalla {
         PantallaPausa pantallaPausa = new PantallaPausa(this);
         PantallaCalendario pantallaCalendario = new PantallaCalendario(this);
         gestorOverlays = new GestorPantallasOverlay(pantallaPausa, pantallaCalendario, gestorAudio);
+
     }
 
     private void inicializarSistemaPedidos() {
@@ -284,11 +282,18 @@ public class PantallaJuego extends Pantalla {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
-            if (gestorOverlays.isJuegoEnPausa()) {
-                togglePausa();
+            // Si el calendario está visible, cerrarlo y reanudar
+            if (gestorOverlays.isCalendarioVisible()) {
+                gestorOverlays.toggleCalendario();
+            } else {
+                // Si el juego está en pausa por otra razón, quitarla primero
+                if (gestorOverlays.isJuegoEnPausa()) {
+                    togglePausa();
+                }
+                gestorOverlays.toggleCalendario();
             }
-            gestorOverlays.toggleCalendario();
 
+            // Reconfigurar entrada solo si el calendario se cerró
             if (!gestorOverlays.isCalendarioVisible()) {
                 gestorEntrada.configurarEntrada(
                     gestorViewport.getViewportJuego(),
@@ -512,7 +517,6 @@ public class PantallaJuego extends Pantalla {
         }
 
         EstacionTrabajo.disposeTexturaError();
-        TipoProducto.disposeTexturas();
         GestorEventosAleatorios.getInstancia().reset();
 
     }

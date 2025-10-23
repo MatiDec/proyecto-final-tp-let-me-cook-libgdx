@@ -47,6 +47,9 @@ public class GestorPedidos {
         logMem("despues liberarCaja");
 
         System.out.println("Pedido tomado. Cliente movido a mesa de retiro");
+        for (int i = 0; i<cliente.getPedido().getProductosSolicitados().size(); i++) {
+            System.out.println(cliente.getPedido().getProductosSolicitados().get(i).getNombre());
+        }
         return true;
     }
 

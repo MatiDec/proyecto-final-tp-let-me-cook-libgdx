@@ -22,4 +22,6 @@ public abstract class Bebida extends Producto {
     public TamanoBebida getTamano() {
         return tamano;
     }
+
+    public abstract String getTipo();
 }

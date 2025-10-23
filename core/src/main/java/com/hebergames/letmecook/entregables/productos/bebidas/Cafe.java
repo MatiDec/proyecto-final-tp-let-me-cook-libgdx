@@ -2,6 +2,7 @@ package com.hebergames.letmecook.entregables.productos.bebidas;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.hebergames.letmecook.entregables.productos.CategoriaProducto;
+import com.hebergames.letmecook.utiles.GestorTexturas;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,14 +15,13 @@ public class Cafe extends Bebida {
         TIPOS_CAFE.put("Expreso", 3f);
         TIPOS_CAFE.put("Americano", 4f);
         TIPOS_CAFE.put("Cortado", 5f);
-        TIPOS_CAFE.put("Doble", 6f);
     }
 
     private String tipo;
 
-    public Cafe(String tipo, TamanoBebida tamano, TextureRegion textura) {
+    public Cafe(String tipo, TamanoBebida tamano) {
         super(tipo + " " + tamano.getNombre(),
-            textura,
+            GestorTexturas.getInstance().getTexturaProducto((tipo + tamano.getNombre()).toLowerCase().replace(" ", "")),
             CategoriaProducto.BEBIDAS,
             tamano,
             TIPOS_CAFE.getOrDefault(tipo, 3f));
