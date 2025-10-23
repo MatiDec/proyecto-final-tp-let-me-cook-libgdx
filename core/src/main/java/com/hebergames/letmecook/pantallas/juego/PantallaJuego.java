@@ -72,7 +72,6 @@ public class PantallaJuego extends Pantalla {
     private GestorTiempoJuego gestorTiempo;
     private GestorPartida gestorPartida;
     private NivelPartida nivelActual;
-    private PantallaCalendario pantallaCalendario;
 
     //texturas y animaciones
     private Texture jugadorSheet;
@@ -187,7 +186,7 @@ public class PantallaJuego extends Pantalla {
         gestorAudio.pausarMusica();
 
         PantallaPausa pantallaPausa = new PantallaPausa(this);
-        pantallaCalendario = new PantallaCalendario(this);
+        PantallaCalendario pantallaCalendario = new PantallaCalendario(this);
         gestorOverlays = new GestorPantallasOverlay(pantallaPausa, pantallaCalendario, gestorAudio);
     }
 

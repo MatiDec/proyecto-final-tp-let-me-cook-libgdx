@@ -3,7 +3,6 @@ package com.hebergames.letmecook.pantallas.juego;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.entidades.clientes.Cliente;
 import com.hebergames.letmecook.pedidos.TarjetaPedido;
@@ -24,7 +23,6 @@ public class GestorUIJuego {
     private ArrayList<TarjetaPedido> tarjetasPedidos;
 
     private Texto textoPuntaje;
-    private final float MARGEN_PEDIDOS = 100f;
     private final int MAX_PEDIDOS_VISIBLES = 5;
 
     public GestorUIJuego() {
@@ -123,7 +121,8 @@ public class GestorUIJuego {
         textoInventario2.setPosition(anchoUI - textoInventario2.getAncho() - MARGEN, altoUI - MARGEN);
         textoPuntaje.setPosition(MARGEN, altoUI - MARGEN * 2);
 
-        float yInicialPedidos = altoUI - MARGEN_PEDIDOS;
+        float margenPedidos = 100f;
+        float yInicialPedidos = altoUI - margenPedidos;
         for (int i = 0; i < textosPedidos.size(); i++) {
             Texto texto = textosPedidos.get(i);
             float yPos = yInicialPedidos - (i * 30);

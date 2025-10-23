@@ -21,7 +21,7 @@ public class TarjetaPedido {
 
     private static final float ANCHO_TARJETA = 200f;
     private static final float ALTO_TARJETA = 100f;
-    private static final float TAMAÑO_IMAGEN = 64f;
+    private static final float TAMANO_IMAGEN = 64f;
     private static final float PADDING = 10f;
 
     public TarjetaPedido() {
@@ -61,15 +61,15 @@ public class TarjetaPedido {
         // Dibujar imagen del cliente
         batch.draw(texturaCliente,
             x + PADDING,
-            y + ALTO_TARJETA - TAMAÑO_IMAGEN - PADDING,
-            TAMAÑO_IMAGEN, TAMAÑO_IMAGEN);
+            y + ALTO_TARJETA - TAMANO_IMAGEN - PADDING,
+            TAMANO_IMAGEN, TAMANO_IMAGEN);
 
         // Dibujar cara de tolerancia encima de la imagen del cliente
         float porcentajeTolerancia = cliente.getPorcentajeToleranciaActual();
         TextureRegion cara = GestorTexturas.getInstance().getCaraPorTolerancia(porcentajeTolerancia);
         if (cara != null) {
             batch.draw(cara,
-                x + PADDING + (TAMAÑO_IMAGEN / 2f) - 12f, // Ajustado para centrar con nuevo tamaño
+                x + PADDING + (TAMANO_IMAGEN / 2f) - 12f, // Ajustado para centrar con nuevo tamaño
                 y + ALTO_TARJETA - PADDING - 12f, // Ajustado para centrar con nuevo tamaño
                 24f, 24f); // Aumentado de 16x16 a 24x24
         }
@@ -77,16 +77,16 @@ public class TarjetaPedido {
         // Dibujar imagen del producto
         ArrayList<Producto> productos = cliente.getPedido().getProductosSolicitados();
         int cantidadAMostrar = Math.min(productos.size(), 3);
-        float espacioProducto = TAMAÑO_IMAGEN + 5f;
+        float espacioProducto = TAMANO_IMAGEN + 5f;
 
         for (int i = 0; i < cantidadAMostrar; i++) {
             TextureRegion texturaProductoActual = GestorTexturas.getInstance()
                 .getTexturaProducto(productos.get(i).getNombre());
 
             batch.draw(texturaProductoActual,
-                x + ANCHO_TARJETA - TAMAÑO_IMAGEN - PADDING,
-                y + ALTO_TARJETA - TAMAÑO_IMAGEN - PADDING - (i * 30f), // Apilar verticalmente
-                TAMAÑO_IMAGEN * 0.8f, TAMAÑO_IMAGEN * 0.8f); // Ligeramente más pequeños
+                x + ANCHO_TARJETA - TAMANO_IMAGEN - PADDING,
+                y + ALTO_TARJETA - TAMANO_IMAGEN - PADDING - (i * 30f), // Apilar verticalmente
+                TAMANO_IMAGEN * 0.8f, TAMANO_IMAGEN * 0.8f); // Ligeramente más pequeños
         }
 
         // Dibujar tiempo restante

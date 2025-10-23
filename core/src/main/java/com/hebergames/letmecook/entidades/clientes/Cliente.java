@@ -79,10 +79,6 @@ public class Cliente {
         return tiempoEspera / tiempoMaximoEspera;
     }
 
-    public int getId() {
-        return id;
-    }
-
     public Pedido getPedido() {
         return pedido;
     }

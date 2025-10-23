@@ -9,10 +9,10 @@ import com.hebergames.letmecook.utiles.Recursos;
 
 public class VisualizadorCliente {
 
-    private TextureRegion texturaCliente;
+    private final TextureRegion TEXTURA_CLIENTE;
 
     public VisualizadorCliente(TextureRegion textura) {
-        this.texturaCliente = textura;
+        this.TEXTURA_CLIENTE = textura;
     }
 
     public void dibujar(SpriteBatch batch, Cliente cliente) {
@@ -24,7 +24,7 @@ public class VisualizadorCliente {
         float y = area.y + area.height;
 
         // Dibujar cliente
-        batch.draw(texturaCliente, x, y, Recursos.MEDIDA_TILE, Recursos.MEDIDA_TILE);
+        batch.draw(TEXTURA_CLIENTE, x, y, Recursos.MEDIDA_TILE, Recursos.MEDIDA_TILE);
 
         // Dibujar indicador de tolerancia encima del cliente
         float porcentajeTolerancia = cliente.getPorcentajeToleranciaActual();

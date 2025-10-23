@@ -29,9 +29,6 @@ public class Pedido {
     public ArrayList<Producto> getProductosSolicitados() {
         return this.productosSolicitados;
     }
-    public int getIdClienteSolicitante() {
-        return this.idClienteSolicitante;
-    }
 
     public static int getCantidadProductosAleatorios(Random random) {
         return 1 + random.nextInt(MAX_PRODUCTOS_POR_PEDIDO); // Genera entre 1 y MAX_PRODUCTOS_POR_PEDIDO

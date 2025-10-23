@@ -74,7 +74,7 @@ public class GestorPedidos {
             }
         }
 
-        int puntos = 0;
+        int puntos;
 
 // Si aún quedan productos por entregar, no completar el pedido
         if (correcto && !productosEsperados.isEmpty()) {
