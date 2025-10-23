@@ -183,4 +183,12 @@ public class GestorTexturas {
         }
         texturasListas = false;
     }
+
+    public TextureRegion getTexturaVirtualInactiva() {
+        return this.texturaClienteVirtual;//esto como no existe todavia le mando lo mismo en ambos getters
+    }
+
+    public TextureRegion getTexturaVirtualActiva() {
+        return this.texturaClienteVirtual;
+    }
 }

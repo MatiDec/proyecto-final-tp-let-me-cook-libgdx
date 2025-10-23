@@ -9,7 +9,7 @@ import com.hebergames.letmecook.eventos.puntaje.CallbackPuntaje;
 import com.hebergames.letmecook.pedidos.GestorPedidos;
 import com.hebergames.letmecook.pedidos.ResultadoEntrega;
 
-public class MesaRetiro extends EstacionTrabajo {
+public class MesaRetiro extends EstacionTrabajo implements EstacionEntrega {
     private Cliente clienteAsignado;
     private GestorPedidos gestorPedidos;
     private CallbackPuntaje callbackPuntaje;

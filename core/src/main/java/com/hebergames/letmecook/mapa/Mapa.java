@@ -173,7 +173,10 @@ public class Mapa {
                     estaciones.add(new MesaRetiro(rect));
                     break;
                 case "Basurero":
-                      estaciones.add(new Basurero(rect));
+                    estaciones.add(new Basurero(rect));
+                    break;
+                case "CajaVirtual":
+                    estaciones.add(new CajaVirtual(rect));
                     break;
             }
         }

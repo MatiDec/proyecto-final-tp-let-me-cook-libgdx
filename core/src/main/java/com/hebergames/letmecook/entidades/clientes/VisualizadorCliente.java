@@ -17,7 +17,7 @@ public class VisualizadorCliente {
 
     public void dibujar(SpriteBatch batch, Cliente cliente) {
         EstacionTrabajo estacion = cliente.getEstacionAsignada();
-        if (estacion == null) return;
+        if (estacion == null || cliente.esVirtual()) return;
 
         Rectangle area = estacion.area;
         float x = area.x + (area.width / 2f) - (Recursos.MEDIDA_TILE / 2f);

@@ -20,14 +20,16 @@ public class Cliente {
     private static int contadorId = 0;
     private float tiempoEsperaEnCaja; // Tiempo que espera sin ser atendido en caja
     private static final float TIEMPO_MAX_ESPERA_CAJA = 30f; // Tiempo antes de irse sin ser atendido
+    private TipoCliente tipoCliente;
 
-    public Cliente(ArrayList<Producto> productosSolicitados, float tiempoMaximoEspera) {
+    public Cliente(ArrayList<Producto> productosSolicitados, float tiempoMaximoEspera, TipoCliente tipo) {
         this.id = contadorId++;
         this.pedido = new Pedido(id, productosSolicitados);
         this.tiempoMaximoEspera = tiempoMaximoEspera;
         this.tiempoEspera = 0f;
         this.visualizador = null;
         this.tiempoEsperaEnCaja = 0f;
+        this.tipoCliente = tipo;
     }
 
     public void actualizar(float delta) {
@@ -66,6 +68,13 @@ public class Cliente {
         this.estacionAsignada = null;
     }
 
+    public TipoCliente getTipoCliente() {
+        return tipoCliente;
+    }
+
+    public boolean esVirtual() {
+        return tipoCliente == TipoCliente.VIRTUAL;
+    }
 
     public boolean haExpiradoTiempo() {
         return tiempoEspera >= tiempoMaximoEspera;

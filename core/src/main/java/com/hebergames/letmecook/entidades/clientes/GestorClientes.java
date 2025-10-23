@@ -3,6 +3,7 @@ package com.hebergames.letmecook.entidades.clientes;
 import com.hebergames.letmecook.entregables.productos.CategoriaProducto;
 import com.hebergames.letmecook.entregables.productos.GestorProductos;
 import com.hebergames.letmecook.entregables.productos.Producto;
+import com.hebergames.letmecook.estaciones.CajaVirtual;
 import com.hebergames.letmecook.mapa.niveles.TurnoTrabajo;
 import com.hebergames.letmecook.estaciones.CajaRegistradora;
 import com.hebergames.letmecook.estaciones.EstacionTrabajo;
@@ -28,12 +29,15 @@ public class GestorClientes {
     private static final int MAX_CLIENTES_SIMULTANEOS = 5; // Máximo de clientes al mismo tiempo
     private static final int MAX_CLIENTES_TOTALES = 15; // Total de clientes antes de cambiar nivel
     private GestorProductos gestorProductos;
+    private ArrayList<CajaVirtual> cajasVirtuales;
 
 
-    public GestorClientes(ArrayList<CajaRegistradora> cajas, ArrayList<Producto> productos, float intervaloSpawn, TurnoTrabajo turno) {
+    public GestorClientes(ArrayList<CajaRegistradora> cajas, ArrayList<CajaVirtual> cajasVirtuales,
+                          ArrayList<Producto> productos, float intervaloSpawn, TurnoTrabajo turno) {
         this.clientesActivos = new ArrayList<>();
         this.cajasDisponibles = cajas;
-        this.gestorProductos = new GestorProductos(); // Crear gestor interno
+        this.cajasVirtuales = cajasVirtuales;
+        this.gestorProductos = new GestorProductos();
         this.intervaloSpawn = intervaloSpawn;
         this.tiempoParaSiguienteCliente = intervaloSpawn;
         this.random = new Random();
@@ -83,7 +87,6 @@ public class GestorClientes {
     }
 
     private void generarNuevoCliente() {
-        // Verificar límites de clientes
         if (clientesActivos.size() >= MAX_CLIENTES_SIMULTANEOS) {
             return;
         }
@@ -93,33 +96,57 @@ public class GestorClientes {
             return;
         }
 
+        // Intentar generar cliente virtual (50% probabilidad si hay cajas disponibles)
+        if (!cajasVirtuales.isEmpty() && random.nextBoolean()) {
+            CajaVirtual cajaLibre = buscarCajaVirtualLibre();
+            if (cajaLibre != null) {
+                crearYAsignarCliente(cajaLibre, TipoCliente.VIRTUAL);
+                return;
+            }
+        }
+
+        // Si no, generar cliente presencial
         CajaRegistradora cajaLibre = buscarCajaLibre();
         if (cajaLibre != null) {
-            CategoriaProducto[] categoriasActuales = turnoActual.getCategoriasProductos();
-
-            int cantidadProductos = Pedido.getCantidadProductosAleatorios(random);
-            ArrayList<Producto> productosDelPedido = new ArrayList<>();
-
-            // Generar productos según las categorías del turno
-            for (int i = 0; i < cantidadProductos; i++) {
-                Producto productoAleatorio = gestorProductos.obtenerProductoAleatorioPorCategorias(categoriasActuales);
-                if (productoAleatorio != null) {
-                    productosDelPedido.add(productoAleatorio);
-                }
-            }
-
-            if (productosDelPedido.isEmpty()) {
-                return; // No generar cliente si no hay productos
-            }
-
-            float tiempoMaximo = 60f + random.nextFloat() * 30f;
-            Cliente nuevoCliente = new Cliente(productosDelPedido, tiempoMaximo);
-            nuevoCliente.inicializarVisualizador();
-            nuevoCliente.setEstacionAsignada(cajaLibre);
-
-            cajaLibre.asignarCliente(nuevoCliente);
-            clientesActivos.add(nuevoCliente);
+            crearYAsignarCliente(cajaLibre, TipoCliente.PRESENCIAL);
         }
+    }
+
+    private void crearYAsignarCliente(EstacionTrabajo estacion, TipoCliente tipo) {
+        CategoriaProducto[] categoriasActuales = turnoActual.getCategoriasProductos();
+        int cantidadProductos = Pedido.getCantidadProductosAleatorios(random);
+        ArrayList<Producto> productosDelPedido = new ArrayList<>();
+
+        for (int i = 0; i < cantidadProductos; i++) {
+            Producto productoAleatorio = gestorProductos.obtenerProductoAleatorioPorCategorias(categoriasActuales);
+            if (productoAleatorio != null) {
+                productosDelPedido.add(productoAleatorio);
+            }
+        }
+
+        if (productosDelPedido.isEmpty()) return;
+
+        float tiempoMaximo = 60f + random.nextFloat() * 30f;
+        Cliente nuevoCliente = new Cliente(productosDelPedido, tiempoMaximo, tipo);
+        nuevoCliente.inicializarVisualizador();
+        nuevoCliente.setEstacionAsignada(estacion);
+
+        if (estacion instanceof CajaVirtual) {
+            ((CajaVirtual) estacion).asignarCliente(nuevoCliente);
+        } else if (estacion instanceof CajaRegistradora) {
+            ((CajaRegistradora) estacion).asignarCliente(nuevoCliente);
+        }
+
+        clientesActivos.add(nuevoCliente);
+    }
+
+    private CajaVirtual buscarCajaVirtualLibre() {
+        for (CajaVirtual caja : cajasVirtuales) {
+            if (!caja.tieneCliente()) {
+                return caja;
+            }
+        }
+        return null;
     }
 
     private CajaRegistradora buscarCajaLibre() {
@@ -144,6 +171,8 @@ public class GestorClientes {
             ((CajaRegistradora) estacion).liberarCliente();
         } else if (estacion instanceof MesaRetiro) {
             ((MesaRetiro) estacion).liberarCliente();
+        } else if (estacion instanceof CajaVirtual) {
+            ((CajaVirtual) estacion).liberarCliente();
         }
         cliente.setEstacionAsignada(null);
         cliente.liberarRecursos();

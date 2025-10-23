@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.entidades.Jugador;
+import com.hebergames.letmecook.estaciones.CajaVirtual;
 import com.hebergames.letmecook.eventos.eventosaleatorios.EventoPisoMojado;
 import com.hebergames.letmecook.eventos.eventosaleatorios.GestorEventosAleatorios;
 import com.hebergames.letmecook.estaciones.CajaRegistradora;
@@ -57,10 +58,11 @@ public class GestorMapa {
             eventoPiso.dibujar(batch);
         }
 
-        // Luego dibujar indicadores de estaciones
+        // Dibujar indicadores y estados de estaciones
         for (EstacionTrabajo estacion : estaciones) {
             estacion.dibujarIndicador(batch);
             estacion.dibujarIndicadorError(batch);
+            estacion.dibujarEstado(batch);
         }
     }
 

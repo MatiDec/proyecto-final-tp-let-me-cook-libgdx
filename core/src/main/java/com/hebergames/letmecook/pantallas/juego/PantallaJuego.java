@@ -15,6 +15,7 @@ import com.hebergames.letmecook.entidades.Jugador;
 import com.hebergames.letmecook.entregables.productos.Producto;
 import com.hebergames.letmecook.entregables.recetas.GestorRecetas;
 import com.hebergames.letmecook.entregables.recetas.Receta;
+import com.hebergames.letmecook.estaciones.CajaVirtual;
 import com.hebergames.letmecook.eventos.eventosaleatorios.EventoMaquinaRota;
 import com.hebergames.letmecook.eventos.eventosaleatorios.EventoPisoMojado;
 import com.hebergames.letmecook.eventos.eventosaleatorios.GestorEventosAleatorios;
@@ -192,12 +193,15 @@ public class PantallaJuego extends Pantalla {
         // Filtrar cajas y mesas de las estaciones
         ArrayList<CajaRegistradora> cajas = new ArrayList<>();
         ArrayList<MesaRetiro> mesas = new ArrayList<>();
+        ArrayList<CajaVirtual> cajasVirtuales = new ArrayList<>();
 
         for (EstacionTrabajo estacion : estaciones) {
             if (estacion instanceof CajaRegistradora) {
                 cajas.add((CajaRegistradora) estacion);
             } else if (estacion instanceof MesaRetiro) {
                 mesas.add((MesaRetiro) estacion);
+            } else if (estacion instanceof CajaVirtual) {
+                cajasVirtuales.add((CajaVirtual) estacion);
             }
         }
 
@@ -211,7 +215,7 @@ public class PantallaJuego extends Pantalla {
 
         TurnoTrabajo turnoActual = nivelActual.getTurno();
 
-        gestorClientes = new GestorClientes(cajas, productosDisponibles, 15f, turnoActual);
+        gestorClientes = new GestorClientes(cajas, cajasVirtuales, productosDisponibles, 15f, turnoActual);
         gestorPedidos = new GestorPedidos(gestorClientes, mesas);
 
         gestorClientes.setCallbackPenalizacion((puntos, razon) -> {
@@ -222,6 +226,11 @@ public class PantallaJuego extends Pantalla {
         // Asignar gestor a las cajas
         for (CajaRegistradora caja : cajas) {
             caja.setGestorPedidos(gestorPedidos);
+        }
+
+        for (CajaVirtual cajaVirtual : cajasVirtuales) {
+            cajaVirtual.setGestorPedidos(gestorPedidos);
+            cajaVirtual.setCallbackPuntaje(gestorPuntaje);
         }
 
         // Asignar gestor y callback a las mesas
@@ -240,7 +249,9 @@ public class PantallaJuego extends Pantalla {
         // Registrar eventos de máquinas rotas
         for (EstacionTrabajo estacion : estaciones) {
             // No aplicar a cajas ni mesas de retiro
-            if (!(estacion instanceof CajaRegistradora) && !(estacion instanceof MesaRetiro)) {
+            if (!(estacion instanceof CajaRegistradora) &&
+                !(estacion instanceof MesaRetiro) &&
+                !(estacion instanceof CajaVirtual)) {
                 gestorEventos.registrarEventoPosible(new EventoMaquinaRota(estacion));
             }
         }

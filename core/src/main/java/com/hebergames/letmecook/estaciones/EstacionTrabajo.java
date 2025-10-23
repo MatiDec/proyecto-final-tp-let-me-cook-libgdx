@@ -229,6 +229,10 @@ public abstract class EstacionTrabajo {
         }
     }
 
+    public void dibujarEstado(SpriteBatch batch) {
+        // Por defecto no hace nada, las subclases pueden sobrescribirlo
+    }
+
     public void dibujar(SpriteBatch batch, Jugador jugador) {
         if (jugadorOcupante == jugador && jugador.estaEnMenu()) {
             dibujarMenu(batch, jugador);

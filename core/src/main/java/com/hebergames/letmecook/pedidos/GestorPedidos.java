@@ -4,6 +4,7 @@ import com.hebergames.letmecook.entidades.clientes.Cliente;
 import com.hebergames.letmecook.entidades.clientes.GestorClientes;
 import com.hebergames.letmecook.entregables.productos.Producto;
 import com.hebergames.letmecook.estaciones.CajaRegistradora;
+import com.hebergames.letmecook.estaciones.EstacionEntrega;
 import com.hebergames.letmecook.estaciones.MesaRetiro;
 
 import java.util.ArrayList;
@@ -58,32 +59,32 @@ public class GestorPedidos {
         System.out.println(tag + " - MemUsed: " + used + " MB");
     }
 
-    public ResultadoEntrega entregarPedido(MesaRetiro mesa, Producto productoEntregado) {
-        Cliente cliente = mesa.getCliente();
+    public ResultadoEntrega entregarPedido(EstacionEntrega estacion, Producto productoEntregado) {
+        Cliente cliente = estacion.getCliente();
         if (cliente == null) {
-            return new ResultadoEntrega(false, 0, "No hay cliente en esta mesa");
+            return new ResultadoEntrega(false, 0, "No hay cliente en esta estación");
         }
 
         Pedido pedido = cliente.getPedido();
         ArrayList<Producto> productosEsperados = pedido.getProductosSolicitados();
 
-// Verificar si el producto entregado está en la lista de esperados
+        // Verificar si el producto entregado está en la lista de esperados
         boolean correcto = false;
         for (Producto esperado : productosEsperados) {
             if (productoEntregado.getNombre().equals(esperado.getNombre())) {
                 correcto = true;
-                productosEsperados.remove(esperado); // Remover el producto entregado
+                productosEsperados.remove(esperado);
                 break;
             }
         }
 
         int puntos;
 
-// Si aún quedan productos por entregar, no completar el pedido
+        // Si aún quedan productos por entregar, no completar el pedido
         if (correcto && !productosEsperados.isEmpty()) {
             float porcentajeTiempo = cliente.getPorcentajeTiempo();
             if (porcentajeTiempo < 0.5f) {
-                puntos = 50; // Puntos parciales por producto correcto
+                puntos = 50;
             } else if (porcentajeTiempo < 0.8f) {
                 puntos = 35;
             } else {
@@ -105,11 +106,11 @@ public class GestorPedidos {
             }
             pedido.setEstadoPedido(EstadoPedido.COMPLETADO);
         } else {
-            puntos = -25; // Penalización por producto incorrecto
+            puntos = -25;
             pedido.setEstadoPedido(EstadoPedido.COMPLETADO);
         }
 
-        mesa.liberarCliente();
+        estacion.liberarCliente();
         gestorClientes.removerCliente(cliente);
 
         String mensaje = correcto ? "¡Pedido correcto! +" + puntos : "Pedido incorrecto. " + puntos;
