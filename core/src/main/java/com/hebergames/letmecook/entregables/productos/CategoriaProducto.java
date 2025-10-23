@@ -4,6 +4,6 @@ public enum CategoriaProducto {
     DESAYUNO,
     ALMUERZO,
     CENA,
-    BEBIDA,
+    BEBIDAS,
     POSTRE
 }

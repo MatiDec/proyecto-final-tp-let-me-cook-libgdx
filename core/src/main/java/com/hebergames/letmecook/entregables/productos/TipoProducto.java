@@ -4,9 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-// Nuevo archivo: TipoProducto.java
 public enum TipoProducto {
-    HAMBURGUESA("Hamburguesa", CategoriaProducto.ALMUERZO, 0, 0);
+    HAMBURGUESA("Hamburguesa", CategoriaProducto.ALMUERZO, 0, 0),
+    CAFE("Cafe", CategoriaProducto.BEBIDAS, 0, 0),
+    GASEOSA("Gaseosa", CategoriaProducto.BEBIDAS, 0, 0);
+    //por ahora todos tienen la misma textura :/
 
     private static TextureRegion[][] regionesProductos;
     private static boolean texturasCache = false;
@@ -47,4 +49,9 @@ public enum TipoProducto {
             texturasCache = false;
         }
     }
+
+    public TextureRegion getTextura() {
+        return cargarTextura();
+    }
+
 }
