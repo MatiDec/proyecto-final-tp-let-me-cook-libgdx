@@ -64,6 +64,16 @@ public class TarjetaPedido {
             y + ALTO_TARJETA - TAMAÑO_IMAGEN - PADDING,
             TAMAÑO_IMAGEN, TAMAÑO_IMAGEN);
 
+        // Dibujar cara de tolerancia encima de la imagen del cliente
+        float porcentajeTolerancia = cliente.getPorcentajeToleranciaActual();
+        TextureRegion cara = GestorTexturas.getInstance().getCaraPorTolerancia(porcentajeTolerancia);
+        if (cara != null) {
+            batch.draw(cara,
+                x + PADDING + (TAMAÑO_IMAGEN / 2f) - 12f, // Ajustado para centrar con nuevo tamaño
+                y + ALTO_TARJETA - PADDING - 12f, // Ajustado para centrar con nuevo tamaño
+                24f, 24f); // Aumentado de 16x16 a 24x24
+        }
+
         // Dibujar imagen del producto
         ArrayList<Producto> productos = cliente.getPedido().getProductosSolicitados();
         int cantidadAMostrar = Math.min(productos.size(), 3);

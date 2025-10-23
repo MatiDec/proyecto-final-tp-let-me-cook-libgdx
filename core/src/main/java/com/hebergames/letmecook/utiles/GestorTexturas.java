@@ -14,6 +14,10 @@ public class GestorTexturas {
     private Texture texturaClientes;
     private TextureRegion texturaClientePresencial;
     private TextureRegion texturaClienteVirtual;
+    private Texture texturaCaras;
+    private TextureRegion caraFeliz;
+    private TextureRegion caraImpaciente;
+    private TextureRegion caraEnojada;
     private Texture texturaPisoMojado;
     private TextureRegion regionPisoMojado;
 
@@ -40,6 +44,13 @@ public class GestorTexturas {
         TextureRegion[][] tmpClientes = TextureRegion.split(texturaClientes, 32, 32);
         texturaClientePresencial = tmpClientes[0][0];
         texturaClienteVirtual = tmpClientes[0][1];
+
+        texturaCaras = new Texture(Gdx.files.internal(
+            "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/caras.jpg"));
+        TextureRegion[][] tmpCaras = TextureRegion.split(texturaCaras, 32, 32);
+        caraFeliz = tmpCaras[0][0];
+        caraImpaciente = tmpCaras[0][1];
+        caraEnojada = tmpCaras[0][2];
 
         //carga texturas del piso mojado y la region
         try {
@@ -93,12 +104,25 @@ public class GestorTexturas {
         return texturasListas;
     }
 
+    public TextureRegion getCaraPorTolerancia(float porcentaje) {
+        if (porcentaje > 0.6f) {
+            return caraFeliz;
+        } else if (porcentaje > 0.3f) {
+            return caraImpaciente;
+        } else {
+            return caraEnojada;
+        }
+    }
+
     public void dispose() {
         if (texturaClientes != null) {
             texturaClientes.dispose();
         }
         if (texturaPisoMojado != null) {
             texturaPisoMojado.dispose();
+        }
+        if (texturaCaras != null) {
+            texturaCaras.dispose();
         }
         texturasListas = false;
     }

@@ -6,6 +6,7 @@ import com.hebergames.letmecook.mapa.niveles.TurnoTrabajo;
 import com.hebergames.letmecook.estaciones.CajaRegistradora;
 import com.hebergames.letmecook.estaciones.EstacionTrabajo;
 import com.hebergames.letmecook.estaciones.MesaRetiro;
+import com.hebergames.letmecook.pedidos.CallbackPenalizacion;
 import com.hebergames.letmecook.pedidos.EstadoPedido;
 import com.hebergames.letmecook.pedidos.Pedido;
 
@@ -20,7 +21,12 @@ public class GestorClientes {
     private Random random;
     private ArrayList<Producto> productosDisponibles;
     private TurnoTrabajo turnoActual;
+    private CallbackPenalizacion callbackPenalizacion;
     private int ultimaCantidadClientes = 0;
+    private int clientesAtendidos; // Clientes que completaron su pedido
+    private int clientesPerdidos; // Clientes que se fueron sin atender o por timeout
+    private static final int MAX_CLIENTES_SIMULTANEOS = 5; // Máximo de clientes al mismo tiempo
+    private static final int MAX_CLIENTES_TOTALES = 15; // Total de clientes antes de cambiar nivel
 
 
     public GestorClientes(ArrayList<CajaRegistradora> cajas, ArrayList<Producto> productos, float intervaloSpawn, TurnoTrabajo turno) {
@@ -31,6 +37,12 @@ public class GestorClientes {
         this.tiempoParaSiguienteCliente = intervaloSpawn;
         this.random = new Random();
         this.turnoActual = turno;
+        this.clientesAtendidos = 0;
+        this.clientesPerdidos = 0;
+    }
+
+    public void setCallbackPenalizacion(CallbackPenalizacion callback) {
+        this.callbackPenalizacion = callback;
     }
 
     public void actualizar(float delta) {
@@ -43,12 +55,21 @@ public class GestorClientes {
             if (estado == EstadoPedido.COMPLETADO) {
                 liberarEstacion(cliente);
                 clientesActivos.remove(i);
+                clientesAtendidos++; // Incrementar clientes atendidos
             } else if (cliente.haExpiradoTiempo() && estado == EstadoPedido.EN_PREPARACION) {
-
+                // Penalización por timeout en preparación
+                aplicarPenalizacion(-50, "Cliente se fue por timeout en preparación");
                 cliente.getPedido().setEstadoPedido(EstadoPedido.CANCELADO);
                 liberarEstacion(cliente);
                 clientesActivos.remove(i);
-
+                clientesPerdidos++; // Incrementar clientes perdidos
+            } else if (cliente.haExpiradoTiempoCaja() && estado == EstadoPedido.EN_ESPERA) {
+                // Penalización por no atender al cliente en caja
+                aplicarPenalizacion(-30, "Cliente se fue sin ser atendido");
+                cliente.getPedido().setEstadoPedido(EstadoPedido.CANCELADO);
+                liberarEstacion(cliente);
+                clientesActivos.remove(i);
+                clientesPerdidos++; // Incrementar clientes perdidos
             }
         }
 
@@ -61,6 +82,15 @@ public class GestorClientes {
     }
 
     private void generarNuevoCliente() {
+        // Verificar límites de clientes
+        if (clientesActivos.size() >= MAX_CLIENTES_SIMULTANEOS) {
+            return; // No generar más clientes si ya hay demasiados simultáneos
+        }
+
+        int totalClientesProcesados = clientesAtendidos + clientesPerdidos;
+        if (totalClientesProcesados >= MAX_CLIENTES_TOTALES) {
+            return; // No generar más clientes, nivel debe terminar
+        }
         CajaRegistradora cajaLibre = buscarCajaLibre();
         if (cajaLibre != null && !productosDisponibles.isEmpty()) {
             ArrayList<Producto> productosFiltrados = new ArrayList<>();
@@ -103,6 +133,13 @@ public class GestorClientes {
         return null;
     }
 
+    private void aplicarPenalizacion(int puntos, String razon) {
+        System.out.println(razon + ": " + puntos + " puntos");
+        if (callbackPenalizacion != null) {
+            callbackPenalizacion.aplicarPenalizacion(puntos, razon);
+        }
+    }
+
     private void liberarEstacion(Cliente cliente) {
         EstacionTrabajo estacion = cliente.getEstacionAsignada();
         if (estacion instanceof CajaRegistradora) {
@@ -141,11 +178,25 @@ public class GestorClientes {
         this.ultimaCantidadClientes = clientesActivos.size();
     }
 
+    public int getClientesAtendidos() {
+        return clientesAtendidos;
+    }
+
+    public int getClientesPerdidos() {
+        return clientesPerdidos;
+    }
+
+    public boolean haAlcanzadoLimiteClientes() {
+        return (clientesAtendidos + clientesPerdidos) >= MAX_CLIENTES_TOTALES;
+    }
+
     public void limpiar() {
         for (Cliente cliente : new ArrayList<>(clientesActivos)) {
             liberarEstacion(cliente);
         }
         clientesActivos.clear();
+        clientesAtendidos = 0;
+        clientesPerdidos = 0;
         tiempoParaSiguienteCliente = intervaloSpawn;
     }
 

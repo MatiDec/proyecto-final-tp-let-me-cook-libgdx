@@ -217,6 +217,11 @@ public class PantallaJuego extends Pantalla {
         gestorClientes = new GestorClientes(cajas, productosDisponibles, 15f, turnoActual);
         gestorPedidos = new GestorPedidos(gestorClientes, mesas);
 
+        gestorClientes.setCallbackPenalizacion((puntos, razon) -> {
+            gestorPuntaje.agregarPuntos(puntos);
+            System.out.println("Penalización aplicada: " + razon);
+        });
+
         // Asignar gestor a las cajas
         for (CajaRegistradora caja : cajas) {
             caja.setGestorPedidos(gestorPedidos);
@@ -386,6 +391,12 @@ public class PantallaJuego extends Pantalla {
     }
 
     private void verificarFinDeJuego() {
+        if (gestorClientes != null && gestorClientes.haAlcanzadoLimiteClientes()) {
+            terminarJuego(calcularPuntajeFinal());
+            return;
+        }
+
+        // Verificar si se acabó el tiempo
         if (gestorTiempo.haTerminadoTiempo()) {
             terminarJuego(calcularPuntajeFinal());
         }

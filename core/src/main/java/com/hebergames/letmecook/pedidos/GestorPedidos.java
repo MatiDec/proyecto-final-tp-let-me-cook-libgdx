@@ -90,7 +90,7 @@ public class GestorPedidos {
             return new ResultadoEntrega(true, puntos, mensaje);
         }
 
-// Si ya entregó todos o se equivocó, completar el pedido
+        // Si ya entregó todos o se equivocó, completar el pedido
         if (correcto && productosEsperados.isEmpty()) {
             float porcentajeTiempo = cliente.getPorcentajeTiempo();
             if (porcentajeTiempo < 0.5f) {
@@ -102,7 +102,7 @@ public class GestorPedidos {
             }
             pedido.setEstadoPedido(EstadoPedido.COMPLETADO);
         } else {
-            puntos = -25;
+            puntos = -25; // Penalización por producto incorrecto
             pedido.setEstadoPedido(EstadoPedido.COMPLETADO);
         }
 

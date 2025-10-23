@@ -18,6 +18,8 @@ public class Cliente {
     private float tiempoMaximoEspera;
     private VisualizadorCliente visualizador;
     private static int contadorId = 0;
+    private float tiempoEsperaEnCaja; // Tiempo que espera sin ser atendido en caja
+    private static final float TIEMPO_MAX_ESPERA_CAJA = 30f; // Tiempo antes de irse sin ser atendido
 
     public Cliente(ArrayList<Producto> productosSolicitados, float tiempoMaximoEspera) {
         this.id = contadorId++;
@@ -25,10 +27,19 @@ public class Cliente {
         this.tiempoMaximoEspera = tiempoMaximoEspera;
         this.tiempoEspera = 0f;
         this.visualizador = null;
+        this.tiempoEsperaEnCaja = 0f;
     }
 
     public void actualizar(float delta) {
-        if (pedido.getEstadoPedido() == EstadoPedido.EN_PREPARACION) {
+        EstadoPedido estado = pedido.getEstadoPedido();
+
+        // Si está esperando en caja sin atender
+        if (estado == EstadoPedido.EN_ESPERA) {
+            tiempoEsperaEnCaja += delta;
+        }
+
+        // Si está en preparación
+        if (estado == EstadoPedido.EN_PREPARACION) {
             tiempoEspera += delta;
         }
     }
@@ -43,7 +54,8 @@ public class Cliente {
     }
 
     public void dibujar(SpriteBatch batch) {
-        if (visualizador != null && estacionAsignada != null) {
+        if (visualizador != null && estacionAsignada != null &&
+            pedido != null && pedido.getEstadoPedido() != EstadoPedido.CANCELADO) {
             visualizador.dibujar(batch, this);
         }
     }
@@ -51,6 +63,7 @@ public class Cliente {
     public void liberarRecursos() {
         this.visualizador = null;
         this.pedido = null;
+        this.estacionAsignada = null;
     }
 
 
@@ -80,6 +93,23 @@ public class Cliente {
 
     public void setEstacionAsignada(EstacionTrabajo estacion) {
         this.estacionAsignada = estacion;
+    }
+
+    public boolean haExpiradoTiempoCaja() {
+        return tiempoEsperaEnCaja >= TIEMPO_MAX_ESPERA_CAJA;
+    }
+
+    public float getPorcentajeTiempoCaja() {
+        return tiempoEsperaEnCaja / TIEMPO_MAX_ESPERA_CAJA;
+    }
+
+    public float getPorcentajeToleranciaActual() {
+        // Retorna el porcentaje según el estado del pedido
+        if (pedido.getEstadoPedido() == EstadoPedido.EN_ESPERA) {
+            return 1f - getPorcentajeTiempoCaja();
+        } else {
+            return 1f - getPorcentajeTiempo();
+        }
     }
 
     public void resetearTiempo() {
