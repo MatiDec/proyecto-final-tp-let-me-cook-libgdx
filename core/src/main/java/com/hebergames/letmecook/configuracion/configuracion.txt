@@ -1,5 +1,5 @@
 #Configuraciones del juego
-#Thu Oct 23 19:35:24 GMT-03:00 2025
-pantallaCompleta=true
+#Fri Oct 24 15:49:25 ART 2025
 resolucion=1280x720
+pantallaCompleta=true
 volumenMusica=28

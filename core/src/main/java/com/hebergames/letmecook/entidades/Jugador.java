@@ -41,14 +41,14 @@ public class Jugador {
     private ObjetoAlmacenable inventario;
 
     public final int DISTANCIA_MOVIMIENTO = 400;
-    public final int DISTANCIA_CORRIENDO = 800; // Velocidad al correr (doble)
+    public final int DISTANCIA_CORRIENDO = 800;
 
     // Variables para el sistema de deslizamiento
     private boolean estaDeslizando = false;
     private Vector2 velocidadDeslizamiento = new Vector2(0, 0);
     private float tiempoDeslizamiento = 0f;
-    private final float DURACION_DESLIZAMIENTO = 0.3f; // 0.3 segundos de deslizamiento
-    private final float FACTOR_DESLIZAMIENTO = 1.5f; // Multiplicador de velocidad al deslizar
+    private final float DURACION_DESLIZAMIENTO = 0.3f;
+    private final float FACTOR_DESLIZAMIENTO = 1.5f;
 
     protected GestorAnimacion gestorAnimacion;
     private String objetoEnMano = "vacio";
@@ -67,7 +67,11 @@ public class Jugador {
     }
 
     public void actualizar(float delta) {
-        // Actualizar animación/estadoTiempo (se hace siempre)
+        if (velocidad.isZero(0.01f) && !estaDeslizando) {
+            frameActual = animacion.getKeyFrame(0, true);
+            return;
+        }
+
         if (velocidad.x != 0 || velocidad.y != 0 || estaDeslizando) {
             estadoTiempo += delta;
         } else {
@@ -78,41 +82,32 @@ public class Jugador {
         if (estaDeslizando) {
             tiempoDeslizamiento += delta;
 
-            // Reducir gradualmente la velocidad de deslizamiento
             float progreso = tiempoDeslizamiento / DURACION_DESLIZAMIENTO;
             float factorReduccion = Math.max(0f, 1f - progreso);
 
-            // actualizar velocidad actual (unidad: px/seg)
             velocidad.set(velocidadDeslizamiento.x * factorReduccion,
                 velocidadDeslizamiento.y * factorReduccion);
 
-            // desplazamiento para este frame
             float desplazamientoX = velocidad.x * delta;
             float desplazamientoY = velocidad.y * delta;
 
-            // Verificar si está sobre piso mojado
             GestorEventosAleatorios gestorEventos = GestorEventosAleatorios.getInstancia();
             EventoPisoMojado eventoPiso = gestorEventos.getEventoPisoMojado();
 
             if (eventoPiso != null && eventoPiso.estaSobrePisoMojado(posicion.x, posicion.y)) {
-                // Duplicar velocidad de deslizamiento en piso mojado
                 desplazamientoX *= 2f;
                 desplazamientoY *= 2f;
             }
 
-            // comprobar colisión a lo largo del desplazamiento (evita tunneling)
             if (colisionMovimiento(desplazamientoX, desplazamientoY)) {
-                // al chocar, detener deslizamiento y cancelar movimiento
                 estaDeslizando = false;
                 tiempoDeslizamiento = 0f;
                 velocidad.set(0, 0);
                 velocidadDeslizamiento.set(0, 0);
             } else {
-                // no hay colisión, aplicar movimiento
                 posicion.add(desplazamientoX, desplazamientoY);
                 hitbox.setPosition(posicion.x + OFFSET_HITBOX_X, posicion.y + OFFSET_HITBOX_Y);
 
-                // terminar deslizamiento si se acabó la duración
                 if (tiempoDeslizamiento >= DURACION_DESLIZAMIENTO) {
                     estaDeslizando = false;
                     tiempoDeslizamiento = 0f;
@@ -123,9 +118,15 @@ public class Jugador {
             return;
         }
 
-        // comportamiento normal (sin deslizamiento)
-        posicion.add(velocidad.x * delta, velocidad.y * delta);
-        hitbox.setPosition(posicion.x + OFFSET_HITBOX_X, posicion.y + OFFSET_HITBOX_Y);
+        float desplazamientoX = velocidad.x * delta;
+        float desplazamientoY = velocidad.y * delta;
+
+        if (colisionMovimiento(desplazamientoX, desplazamientoY)) {
+            velocidad.set(0, 0);
+        } else {
+            posicion.add(desplazamientoX, desplazamientoY);
+            hitbox.setPosition(posicion.x + OFFSET_HITBOX_X, posicion.y + OFFSET_HITBOX_Y);
+        }
     }
 
     public void dibujar(SpriteBatch batch) {
@@ -146,7 +147,6 @@ public class Jugador {
     }
 
     public void manejarEntrada(DatosEntrada datosEntrada) {
-        // No permitir control manual durante el deslizamiento
         if (estaDeslizando) {
             return;
         }
@@ -158,7 +158,6 @@ public class Jugador {
         if (datosEntrada.izquierda) dx -= DISTANCIA_MOVIMIENTO;
         if (datosEntrada.derecha) dx += DISTANCIA_MOVIMIENTO;
 
-        // Aplicar velocidad de carrera si está corriendo
         if (datosEntrada.correr && (dx != 0 || dy != 0)) {
             float multiplicador = (float) DISTANCIA_CORRIENDO / DISTANCIA_MOVIMIENTO;
             dx *= multiplicador;
@@ -182,7 +181,7 @@ public class Jugador {
         }
 
         for (Jugador otro : otrosJugadores) {
-            if (otro != this && otro.getHitbox().overlaps(rect)) //programacion negativa jasinski
+            if (otro != this && otro.getHitbox().overlaps(rect))
             {
                 return true;
             }
@@ -191,12 +190,11 @@ public class Jugador {
     }
 
     private void moverSiNoColisiona(float dx, float dy, boolean estaCorriendo) {
-        // Verificar si está sobre piso mojado
         GestorEventosAleatorios gestorEventos = GestorEventosAleatorios.getInstancia();
         EventoPisoMojado eventoPiso = gestorEventos.getEventoPisoMojado();
 
         if (eventoPiso != null && eventoPiso.estaSobrePisoMojado(posicion.x, posicion.y)) {
-            dx *= 2f; // Duplicar velocidad en piso mojado
+            dx *= 2f;
             dy *= 2f;
         }
         float deltaTime = Gdx.graphics.getDeltaTime();
