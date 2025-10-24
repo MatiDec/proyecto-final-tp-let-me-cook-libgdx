@@ -25,6 +25,7 @@ public class GestorTexturas {
 
     private Map<String, TextureRegion> texturasProductos;
     private boolean texturasListas = false;
+    private TextureRegion texturaIngrediente;
 
     private GestorTexturas() {
         texturasProductos = new HashMap<>();
@@ -204,4 +205,6 @@ public class GestorTexturas {
     public Texture getTexturaError() {
         return this.texturaError;
     }
+
+    public TextureRegion getTexturaIngrediente() { return this.texturaIngrediente; }
 }

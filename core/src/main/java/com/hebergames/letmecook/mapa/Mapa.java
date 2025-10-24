@@ -178,6 +178,9 @@ public class Mapa {
                 case "CajaVirtual":
                     estaciones.add(new CajaVirtual(rect));
                     break;
+                case "MaquinaEnvasadora":
+                    estaciones.add(new MaquinaEnvasadora(rect));
+                    break;
             }
         }
 

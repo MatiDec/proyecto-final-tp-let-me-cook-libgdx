@@ -4,7 +4,14 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.hebergames.letmecook.utiles.GestorTexturas;
 
 public enum TipoProducto {
-    HAMBURGUESA("Hamburguesa", CategoriaProducto.ALMUERZO),
+    HAMBURGUESA_CARNE("Hamburguesa de Carne", CategoriaProducto.ALMUERZO),
+    HAMBURGUESA_POLLO("Hamburguesa de Pollo", CategoriaProducto.ALMUERZO),
+    MILANESA_CARNE("Milanesa de Carne", CategoriaProducto.ALMUERZO),
+    MILANESA_POLLO("Milanesa de Pollo", CategoriaProducto.ALMUERZO),
+    PAPAS_FRITAS("Papas Fritas", CategoriaProducto.ALMUERZO),
+    NUGGETS_POLLO("Nuggets de pollo", CategoriaProducto.ALMUERZO),
+    RABAS("Rabas", CategoriaProducto.ALMUERZO),
+    AROS_CEBOLLA("Aros de Cebolla", CategoriaProducto.ALMUERZO),
     CAFE("Cafe", CategoriaProducto.BEBIDAS),
     GASEOSA("Gaseosa", CategoriaProducto.BEBIDAS);
 

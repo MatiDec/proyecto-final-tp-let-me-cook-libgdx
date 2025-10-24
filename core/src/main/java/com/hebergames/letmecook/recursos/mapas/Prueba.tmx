@@ -31,8 +31,8 @@
   <object id="16" name="Cafetera" type="Interactuable" x="1024" y="640" width="128" height="128"/>
   <object id="23" name="Heladera" type="Interactuable" x="896" y="896" width="128" height="128"/>
   <object id="24" name="Heladera" type="Interactuable" x="1024" y="896" width="128" height="128"/>
-  <object id="25" name="Horno" type="Interactuable" x="0" y="1152" width="128" height="128"/>
-  <object id="27" name="Horno" type="Interactuable" x="0" y="1280" width="128" height="128"/>
+  <object id="25" name="MaquinaEnvasadora" type="Interactuable" x="0" y="1152" width="128" height="128"/>
+  <object id="27" name="MaquinaEnvasadora" type="Interactuable" x="0" y="1280" width="128" height="128"/>
   <object id="29" name="Fuente" type="Interactuable" x="0" y="1536" width="128" height="128"/>
   <object id="30" name="Fuente" type="Interactuable" x="0" y="1664" width="128" height="128"/>
   <object id="31" name="AreaEnsamblaje" type="Interactuable" x="896" y="1920" width="128" height="128"/>

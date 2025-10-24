@@ -47,14 +47,9 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
 
     @Override
     public boolean iniciarProceso(Ingrediente ingrediente) {
-        System.out.println("DEBUG: HornoProcesador #" + idInstancia + " - iniciarProceso llamado con ingrediente: " + ingrediente.getNombre());
-        System.out.println("DEBUG: HornoProcesador #" + idInstancia + " - puedeIniciarProceso: " + puedeIniciarProceso());
-        System.out.println("DEBUG: HornoProcesador #" + idInstancia + " - esCocinableInterna: " + ingrediente.esCocinableInterna());
-        System.out.println("DEBUG: HornoProcesador #" + idInstancia + " - estaQuemado: " + ingrediente.estaQuemado());
 
         if (!puedeIniciarProceso() || !ingrediente.esCocinableInterna()
             || ingrediente.estaQuemado()) {
-            System.out.println("DEBUG: ProcesadorGenerico #" + idInstancia + " - No se puede iniciar el proceso");
             return false;
         }
 
@@ -62,9 +57,6 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
         ingredienteCocinando.setCoccionListener(this);
         procesando = true;
 
-        System.out.println("DEBUG: HornoProcesador #" + idInstancia + " - Proceso iniciado exitosamente - procesando: " + procesando);
-        System.out.println("DEBUG: HornoProcesador #" + idInstancia + " - ingredienteCocinando: " + (ingredienteCocinando != null ? ingredienteCocinando.getNombre() : "null"));
-        System.out.println("Iniciando cocción de: " + ingrediente.getNombre());
         return true;
     }
 
@@ -116,7 +108,7 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
         if (procesando && ingredienteCocinando != null) {
             EstadoCoccion estado = ingredienteCocinando.getEstadoCoccion();
 
-            if (estado == EstadoCoccion.CRUDO) {
+            if (estado == EstadoCoccion.MAL_HECHO) {
                 texto = tipoCoccion.getAccionRealizada();
             } else {
                 texto = estado.getESTADO();
@@ -145,7 +137,7 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
         System.out.println("Estado de cocción cambió a: " + nuevoEstado.getESTADO());
 
         switch (nuevoEstado) {
-            case COCIDO:
+            case BIEN_HECHO:
                 GestorAudio.getInstance().reproducirSonido("coccion_perfecta");
                 break;
         }

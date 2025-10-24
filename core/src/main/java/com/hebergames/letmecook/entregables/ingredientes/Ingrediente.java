@@ -20,7 +20,7 @@ public abstract class Ingrediente implements ObjetoAlmacenable {
         this.nombre = nombre;
         this.textura = textura;
         this.metodoCoccion = null;
-        this.estadoCoccion = EstadoCoccion.CRUDO;
+        this.estadoCoccion = EstadoCoccion.MAL_HECHO;
         this.tiempoCoccionActual = 0f;
     }
 
@@ -29,7 +29,7 @@ public abstract class Ingrediente implements ObjetoAlmacenable {
         this.nombre = nombre;
         this.textura = textura;
         this.metodoCoccion = metodoCoccion;
-        this.estadoCoccion = EstadoCoccion.CRUDO;
+        this.estadoCoccion = EstadoCoccion.MAL_HECHO;
         this.tiempoCoccionActual = 0f;
         this.tiempoCoccionMinimo = tiempoCoccionMinimo;
         this.tiempoCoccionMaximo = tiempoCoccionMaximo;
@@ -43,12 +43,12 @@ public abstract class Ingrediente implements ObjetoAlmacenable {
         EstadoCoccion estadoAnterior = estadoCoccion;
 
         if (tiempoCoccionActual >= tiempoCoccionMaximo) {
-            estadoCoccion = EstadoCoccion.QUEMADO;
-            if (coccionListener != null && estadoAnterior != EstadoCoccion.QUEMADO) {
+            estadoCoccion = EstadoCoccion.PASADO;
+            if (coccionListener != null && estadoAnterior != EstadoCoccion.PASADO) {
                 coccionListener.onIngredienteQuemado();
             }
         } else if (tiempoCoccionActual >= tiempoCoccionMinimo) {
-            estadoCoccion = EstadoCoccion.COCIDO;
+            estadoCoccion = EstadoCoccion.BIEN_HECHO;
         }
 
         if (estadoAnterior != estadoCoccion && coccionListener != null) {
@@ -69,12 +69,12 @@ public abstract class Ingrediente implements ObjetoAlmacenable {
     }
 
     public boolean estaQuemado() {
-        return estadoCoccion == EstadoCoccion.QUEMADO;
+        return estadoCoccion == EstadoCoccion.PASADO;
     }
 
     @Override
     public String getNombre() {
-        if (esCocinableInterna && estadoCoccion != EstadoCoccion.CRUDO) {
+        if (esCocinableInterna && estadoCoccion != EstadoCoccion.MAL_HECHO) {
             return nombre + " (" + estadoCoccion.getESTADO() + ")";
         }
         return nombre;
