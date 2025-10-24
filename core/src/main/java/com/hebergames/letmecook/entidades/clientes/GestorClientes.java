@@ -16,32 +16,32 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class GestorClientes {
-    private ArrayList<Cliente> clientesActivos;
-    private ArrayList<CajaRegistradora> cajasDisponibles;
+    private final ArrayList<Cliente> CLIENTES_ACTIVOS;
+    private final ArrayList<CajaRegistradora> CAJAS_DISPONIBLES;
     private float tiempoParaSiguienteCliente;
-    private float intervaloSpawn;
-    private Random random;
-    private TurnoTrabajo turnoActual;
+    private final float INTERVALO_SPAWN;
+    private final Random RANDOM;
+    private final TurnoTrabajo TURNO_ACTUAL;
     private CallbackPenalizacion callbackPenalizacion;
     private int ultimaCantidadClientes = 0;
-    private int clientesAtendidos; // Clientes que completaron su pedido
-    private int clientesPerdidos; // Clientes que se fueron sin atender o por timeout
-    private static final int MAX_CLIENTES_SIMULTANEOS = 5; // Máximo de clientes al mismo tiempo
-    private static final int MAX_CLIENTES_TOTALES = 15; // Total de clientes antes de cambiar nivel
-    private GestorProductos gestorProductos;
-    private ArrayList<CajaVirtual> cajasVirtuales;
+    private int clientesAtendidos;
+    private int clientesPerdidos;
+    private static final int MAX_CLIENTES_SIMULTANEOS = 5;
+    private static final int MAX_CLIENTES_TOTALES = 15;
+    private final GestorProductos GESTOR_PRODUCTOS;
+    private final ArrayList<CajaVirtual> CAJAS_VIRTUALES;
 
 
     public GestorClientes(ArrayList<CajaRegistradora> cajas, ArrayList<CajaVirtual> cajasVirtuales,
                           ArrayList<Producto> productos, float intervaloSpawn, TurnoTrabajo turno) {
-        this.clientesActivos = new ArrayList<>();
-        this.cajasDisponibles = cajas;
-        this.cajasVirtuales = cajasVirtuales;
-        this.gestorProductos = new GestorProductos();
-        this.intervaloSpawn = intervaloSpawn;
+        this.CLIENTES_ACTIVOS = new ArrayList<>();
+        this.CAJAS_DISPONIBLES = cajas;
+        this.CAJAS_VIRTUALES = cajasVirtuales;
+        this.GESTOR_PRODUCTOS = new GestorProductos();
+        this.INTERVALO_SPAWN = intervaloSpawn;
         this.tiempoParaSiguienteCliente = intervaloSpawn;
-        this.random = new Random();
-        this.turnoActual = turno;
+        this.RANDOM = new Random();
+        this.TURNO_ACTUAL = turno;
         this.clientesAtendidos = 0;
         this.clientesPerdidos = 0;
     }
@@ -51,43 +51,45 @@ public class GestorClientes {
     }
 
     public void actualizar(float delta) {
-        for (int i = clientesActivos.size() - 1; i >= 0; i--) {
-            Cliente cliente = clientesActivos.get(i);
+        for (int i = CLIENTES_ACTIVOS.size() - 1; i >= 0; i--) {
+            Cliente cliente = CLIENTES_ACTIVOS.get(i);
             cliente.actualizar(delta);
 
             EstadoPedido estado = cliente.getPedido().getEstadoPedido();
 
             if (estado == EstadoPedido.COMPLETADO) {
                 liberarEstacion(cliente);
-                clientesActivos.remove(i);
-                clientesAtendidos++; // Incrementar clientes atendidos
+                cliente.liberarRecursos();
+                CLIENTES_ACTIVOS.remove(i);
+                clientesAtendidos++;
+
             } else if (cliente.haExpiradoTiempo() && estado == EstadoPedido.EN_PREPARACION) {
-                // Penalización por timeout en preparación
                 aplicarPenalizacion(-50, "Cliente se fue por timeout en preparación");
                 cliente.getPedido().setEstadoPedido(EstadoPedido.CANCELADO);
                 liberarEstacion(cliente);
-                clientesActivos.remove(i);
-                clientesPerdidos++; // Incrementar clientes perdidos
+                cliente.liberarRecursos();
+                CLIENTES_ACTIVOS.remove(i);
+                clientesPerdidos++;
+
             } else if (cliente.haExpiradoTiempoCaja() && estado == EstadoPedido.EN_ESPERA) {
-                // Penalización por no atender al cliente en caja
                 aplicarPenalizacion(-30, "Cliente se fue sin ser atendido");
                 cliente.getPedido().setEstadoPedido(EstadoPedido.CANCELADO);
                 liberarEstacion(cliente);
-                clientesActivos.remove(i);
-                clientesPerdidos++; // Incrementar clientes perdidos
+                cliente.liberarRecursos();
+                CLIENTES_ACTIVOS.remove(i);
+                clientesPerdidos++;
             }
         }
-
 
         tiempoParaSiguienteCliente -= delta;
         if (tiempoParaSiguienteCliente <= 0) {
             generarNuevoCliente();
-            tiempoParaSiguienteCliente = intervaloSpawn;
+            tiempoParaSiguienteCliente = INTERVALO_SPAWN;
         }
     }
 
     private void generarNuevoCliente() {
-        if (clientesActivos.size() >= MAX_CLIENTES_SIMULTANEOS) {
+        if (CLIENTES_ACTIVOS.size() >= MAX_CLIENTES_SIMULTANEOS) {
             return;
         }
 
@@ -96,8 +98,7 @@ public class GestorClientes {
             return;
         }
 
-        // Intentar generar cliente virtual (50% probabilidad si hay cajas disponibles)
-        if (!cajasVirtuales.isEmpty() && random.nextBoolean()) {
+        if (!CAJAS_VIRTUALES.isEmpty() && RANDOM.nextBoolean()) {
             CajaVirtual cajaLibre = buscarCajaVirtualLibre();
             if (cajaLibre != null) {
                 crearYAsignarCliente(cajaLibre, TipoCliente.VIRTUAL);
@@ -105,7 +106,6 @@ public class GestorClientes {
             }
         }
 
-        // Si no, generar cliente presencial
         CajaRegistradora cajaLibre = buscarCajaLibre();
         if (cajaLibre != null) {
             crearYAsignarCliente(cajaLibre, TipoCliente.PRESENCIAL);
@@ -113,12 +113,12 @@ public class GestorClientes {
     }
 
     private void crearYAsignarCliente(EstacionTrabajo estacion, TipoCliente tipo) {
-        CategoriaProducto[] categoriasActuales = turnoActual.getCategoriasProductos();
-        int cantidadProductos = Pedido.getCantidadProductosAleatorios(random);
+        CategoriaProducto[] categoriasActuales = TURNO_ACTUAL.getCategoriasProductos();
+        int cantidadProductos = Pedido.getCantidadProductosAleatorios(RANDOM);
         ArrayList<Producto> productosDelPedido = new ArrayList<>();
 
         for (int i = 0; i < cantidadProductos; i++) {
-            Producto productoAleatorio = gestorProductos.obtenerProductoAleatorioPorCategorias(categoriasActuales);
+            Producto productoAleatorio = GESTOR_PRODUCTOS.obtenerProductoAleatorioPorCategorias(categoriasActuales);
             if (productoAleatorio != null) {
                 productosDelPedido.add(productoAleatorio);
             }
@@ -126,7 +126,7 @@ public class GestorClientes {
 
         if (productosDelPedido.isEmpty()) return;
 
-        float tiempoMaximo = 60f + random.nextFloat() * 30f;
+        float tiempoMaximo = 60f + RANDOM.nextFloat() * 30f;
         Cliente nuevoCliente = new Cliente(productosDelPedido, tiempoMaximo, tipo);
         nuevoCliente.inicializarVisualizador();
         nuevoCliente.setEstacionAsignada(estacion);
@@ -137,11 +137,11 @@ public class GestorClientes {
             ((CajaRegistradora) estacion).asignarCliente(nuevoCliente);
         }
 
-        clientesActivos.add(nuevoCliente);
+        CLIENTES_ACTIVOS.add(nuevoCliente);
     }
 
     private CajaVirtual buscarCajaVirtualLibre() {
-        for (CajaVirtual caja : cajasVirtuales) {
+        for (CajaVirtual caja : CAJAS_VIRTUALES) {
             if (!caja.tieneCliente()) {
                 return caja;
             }
@@ -150,7 +150,7 @@ public class GestorClientes {
     }
 
     private CajaRegistradora buscarCajaLibre() {
-        for (CajaRegistradora caja : cajasDisponibles) {
+        for (CajaRegistradora caja : CAJAS_DISPONIBLES) {
             if (!caja.tieneCliente()) {
                 return caja;
             }
@@ -167,29 +167,30 @@ public class GestorClientes {
 
     private void liberarEstacion(Cliente cliente) {
         EstacionTrabajo estacion = cliente.getEstacionAsignada();
-        if (estacion instanceof CajaRegistradora) {
-            ((CajaRegistradora) estacion).liberarCliente();
-        } else if (estacion instanceof MesaRetiro) {
-            ((MesaRetiro) estacion).liberarCliente();
-        } else if (estacion instanceof CajaVirtual) {
-            ((CajaVirtual) estacion).liberarCliente();
+        if (estacion != null) {
+            if (estacion instanceof CajaRegistradora) {
+                ((CajaRegistradora) estacion).liberarCliente();
+            } else if (estacion instanceof MesaRetiro) {
+                ((MesaRetiro) estacion).liberarCliente();
+            } else if (estacion instanceof CajaVirtual) {
+                ((CajaVirtual) estacion).liberarCliente();
+            }
         }
         cliente.setEstacionAsignada(null);
-        cliente.liberarRecursos();
     }
 
     public void removerCliente(Cliente cliente) {
-        clientesActivos.remove(cliente);
+        CLIENTES_ACTIVOS.remove(cliente);
         liberarEstacion(cliente);
     }
 
-    public ArrayList<Cliente> getClientesActivos() {
-        return clientesActivos;
+    public ArrayList<Cliente> getCLIENTES_ACTIVOS() {
+        return this.CLIENTES_ACTIVOS;
     }
 
     public ArrayList<Cliente> getClientesEnPreparacion() {
         ArrayList<Cliente> enPreparacion = new ArrayList<>();
-        for (Cliente cliente : clientesActivos) {
+        for (Cliente cliente : CLIENTES_ACTIVOS) {
             if (cliente.getPedido().getEstadoPedido() == EstadoPedido.EN_PREPARACION) {
                 enPreparacion.add(cliente);
             }
@@ -198,19 +199,11 @@ public class GestorClientes {
     }
 
     public int getUltimaCantidadClientes() {
-        return ultimaCantidadClientes;
+        return this.ultimaCantidadClientes;
     }
 
     public void actualizarUltimaCantidadClientes() {
-        this.ultimaCantidadClientes = clientesActivos.size();
-    }
-
-    public int getClientesAtendidos() {
-        return clientesAtendidos;
-    }
-
-    public int getClientesPerdidos() {
-        return clientesPerdidos;
+        this.ultimaCantidadClientes = CLIENTES_ACTIVOS.size();
     }
 
     public boolean haAlcanzadoLimiteClientes() {
@@ -218,13 +211,13 @@ public class GestorClientes {
     }
 
     public void limpiar() {
-        for (Cliente cliente : new ArrayList<>(clientesActivos)) {
+        for (Cliente cliente : new ArrayList<>(CLIENTES_ACTIVOS)) {
             liberarEstacion(cliente);
         }
-        clientesActivos.clear();
+        CLIENTES_ACTIVOS.clear();
         clientesAtendidos = 0;
         clientesPerdidos = 0;
-        tiempoParaSiguienteCliente = intervaloSpawn;
+        tiempoParaSiguienteCliente = INTERVALO_SPAWN;
     }
 
 

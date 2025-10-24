@@ -4,7 +4,6 @@ import com.hebergames.letmecook.entregables.productos.bebidas.Cafe;
 import com.hebergames.letmecook.entregables.productos.bebidas.Gaseosa;
 import com.hebergames.letmecook.entregables.productos.bebidas.TamanoBebida;
 import com.hebergames.letmecook.entregables.recetas.TipoReceta;
-import com.hebergames.letmecook.utiles.GestorTexturas;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,25 +11,23 @@ import java.util.Random;
 
 public class GestorProductos {
 
-    private ArrayList<TipoProducto> productosDisponibles;
-    private ArrayList<TipoReceta> recetasDisponibles;
-    private Random random;
+    private final ArrayList<TipoProducto> PRODUCTOS_DISPONIBLES;
+    private final ArrayList<TipoReceta> RECETAS_DISPONIBLES;
+    private final Random RANDOM;
 
     public GestorProductos() {
-        productosDisponibles = new ArrayList<>();
-        recetasDisponibles = new ArrayList<>();
-        random = new Random();
+        PRODUCTOS_DISPONIBLES = new ArrayList<>();
+        RECETAS_DISPONIBLES = new ArrayList<>();
+        RANDOM = new Random();
         cargarProductos();
     }
 
 
     private void cargarProductos() {
-        // Cargar recetas (productos que requieren preparación)
-        recetasDisponibles.addAll(Arrays.asList(TipoReceta.values()));
+        RECETAS_DISPONIBLES.addAll(Arrays.asList(TipoReceta.values()));
 
-        // Cargar productos simples (bebidas)
-        productosDisponibles.add(TipoProducto.CAFE);
-        productosDisponibles.add(TipoProducto.GASEOSA);
+        PRODUCTOS_DISPONIBLES.add(TipoProducto.CAFE);
+        PRODUCTOS_DISPONIBLES.add(TipoProducto.GASEOSA);
     }
 
     public Producto obtenerProductoAleatorioPorCategorias(CategoriaProducto... categoriasPermitidas) {
@@ -41,8 +38,7 @@ public class GestorProductos {
         ArrayList<TipoReceta> recetasFiltradas = new ArrayList<>();
         ArrayList<TipoProducto> productosFiltrados = new ArrayList<>();
 
-        // Filtrar recetas por categoría
-        for (TipoReceta receta : recetasDisponibles) {
+        for (TipoReceta receta : RECETAS_DISPONIBLES) {
             for (CategoriaProducto cat : categoriasPermitidas) {
                 if (receta.getTipoProducto().getCategoria() == cat) {
                     recetasFiltradas.add(receta);
@@ -51,8 +47,7 @@ public class GestorProductos {
             }
         }
 
-        // Filtrar productos simples por categoría
-        for (TipoProducto producto : productosDisponibles) {
+        for (TipoProducto producto : PRODUCTOS_DISPONIBLES) {
             for (CategoriaProducto cat : categoriasPermitidas) {
                 if (producto.getCategoria() == cat) {
                     productosFiltrados.add(producto);
@@ -61,38 +56,35 @@ public class GestorProductos {
             }
         }
 
-        // Calcular total de opciones
         int totalOpciones = recetasFiltradas.size() + productosFiltrados.size();
 
         if (totalOpciones == 0) {
-            return obtenerProductoAleatorio(); // Fallback
+            return obtenerProductoAleatorio();
         }
 
-        // Decidir aleatoriamente entre receta o producto simple
-        int seleccion = random.nextInt(totalOpciones);
+        int seleccion = RANDOM.nextInt(totalOpciones);
 
         if (seleccion < recetasFiltradas.size()) {
-            // Generar producto de receta
+
             return recetasFiltradas.get(seleccion).crear().preparar();
+
         } else {
-            // Generar bebida
+
             int indexProducto = seleccion - recetasFiltradas.size();
             return generarBebidaAleatoria(productosFiltrados.get(indexProducto));
+
         }
     }
 
     public Producto obtenerProductoAleatorio() {
-        // Decidir aleatoriamente si generar receta o bebida
-        boolean generarReceta = random.nextBoolean();
+        boolean generarReceta = RANDOM.nextBoolean();
 
-        if (generarReceta && !recetasDisponibles.isEmpty()) {
-            // Generar producto de receta
-            int index = random.nextInt(recetasDisponibles.size());
-            return recetasDisponibles.get(index).crear().preparar();
-        } else if (!productosDisponibles.isEmpty()) {
-            // Generar bebida aleatoria
-            int index = random.nextInt(productosDisponibles.size());
-            TipoProducto tipo = productosDisponibles.get(index);
+        if (generarReceta && !RECETAS_DISPONIBLES.isEmpty()) {
+            int index = RANDOM.nextInt(RECETAS_DISPONIBLES.size());
+            return RECETAS_DISPONIBLES.get(index).crear().preparar();
+        } else if (!PRODUCTOS_DISPONIBLES.isEmpty()) {
+            int index = RANDOM.nextInt(PRODUCTOS_DISPONIBLES.size());
+            TipoProducto tipo = PRODUCTOS_DISPONIBLES.get(index);
 
             return generarBebidaAleatoria(tipo);
         }
@@ -101,21 +93,21 @@ public class GestorProductos {
     }
 
     private Producto generarBebidaAleatoria(TipoProducto tipo) {
-        // Seleccionar tamaño aleatorio
         TamanoBebida[] tamanos = TamanoBebida.values();
-        TamanoBebida tamano = tamanos[random.nextInt(tamanos.length)];
+        TamanoBebida tamano = tamanos[RANDOM.nextInt(tamanos.length)];
 
         if (tipo == TipoProducto.CAFE) {
-            // Seleccionar tipo de café aleatorio
+
             String[] tiposCafe = Cafe.getTiposCafe().keySet().toArray(new String[0]);
-            String tipoCafe = tiposCafe[random.nextInt(tiposCafe.length)];
+            String tipoCafe = tiposCafe[RANDOM.nextInt(tiposCafe.length)];
             return new Cafe(tipoCafe, tamano);
 
         } else if (tipo == TipoProducto.GASEOSA) {
-            // Seleccionar tipo de gaseosa aleatorio
+
             String[] tiposGaseosa = Gaseosa.getTiposGaseosa().keySet().toArray(new String[0]);
-            String tipoGaseosa = tiposGaseosa[random.nextInt(tiposGaseosa.length)];
+            String tipoGaseosa = tiposGaseosa[RANDOM.nextInt(tiposGaseosa.length)];
             return new Gaseosa(tipoGaseosa, tamano);
+
         }
 
         return tipo.crear();

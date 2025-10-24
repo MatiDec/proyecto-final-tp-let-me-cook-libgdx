@@ -19,25 +19,23 @@ public class EfectoHover {
         boolean mouseEncima = texto.fueClickeado(mouseX, mouseY);
 
         if (mouseEncima && !estaEnHover) {
-            // El mouse acaba de entrar al área del botón
             aplicarHover();
             estaEnHover = true;
         } else if (!mouseEncima && estaEnHover) {
-            // El mouse acaba de salir del área del botón
             quitarHover();
             estaEnHover = false;
         }
     }
 
     private void aplicarHover() {
-        texto.fuente.setColor(colorHover);
+        this.texto.fuente.setColor(colorHover);
     }
 
     private void quitarHover() {
-        texto.fuente.setColor(colorOriginal);
+        this.texto.fuente.setColor(colorOriginal);
     }
 
     public boolean isEnHover() {
-        return estaEnHover;
+        return this.estaEnHover;
     }
 }

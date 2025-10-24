@@ -1,9 +1,6 @@
 package com.hebergames.letmecook.estaciones;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.entidades.Jugador;
 import com.hebergames.letmecook.entregables.ObjetoAlmacenable;
@@ -11,6 +8,7 @@ import com.hebergames.letmecook.entregables.ingredientes.Ingrediente;
 import com.hebergames.letmecook.entregables.productos.Producto;
 import com.hebergames.letmecook.estaciones.procesadoras.MaquinaProcesadora;
 import com.hebergames.letmecook.pedidos.ResultadoEntrega;
+import com.hebergames.letmecook.utiles.GestorTexturas;
 import com.hebergames.letmecook.utiles.Recursos;
 
 public abstract class EstacionTrabajo {
@@ -22,29 +20,10 @@ public abstract class EstacionTrabajo {
     private Jugador jugadorOcupante = null;
 
     private boolean fueraDeServicio = false;
-    private static Texture texturaError;
-    private static TextureRegion iconoError;
-    private static boolean texturaErrorCargada = false;
+
 
     public EstacionTrabajo(Rectangle area) {
         this.area = area;
-    }
-
-    // esto es una de las cosas que después voy a cambiar al refactorizar y limpiar el código
-    private static void cargarTexturaError() {
-        if (!texturaErrorCargada) {
-            try {
-                texturaError = new Texture(Gdx.files.internal("core/src/main/java/com/hebergames/letmecook/recursos/imagenes/error_icon.png"));
-                iconoError = new TextureRegion(texturaError);
-                texturaErrorCargada = true;
-            } catch (Exception e) {
-                System.err.println("No se pudo cargar icono de error: " + e.getMessage());
-            }
-        }
-    }
-
-    public boolean fueClickeada(float x, float y) {
-        return area.contains(x, y);
     }
 
     public boolean estaCerca(float jugadorX, float jugadorY) {
@@ -79,23 +58,19 @@ public abstract class EstacionTrabajo {
             return;
         }
 
-        // Si la máquina está ocupada por otro jugador
         if (jugadorOcupante != null && jugadorOcupante != jugador) {
             System.out.println("Maquina ocupada por otro jugador.");
             return;
         }
 
-        // Si el jugador no está ocupando esta estación, ocuparla Y entrar en menú
         if (jugadorOcupante != jugador) {
             ocupar(jugador);
         }
 
-        // SIEMPRE asegurar que el jugador esté en menú cuando interactúa
         if (!jugador.estaEnMenu()) {
             jugador.entrarEnMenu(this);
         }
 
-        // Ejecutar la interacción específica de cada máquina
         alInteractuar();
 
         iniciarMenu(jugador);
@@ -109,7 +84,6 @@ public abstract class EstacionTrabajo {
             }
         }
 
-        // Lógica específica para MesaRetiro
         if (this instanceof MesaRetiro) {
             MesaRetiro mesa = (MesaRetiro) this;
             if (mesa.tieneCliente() && jugador.getInventario() instanceof Producto) {
@@ -126,20 +100,6 @@ public abstract class EstacionTrabajo {
     }
 
     private boolean puedeInteractuar(Jugador jugador) {
-//        float centroMaquinaX = area.x + area.width / 2f;
-//        float centroMaquinaY = area.y + area.height / 2f;
-//
-//        float centroJugadorX = jugador.getPosicion().x + Recursos.MEDIDA_TILE / 2f;
-//        float centroJugadorY = jugador.getPosicion().y + Recursos.MEDIDA_TILE / 2f; //sacar numeros magicos
-//
-//        float dx = centroJugadorX - centroMaquinaX;
-//        float dy = centroJugadorY - centroMaquinaY;
-
-        //double distancia = Math.sqrt(dx * dx + dy * dy);
-
-        //return distancia <= DIFERENCIA;
-        //mi logica de esto, si la maquina mide 128 y el jugador mide 128 sus centros estan a 64px de sus bordes, entonces la suma ya te da 128
-        //lo que es una tile entonces le tengo que sumar 128 de la tile para que funque
         return estaCerca(jugador.getPosicion().x, jugador.getPosicion().y);
     }
 
@@ -164,7 +124,6 @@ public abstract class EstacionTrabajo {
 
         System.out.println("DEBUG: procesadora.tieneProcesandose(): " + procesadora.tieneProcesandose());
 
-        // Si hay algo procesándose, retirar
         if (procesadora.tieneProcesandose()) {
             System.out.println("DEBUG: Ya hay algo procesándose, intentando retirar");
 
@@ -180,7 +139,6 @@ public abstract class EstacionTrabajo {
             return;
         }
 
-        // Si no hay nada procesándose, intentar iniciar proceso
         ObjetoAlmacenable objetoInventario = jugador.getInventario();
         System.out.println("DEBUG: Objeto en inventario: " + objetoInventario);
         System.out.println("DEBUG: Tipo del objeto: " + (objetoInventario != null ? objetoInventario.getClass().getSimpleName() : "null"));
@@ -218,19 +176,13 @@ public abstract class EstacionTrabajo {
 
     public void dibujarIndicadorError(SpriteBatch batch) {
         if (fueraDeServicio) {
-            if (!texturaErrorCargada) {
-                cargarTexturaError();
-            }
-            if (iconoError != null) {
-                float x = area.x + area.width / 2 - 16;
-                float y = area.y + area.height + 10;
-                batch.draw(iconoError, x, y, 32, 32);
-            }
+            float x = area.x + area.width / 2 - 16;
+            float y = area.y + area.height + 10;
+            batch.draw(GestorTexturas.getInstance().getTexturaError(), x, y, 32, 32);
         }
     }
 
     public void dibujarEstado(SpriteBatch batch) {
-        // Por defecto no hace nada, las subclases pueden sobrescribirlo
     }
 
     public void dibujar(SpriteBatch batch, Jugador jugador) {
@@ -264,17 +216,6 @@ public abstract class EstacionTrabajo {
 
     public void setFueraDeServicio(boolean fuera) {
         this.fueraDeServicio = fuera;
-    }
-
-    public boolean estaFueraDeServicio() {
-        return fueraDeServicio;
-    }
-
-    public static void disposeTexturaError() {
-        if (texturaError != null) {
-            texturaError.dispose();
-            texturaErrorCargada = false;
-        }
     }
 
     protected abstract void alLiberar();

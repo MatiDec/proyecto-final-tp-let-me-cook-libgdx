@@ -5,18 +5,17 @@ import com.hebergames.letmecook.entregables.productos.TipoProducto;
 
 import java.util.ArrayList;
 
-// Nuevo archivo: RecetaGenerica.java
 public class RecetaGenerica extends Receta {
-    private TipoProducto tipoProducto;
+    private final TipoProducto TIPO_PRODUCTO;
 
     public RecetaGenerica(String nombre, ArrayList<String> ingredientesRequeridos,
                           TipoProducto tipoProducto) {
         super(nombre, ingredientesRequeridos, tipoProducto.getCategoria());
-        this.tipoProducto = tipoProducto;
+        this.TIPO_PRODUCTO = tipoProducto;
     }
 
     @Override
     public Producto preparar() {
-        return tipoProducto.crear();
+        return TIPO_PRODUCTO.crear();
     }
 }

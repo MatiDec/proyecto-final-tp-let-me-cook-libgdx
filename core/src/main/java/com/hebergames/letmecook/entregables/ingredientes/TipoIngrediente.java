@@ -9,26 +9,24 @@ public enum TipoIngrediente {
 
     private final String nombre;
     private final MetodoCoccion metodoCoccion;
-    private final float tiempoCoccionMinimo;
-    private final float tiempoCoccionMaximo;
+    private final float TIEMPO_MINIMO_COCCION;
+    private final float TIEMPO_MAXIMO_COCCION;
 
     TipoIngrediente(String nombre, MetodoCoccion metodoCoccion,
                     float tiempoCoccionMinimo, float tiempoCoccionMaximo) {
         this.nombre = nombre;
         this.metodoCoccion = metodoCoccion;
-        this.tiempoCoccionMinimo = tiempoCoccionMinimo;
-        this.tiempoCoccionMaximo = tiempoCoccionMaximo;
+        this.TIEMPO_MINIMO_COCCION = tiempoCoccionMinimo;
+        this.TIEMPO_MAXIMO_COCCION = tiempoCoccionMaximo;
     }
 
     public IngredienteGenerico crear(TextureRegion textura) {
         if (metodoCoccion != null) {
             return new IngredienteGenerico(nombre, textura, metodoCoccion,
-                tiempoCoccionMinimo, tiempoCoccionMaximo);
+                TIEMPO_MINIMO_COCCION, TIEMPO_MAXIMO_COCCION);
         }
         return new IngredienteGenerico(nombre, textura);
     }
 
     public String getNombre() { return nombre; }
-    public MetodoCoccion getMetodoCoccion() { return metodoCoccion; }
-    public boolean esCocinableInterna() { return metodoCoccion != null; }
 }

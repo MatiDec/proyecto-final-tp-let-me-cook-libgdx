@@ -45,26 +45,26 @@ public class CajaRegistradora extends EstacionTrabajo {
 
     @Override
     public void alInteractuar() {
-        // Se maneja en manejarSeleccionMenu
+
     }
 
     @Override
     protected void iniciarMenu(Jugador jugador) {
-        // No se usa menú numérico aquí
+
     }
 
     @Override
     public void manejarSeleccionMenu(Jugador jugador, int numeroSeleccion) {
-        // No se usa menú numérico aquí
+
     }
 
     @Override
     protected void dibujarMenu(SpriteBatch batch, Jugador jugador) {
-        // Aquí se dibuja info del pedido del cliente si existe
+
     }
 
     @Override
     protected void alLiberar() {
-        // Mantener el cliente asignado hasta que se tome el pedido
+
     }
 }

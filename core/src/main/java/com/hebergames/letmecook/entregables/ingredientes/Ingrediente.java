@@ -9,7 +9,6 @@ public abstract class Ingrediente implements ObjetoAlmacenable {
     protected TextureRegion textura;
     protected boolean esCocinableInterna;
 
-    // Variables para el sistema de cocción
     protected EstadoCoccion estadoCoccion;
     protected float tiempoCoccionActual;
     protected float tiempoCoccionMinimo;
@@ -43,7 +42,6 @@ public abstract class Ingrediente implements ObjetoAlmacenable {
         tiempoCoccionActual += delta;
         EstadoCoccion estadoAnterior = estadoCoccion;
 
-        // Determinar nuevo estado basado en tiempo de cocción
         if (tiempoCoccionActual >= tiempoCoccionMaximo) {
             estadoCoccion = EstadoCoccion.QUEMADO;
             if (coccionListener != null && estadoAnterior != EstadoCoccion.QUEMADO) {
@@ -53,7 +51,6 @@ public abstract class Ingrediente implements ObjetoAlmacenable {
             estadoCoccion = EstadoCoccion.COCIDO;
         }
 
-        // Notificar cambio de estado
         if (estadoAnterior != estadoCoccion && coccionListener != null) {
             coccionListener.onCambioEstado(estadoCoccion);
         }
@@ -67,38 +64,18 @@ public abstract class Ingrediente implements ObjetoAlmacenable {
         return this.metodoCoccion != null;
     }
 
-    public MetodoCoccion getMetodoCoccion() {
-        return metodoCoccion;
-    }
-
     public EstadoCoccion getEstadoCoccion() {
-        return estadoCoccion;
-    }
-
-    public float getTiempoCoccionActual() {
-        return tiempoCoccionActual;
-    }
-
-    public float getTiempoCoccionMinimo() {
-        return tiempoCoccionMinimo;
-    }
-
-    public float getTiempoCoccionMaximo() {
-        return tiempoCoccionMaximo;
+        return this.estadoCoccion;
     }
 
     public boolean estaQuemado() {
         return estadoCoccion == EstadoCoccion.QUEMADO;
     }
 
-    public boolean estaBienCocinado() {
-        return estadoCoccion == EstadoCoccion.COCIDO;
-    }
-
     @Override
     public String getNombre() {
         if (esCocinableInterna && estadoCoccion != EstadoCoccion.CRUDO) {
-            return nombre + " (" + estadoCoccion.getNombre() + ")";
+            return nombre + " (" + estadoCoccion.getESTADO() + ")";
         }
         return nombre;
     }

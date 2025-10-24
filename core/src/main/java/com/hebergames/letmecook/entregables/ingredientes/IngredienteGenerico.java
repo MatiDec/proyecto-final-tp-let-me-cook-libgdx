@@ -3,7 +3,6 @@ package com.hebergames.letmecook.entregables.ingredientes;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.hebergames.letmecook.estaciones.procesadoras.MetodoCoccion;
 
-// Nuevo archivo: IngredienteGenerico.java
 public class IngredienteGenerico extends Ingrediente {
 
     public IngredienteGenerico(String nombre, TextureRegion textura) {

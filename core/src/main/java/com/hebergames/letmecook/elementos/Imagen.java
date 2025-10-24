@@ -15,15 +15,15 @@ public class Imagen {
     }
 
     public void dibujar() {
-        s.draw(Render.batch);
+        this.s.draw(Render.batch);
     }
 
     public void setSize(int ancho, int alto) {
-        s.setSize(ancho, alto);
+        this.s.setSize(ancho, alto);
     }
 
     public void setPosicion(float x, float y) {
-        s.setPosition(x, y);
+        this.s.setPosition(x, y);
     }
 
 }

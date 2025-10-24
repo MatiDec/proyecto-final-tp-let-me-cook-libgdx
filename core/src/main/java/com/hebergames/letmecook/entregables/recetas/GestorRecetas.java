@@ -7,18 +7,17 @@ import java.util.ArrayList;
 
 public class GestorRecetas {
     private static GestorRecetas instancia;
-    private ArrayList<Receta> recetas;
+    private final ArrayList<Receta> RECETAS;
 
     private GestorRecetas() {
-        recetas = new ArrayList<>();
+        RECETAS = new ArrayList<>();
         cargarRecetas();
     }
 
     public void cargarRecetas() {
-        recetas.clear();
-        // Cargar todas las recetas desde el enum
+        RECETAS.clear();
         for (TipoReceta tipo : TipoReceta.values()) {
-            recetas.add(tipo.crear());
+            RECETAS.add(tipo.crear());
         }
     }
 
@@ -30,7 +29,7 @@ public class GestorRecetas {
     }
 
     public Receta buscarReceta(ArrayList<Ingrediente> ingredientes) {
-        for (Receta receta : recetas) {
+        for (Receta receta : RECETAS) {
             if (receta.puedePreparar(ingredientes)) {
                 return receta;
             }
@@ -40,7 +39,7 @@ public class GestorRecetas {
 
     public ArrayList<Receta> getRecetasPorCategoria(CategoriaProducto categoria) {
         ArrayList<Receta> recetasFiltradas = new ArrayList<>();
-        for (Receta receta : recetas) {
+        for (Receta receta : RECETAS) {
             if (receta.getCategoria() == categoria) {
                 recetasFiltradas.add(receta);
             }
@@ -48,7 +47,7 @@ public class GestorRecetas {
         return recetasFiltradas;
     }
 
-    public ArrayList<Receta> getRecetas() {
-        return this.recetas;
+    public ArrayList<Receta> getRECETAS() {
+        return this.RECETAS;
     }
 }

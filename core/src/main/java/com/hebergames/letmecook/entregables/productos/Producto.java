@@ -17,5 +17,4 @@ public abstract class Producto implements ObjetoAlmacenable {
     public String getNombre() { return nombre; }
     public TextureRegion getTextura() { return textura; }
 
-    public CategoriaProducto getCategoria() {return this.categoria;}
 }

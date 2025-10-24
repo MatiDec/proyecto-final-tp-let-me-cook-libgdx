@@ -5,13 +5,13 @@ public enum EstadoCoccion {
     COCIDO("Cocido"),
     QUEMADO("Quemado");
 
-    private String nombre;
+    private final String ESTADO;
 
-    EstadoCoccion(String nombre) {
-        this.nombre = nombre;
+    EstadoCoccion(final String ESTADO) {
+        this.ESTADO = ESTADO;
     }
 
-    public String getNombre() {
-        return this.nombre;
+    public String getESTADO() {
+        return this.ESTADO;
     }
 }

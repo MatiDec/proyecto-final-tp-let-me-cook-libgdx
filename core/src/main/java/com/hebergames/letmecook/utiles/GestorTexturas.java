@@ -20,6 +20,8 @@ public class GestorTexturas {
     private TextureRegion caraEnojada;
     private Texture texturaPisoMojado;
     private TextureRegion regionPisoMojado;
+    private Texture texturaError;
+    private TextureRegion iconoError;
 
     private Map<String, TextureRegion> texturasProductos;
     private boolean texturasListas = false;
@@ -63,6 +65,13 @@ public class GestorTexturas {
 
         } catch (Exception e) {
             System.err.println("No se pudieron cargar las texturas de productos: " + e.getMessage());
+        }
+
+        try {
+            texturaError = new Texture(Gdx.files.internal("core/src/main/java/com/hebergames/letmecook/recursos/imagenes/error_icon.png"));
+            iconoError = new TextureRegion(texturaError);
+        } catch (Exception e) {
+            System.err.println("No se pudo cargar icono de error: " + e.getMessage());
         }
 
         // AÑADIR: Cargar texturas específicas de bebidas
@@ -190,5 +199,9 @@ public class GestorTexturas {
 
     public TextureRegion getTexturaVirtualActiva() {
         return this.texturaClienteVirtual;
+    }
+
+    public Texture getTexturaError() {
+        return this.texturaError;
     }
 }

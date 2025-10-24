@@ -39,7 +39,6 @@ public abstract class Receta {
     public abstract Producto preparar();
 
     public String getNombre() { return nombre; }
-    public ArrayList<String> getIngredientesRequeridos() { return ingredientesRequeridos; }
 
     public CategoriaProducto getCategoria() { return this.categoria; }
 }

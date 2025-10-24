@@ -51,7 +51,7 @@ public class Texto implements ObjetoVisualizable {
     }
 
     public void setTexto(String nuevoTexto) {
-        if (!this.texto.equals(nuevoTexto)) { // solo si realmente cambia
+        if (!this.texto.equals(nuevoTexto)) {
             this.texto = nuevoTexto;
             this.layout.setText(fuente, nuevoTexto);
         }

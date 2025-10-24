@@ -58,10 +58,8 @@ public class CajaVirtual extends EstacionTrabajo implements EstacionEntrega {
         Jugador jugador = getJugadorOcupante();
         if (jugador == null) return;
 
-        // Si tiene cliente virtual en espera, tomar pedido (como CajaRegistradora)
         if (tieneCliente() && clienteVirtual.getPedido().getEstadoPedido() == EstadoPedido.EN_ESPERA) {
             if (gestorPedidos != null) {
-                // El cliente virtual usa ESTA MISMA caja como "mesa de retiro"
                 clienteVirtual.getPedido().setEstadoPedido(EstadoPedido.EN_PREPARACION);
                 clienteVirtual.resetearTiempo();
                 System.out.println("Pedido virtual tomado");
@@ -69,7 +67,7 @@ public class CajaVirtual extends EstacionTrabajo implements EstacionEntrega {
             jugador.salirDeMenu();
             alLiberar();
         }
-        // Si tiene cliente en preparación y jugador tiene producto, entregar (como MesaRetiro)
+
         else if (tieneCliente() &&
             clienteVirtual.getPedido().getEstadoPedido() == EstadoPedido.EN_PREPARACION &&
             jugador.getInventario() instanceof Producto) {
@@ -78,7 +76,6 @@ public class CajaVirtual extends EstacionTrabajo implements EstacionEntrega {
 
             ResultadoEntrega resultado = gestorPedidos.entregarPedido(this, productoJugador);
 
-            // Notificar puntos mediante callback
             if (callbackPuntaje != null) {
                 callbackPuntaje.onPuntosObtenidos(resultado.getPuntos());
             }
@@ -92,15 +89,12 @@ public class CajaVirtual extends EstacionTrabajo implements EstacionEntrega {
     }
 
     public void dibujarEstadoCaja(SpriteBatch batch) {
-        // Siempre dibujar la textura base de la caja
         if (tieneCliente()) {
             batch.draw(texturaCajaEncendida, area.x, area.y, area.width, area.height);
 
-            // Superponer la textura del cliente virtual
             TextureRegion texturaClienteVirtual = GestorTexturas.getInstance().getTexturaCliente();
             if (texturaClienteVirtual != null) {
-                // Centrar el cliente en la caja
-                float clienteX = area.x + (area.width / 2f) - 32f; // 32 = mitad del tamaño del cliente (64/2)
+                float clienteX = area.x + (area.width / 2f) - 32f;
                 float clienteY = area.y + (area.height / 2f) - 32f;
                 batch.draw(texturaClienteVirtual, clienteX, clienteY, 64f, 64f);
             }
@@ -116,21 +110,17 @@ public class CajaVirtual extends EstacionTrabajo implements EstacionEntrega {
 
     @Override
     protected void iniciarMenu(Jugador jugador) {
-        // No necesita menú
     }
 
     @Override
     public void manejarSeleccionMenu(Jugador jugador, int numeroSeleccion) {
-        // No necesita menú
     }
 
     @Override
     protected void dibujarMenu(SpriteBatch batch, Jugador jugador) {
-        // Opcional: mostrar info del pedido virtual
     }
 
     @Override
     protected void alLiberar() {
-        // El cliente se libera cuando se entrega el pedido
     }
 }

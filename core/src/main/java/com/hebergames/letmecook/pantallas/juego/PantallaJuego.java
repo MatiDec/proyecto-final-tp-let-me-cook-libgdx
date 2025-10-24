@@ -209,7 +209,7 @@ public class PantallaJuego extends Pantalla {
         GestorRecetas gestorRecetas = GestorRecetas.getInstance();
         ArrayList<Producto> productosDisponibles = new ArrayList<>();
 
-        for (Receta receta : gestorRecetas.getRecetas()) {
+        for (Receta receta : gestorRecetas.getRECETAS()) {
             productosDisponibles.add(receta.preparar());
         }
 
@@ -347,7 +347,7 @@ public class PantallaJuego extends Pantalla {
         }
 
         if (gestorClientes != null) {
-            for (Cliente cliente : gestorClientes.getClientesActivos()) {
+            for (Cliente cliente : gestorClientes.getCLIENTES_ACTIVOS()) {
                 cliente.dibujar(batch);
             }
         }
@@ -367,9 +367,9 @@ public class PantallaJuego extends Pantalla {
             itemJ2 // Pasa null si jugador2 no existe
         );
         if (gestorClientes != null) {
-            int cantidadActual = gestorClientes.getClientesActivos().size();
+            int cantidadActual = gestorClientes.getCLIENTES_ACTIVOS().size();
             if (cantidadActual != gestorClientes.getUltimaCantidadClientes()) {
-                gestorUI.actualizarPedidosActivos(gestorClientes.getClientesActivos());
+                gestorUI.actualizarPedidosActivos(gestorClientes.getCLIENTES_ACTIVOS());
                 gestorClientes.actualizarUltimaCantidadClientes();
             }
         }
@@ -527,7 +527,6 @@ public class PantallaJuego extends Pantalla {
             gestorMapa.dispose();
         }
 
-        EstacionTrabajo.disposeTexturaError();
         GestorEventosAleatorios.getInstancia().reset();
 
     }

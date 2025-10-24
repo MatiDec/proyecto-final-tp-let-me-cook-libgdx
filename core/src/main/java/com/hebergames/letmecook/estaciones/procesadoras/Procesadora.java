@@ -78,7 +78,7 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
         if (tiempoSonidoTemporizador >= INTERVALO_SONIDO_TEMPORIZADOR) {
             tiempoSonidoTemporizador = 0f;
             System.out.println(tipoCoccion.getAccionRealizada() + " - Estado:" +
-                ingredienteCocinando.getEstadoCoccion().getNombre());
+                ingredienteCocinando.getEstadoCoccion().getESTADO());
         }
 
         if (ingredienteCocinando.estaQuemado()) {
@@ -119,7 +119,7 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
             if (estado == EstadoCoccion.CRUDO) {
                 texto = tipoCoccion.getAccionRealizada();
             } else {
-                texto = estado.getNombre();
+                texto = estado.getESTADO();
             }
 
             System.out.println("DEBUG: HornoProcesador #" + idInstancia + " - Mostrando: " + texto);
@@ -142,7 +142,7 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
 
     @Override
     public void onCambioEstado(EstadoCoccion nuevoEstado) {
-        System.out.println("Estado de cocción cambió a: " + nuevoEstado.getNombre());
+        System.out.println("Estado de cocción cambió a: " + nuevoEstado.getESTADO());
 
         switch (nuevoEstado) {
             case COCIDO:
