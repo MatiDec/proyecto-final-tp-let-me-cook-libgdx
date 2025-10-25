@@ -26,6 +26,8 @@ public class Entrada implements InputProcessor {
     private final Map<Jugador, int[]> TECLAS_MENU_POR_JUGADOR = new HashMap<>();
     private final Map<Jugador, Integer> NUMERO_SELECCIONADO = new HashMap<>();
 
+    private CallbackClick callbackClick;
+
     public void registrar(BotonInteractuable i) {
         ELEMENTOS_INTERACTUABLES.add(i);
     }
@@ -183,13 +185,21 @@ public class Entrada implements InputProcessor {
             }
         }
 
-        // Ya no se permiten clicks en estaciones de trabajo durante el juego
+        if (callbackClick != null) {
+            // Pasar coordenadas ya convertidas (coordenadas del mundo)
+            callbackClick.onClick(coordenadasUI.x, coordenadasUI.y);
+        }
+
         return false;
     }
 
     public void registrarEstacionesTrabajo(List<EstacionTrabajo> estaciones) {
         ESTACIONES.clear();
         ESTACIONES.addAll(estaciones);
+    }
+
+    public void setCallbackClick(CallbackClick callback) {
+        this.callbackClick = callback;
     }
 
     public DatosEntrada getDatosEntrada(Jugador jugador) {
