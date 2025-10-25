@@ -580,7 +580,6 @@ public class PantallaJuego extends Pantalla {
             gestorAudio.detenerMusica();
             int puntajeTotal = gestorPartida.getPuntajeTotalPartida();
             Pantalla.cambiarPantalla(new PantallaFinal(gestorTiempo.getTiempoFormateado(), puntajeTotal));
-            gestorPartida.resetearPartida();
         }
     }
 

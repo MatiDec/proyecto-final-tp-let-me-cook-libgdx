@@ -11,7 +11,7 @@ public class EfectoHover {
 
     public EfectoHover(Texto texto, Color colorHover) {
         this.texto = texto;
-        this.colorOriginal = new Color(texto.fuente.getColor());
+        this.colorOriginal = new Color(texto.getFuente().getColor());
         this.colorHover = colorHover;
     }
 
@@ -28,11 +28,11 @@ public class EfectoHover {
     }
 
     private void aplicarHover() {
-        this.texto.fuente.setColor(colorHover);
+        this.texto.getFuente().setColor(colorHover);
     }
 
     private void quitarHover() {
-        this.texto.fuente.setColor(colorOriginal);
+        this.texto.getFuente().setColor(colorOriginal);
     }
 
     public boolean isEnHover() {

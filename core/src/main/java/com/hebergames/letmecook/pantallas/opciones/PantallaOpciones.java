@@ -1,4 +1,4 @@
-package com.hebergames.letmecook.pantallas;
+package com.hebergames.letmecook.pantallas.opciones;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -10,6 +10,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.eventos.entrada.Entrada;
 import com.hebergames.letmecook.eventos.entrada.TextoInteractuable;
+import com.hebergames.letmecook.pantallas.Pantalla;
+import com.hebergames.letmecook.pantallas.PantallaMenu;
 import com.hebergames.letmecook.pantallas.juego.GestorConfiguracion;
 import com.hebergames.letmecook.utiles.Recursos;
 import com.hebergames.letmecook.utiles.Render;

@@ -11,10 +11,10 @@ import com.hebergames.letmecook.utiles.Render;
 
 public class Texto implements ObjetoVisualizable {
 
-    BitmapFont fuente;
+    private final BitmapFont FUENTE;
     private float x = 0, y = 0;
     private String texto = "";
-    GlyphLayout layout;
+    private final GlyphLayout LAYOUT;
 
     public Texto(final String RUTA_FUENTE, final int DIMENSION, final Color COLOR, final boolean SOMBRA) {
 
@@ -29,9 +29,9 @@ public class Texto implements ObjetoVisualizable {
             parametro.shadowOffsetY = 1;
         }
 
-        fuente = generator.generateFont(parametro);
+        FUENTE = generator.generateFont(parametro);
         generator.dispose();
-        layout = new GlyphLayout();
+        LAYOUT = new GlyphLayout();
     }
     public boolean fueClickeado(float x, float y){
         float ancho = getAncho();
@@ -42,18 +42,18 @@ public class Texto implements ObjetoVisualizable {
     };
 
     public void dibujar() {
-        fuente.draw(Render.batch, this.texto, this.x, this.y);
+        FUENTE.draw(Render.batch, this.texto, this.x, this.y);
     }
 
     @Override
     public void dibujarEnUi(SpriteBatch batch) {
-        fuente.draw(batch, this.texto, this.x, this.y);
+        FUENTE.draw(batch, this.texto, this.x, this.y);
     }
 
     public void setTexto(String nuevoTexto) {
         if (!this.texto.equals(nuevoTexto)) {
             this.texto = nuevoTexto;
-            this.layout.setText(fuente, nuevoTexto);
+            this.LAYOUT.setText(FUENTE, nuevoTexto);
         }
     }
 
@@ -64,11 +64,11 @@ public class Texto implements ObjetoVisualizable {
     }
 
     public float getAncho() {
-        return this.layout.width;
+        return this.LAYOUT.width;
     }
 
     public float getAlto() {
-        return this.layout.height;
+        return this.LAYOUT.height;
     }
 
     public float getX() {
@@ -87,6 +87,6 @@ public class Texto implements ObjetoVisualizable {
     }
 
     public BitmapFont getFuente() {
-        return this.fuente;
+        return this.FUENTE;
     }
 }

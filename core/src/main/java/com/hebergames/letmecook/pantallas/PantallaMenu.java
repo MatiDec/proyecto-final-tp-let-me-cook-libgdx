@@ -12,6 +12,8 @@ import com.hebergames.letmecook.eventos.entrada.Entrada;
 import com.hebergames.letmecook.eventos.entrada.TextoInteractuable;
 import com.hebergames.letmecook.mapa.niveles.GestorPartida;
 import com.hebergames.letmecook.pantallas.juego.PantallaJuego;
+import com.hebergames.letmecook.pantallas.opciones.PantallaOpciones;
+import com.hebergames.letmecook.pantallas.tutorial.PantallaTutorial;
 import com.hebergames.letmecook.utiles.GestorJugadores;
 import com.hebergames.letmecook.elementos.Imagen;
 import com.hebergames.letmecook.utiles.Recursos;

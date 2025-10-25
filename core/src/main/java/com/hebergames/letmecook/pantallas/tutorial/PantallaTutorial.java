@@ -1,9 +1,11 @@
-package com.hebergames.letmecook.pantallas;
+package com.hebergames.letmecook.pantallas.tutorial;
+
+import com.hebergames.letmecook.pantallas.Pantalla;
 
 public class PantallaTutorial extends Pantalla {
     @Override
     public void show() {
-        
+
     }
 
     @Override

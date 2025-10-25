@@ -85,7 +85,7 @@ public class GestorPartida {
     }
 
     public ArrayList<NivelPartida> getTodosLosNiveles() {
-        return nivelesPartida;
+        return this.nivelesPartida;
     }
 
     public int getPuntajeTotalPartida() { return this.puntajeTotalPartida; }
