@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.utils.Disposable;
+import com.hebergames.letmecook.pantallas.juego.GestorConfiguracion;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +26,14 @@ public class GestorAudio implements Disposable {
     private GestorAudio() {
         canciones = new HashMap<>();
         sonidos = new HashMap<>();
+        cargarVolumenDesdeConfiguracion();
+    }
+
+    private void cargarVolumenDesdeConfiguracion() {
+        GestorConfiguracion.cargar();
+        int volumenConfig = GestorConfiguracion.getInt("volumenMusica", 60);
+        this.volumenMusica = volumenConfig / 100f;
+        this.volumenSonidos = volumenConfig / 100f;
     }
 
     //Patrón de diseño Singleton, se asegura de que una clase tenga una única instancia en

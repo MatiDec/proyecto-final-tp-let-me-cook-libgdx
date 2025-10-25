@@ -13,11 +13,11 @@ import com.hebergames.letmecook.eventos.entrada.TextoInteractuable;
 import com.hebergames.letmecook.pantallas.Pantalla;
 import com.hebergames.letmecook.pantallas.PantallaMenu;
 import com.hebergames.letmecook.pantallas.juego.GestorConfiguracion;
+import com.hebergames.letmecook.pantallas.juego.PantallaJuego;
+import com.hebergames.letmecook.pantallas.superposiciones.PantallaPausa;
+import com.hebergames.letmecook.sonido.GestorAudio;
 import com.hebergames.letmecook.utiles.Recursos;
 import com.hebergames.letmecook.utiles.Render;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class PantallaOpciones extends Pantalla {
 
@@ -26,14 +26,23 @@ public class PantallaOpciones extends Pantalla {
     private Viewport viewport;
     private Entrada entrada;
 
-    private Texto tVolumen, tPantallaCompleta, tResolucion, tAplicar, tVolver;
-    private List<Texto> opcionesResolucion = new ArrayList<>();
-
-    private int volumenActual;
+    private ControlVolumen controlVolumen;
+    private SelectorResolucion selectorResolucion;
+    private Texto tPantallaCompleta, tAplicar, tVolver;
     private boolean pantallaCompleta;
     private String[] resoluciones = {"840x680", "1280x720", "1366x768", "1600x900", "1920x1080", "2560x1440"};
-    private int indiceResolucion;
-    private boolean menuResolucionesAbierto = false;
+
+    private boolean esDesdePausa = false;
+    private PantallaPausa pantallaPausa = null;
+
+    public PantallaOpciones() {
+        this.esDesdePausa = false;
+    }
+
+    public PantallaOpciones(PantallaPausa pantallaPausa) {
+        this.esDesdePausa = true;
+        this.pantallaPausa = pantallaPausa;
+    }
 
     @Override
     public void show() {
@@ -52,11 +61,11 @@ public class PantallaOpciones extends Pantalla {
     }
 
     private void inicializarOpciones() {
-        volumenActual = GestorConfiguracion.getInt("volumenMusica", 100);
+        int volumenInicial = GestorConfiguracion.getInt("volumenMusica", 100);
         pantallaCompleta = GestorConfiguracion.getBoolean("pantallaCompleta", false);
         String resActual = GestorConfiguracion.get("resolucion", "1920x1080");
 
-        indiceResolucion = 0;
+        int indiceResolucion = 0;
         for (int i = 0; i < resoluciones.length; i++) {
             if (resoluciones[i].equals(resActual)) {
                 indiceResolucion = i;
@@ -64,73 +73,34 @@ public class PantallaOpciones extends Pantalla {
             }
         }
 
-        tVolumen = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE, true);
-        actualizarTextoVolumen();
+        controlVolumen = new ControlVolumen("Volumen: ", volumenInicial);
+        selectorResolucion = new SelectorResolucion(resoluciones, indiceResolucion);
 
-        tPantallaCompleta = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE, true);
+        tPantallaCompleta = new Texto(Recursos.FUENTE_MENU, 48, Color.WHITE, true);
         actualizarTextoPantallaCompleta();
 
-        tResolucion = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE, true);
-        actualizarTextoResolucion();
-
-        tAplicar = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE, true);
+        tAplicar = new Texto(Recursos.FUENTE_MENU, 48, Color.WHITE, true);
         tAplicar.setTexto("Aplicar");
 
-        tVolver = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE, true);
+        tVolver = new Texto(Recursos.FUENTE_MENU, 48, Color.WHITE, true);
         tVolver.setTexto("Volver");
-
-        opcionesResolucion.clear();
-
-        if (opcionesResolucion.isEmpty()) {
-            for (String r : resoluciones) {
-                Texto opcion = new Texto(Recursos.FUENTE_MENU, 50, Color.LIGHT_GRAY, true);
-                opcion.setTexto(r);
-                opcionesResolucion.add(opcion);
-            }
-        }
-    }
-
-    private void actualizarTextoVolumen() {
-        String barra = generarBarra(volumenActual);
-        tVolumen.setTexto("Volumen: " + barra + " " + volumenActual + "%");
-    }
-
-    //este metodo es un quilombo pero es el que hace el slider
-    private String generarBarra(int valor) {
-        int total = 20; // más segmentos → más precisión
-        int llenos = (int) ((valor / 100f) * total);
-        StringBuilder sb = new StringBuilder("[");
-        for (int i = 0; i < total; i++) {
-            sb.append(i < llenos ? "#" : "-");
-        }
-        sb.append("]");
-        return sb.toString();
     }
 
     private void actualizarTextoPantallaCompleta() {
         tPantallaCompleta.setTexto("Pantalla completa: " + (pantallaCompleta ? "ON" : "OFF"));
     }
 
-    private void actualizarTextoResolucion() {
-        tResolucion.setTexto("Resolución: " + resoluciones[indiceResolucion] + " ▼");
-    }
-
     private void registrarEntradas() {
-        entrada.registrar(new TextoInteractuable(tVolumen, () -> {
-            float xClick = entrada.getUltimoClickX();
-            String textoCompleto = tVolumen.getTexto();
-            int indexBarraStart = textoCompleto.indexOf("[");
-            int indexBarraEnd = textoCompleto.indexOf("]") + 1;
-            float anchoTexto = tVolumen.getAncho();
-            float inicioBarra = tVolumen.getX() + (indexBarraStart / (float) textoCompleto.length()) * anchoTexto;
-            float finBarra = tVolumen.getX() + (indexBarraEnd / (float) textoCompleto.length()) * anchoTexto;
-            float anchoBarra = finBarra - inicioBarra;
-            float relativo = (xClick - inicioBarra) / anchoBarra;
-            if (relativo < 0) relativo = 0;
-            if (relativo > 1) relativo = 1;
-            volumenActual = (int) (relativo * 100);
-            actualizarTextoVolumen();
-            GestorConfiguracion.set("volumenMusica", String.valueOf(volumenActual));
+        entrada.registrar(new TextoInteractuable(controlVolumen.getTextoFlechaIzq(), () -> {
+            controlVolumen.disminuirVolumen();
+            GestorConfiguracion.set("volumenMusica", String.valueOf(controlVolumen.getVolumen()));
+            GestorAudio.getInstance().setVolumenMusica(controlVolumen.getVolumen() / 100f);
+        }));
+
+        entrada.registrar(new TextoInteractuable(controlVolumen.getTextoFlechaDer(), () -> {
+            controlVolumen.aumentarVolumen();
+            GestorConfiguracion.set("volumenMusica", String.valueOf(controlVolumen.getVolumen()));
+            GestorAudio.getInstance().setVolumenMusica(controlVolumen.getVolumen() / 100f);
         }));
 
         entrada.registrar(new TextoInteractuable(tPantallaCompleta, () -> {
@@ -139,23 +109,16 @@ public class PantallaOpciones extends Pantalla {
             GestorConfiguracion.set("pantallaCompleta", String.valueOf(pantallaCompleta));
         }));
 
-        entrada.registrar(new TextoInteractuable(tResolucion, () -> {
-            menuResolucionesAbierto = !menuResolucionesAbierto;
+        entrada.registrar(new TextoInteractuable(selectorResolucion.getTextoFlechaIzq(), () -> {
+            selectorResolucion.anterior();
         }));
 
-        for (int i = 0; i < opcionesResolucion.size(); i++) {
-            final int idx = i;
-            entrada.registrar(new TextoInteractuable(opcionesResolucion.get(i), () -> {
-                if (menuResolucionesAbierto) {
-                    indiceResolucion = idx;
-                    actualizarTextoResolucion();
-                    menuResolucionesAbierto = false;
-                }
-            }));
-        }
+        entrada.registrar(new TextoInteractuable(selectorResolucion.getTextoFlechaDer(), () -> {
+            selectorResolucion.siguiente();
+        }));
 
         entrada.registrar(new TextoInteractuable(tAplicar, () -> {
-            String res = resoluciones[indiceResolucion];
+            String res = selectorResolucion.getResolucionActual();
             GestorConfiguracion.set("resolucion", res);
             GestorConfiguracion.set("pantallaCompleta", String.valueOf(pantallaCompleta));
 
@@ -171,7 +134,13 @@ public class PantallaOpciones extends Pantalla {
         }));
 
         entrada.registrar(new TextoInteractuable(tVolver, () -> {
-            cambiarPantalla(new PantallaMenu());
+            // Verificar de dónde venimos
+            if (esDesdePausa) {
+                // Volver a la pantalla de pausa
+                cambiarPantalla(pantallaPausa);
+            } else {
+                cambiarPantalla(new PantallaMenu());
+            }
         }));
     }
 
@@ -182,30 +151,14 @@ public class PantallaOpciones extends Pantalla {
         float centroX = ancho / 2f;
         float centroY = alto / 2f;
 
-        float espaciado = Math.max(50, alto * 0.08f);
-        float altura = tVolumen.getAlto();
+        float espaciado = 80f;
+        float inicio = centroY + 150f;
 
-        float inicio = centroY + (2 * (altura + espaciado));
-
-        tVolumen.setPosition(centroX - tVolumen.getAncho() / 2f, inicio);
-        tPantallaCompleta.setPosition(centroX - tPantallaCompleta.getAncho() / 2f, inicio - (altura + espaciado));
-        tResolucion.setPosition(centroX - tResolucion.getAncho() / 2f, inicio - 2 * (altura + espaciado));
-        tAplicar.setPosition(centroX - tAplicar.getAncho() / 2f, inicio - 3 * (altura + espaciado));
-        tVolver.setPosition(centroX - tVolver.getAncho() / 2f, inicio - 4 * (altura + espaciado));
-
-        posicionarOpcionesResolucion();
-    }
-
-    private void posicionarOpcionesResolucion() {
-        if (opcionesResolucion.isEmpty()) return;
-
-        float baseY = tResolucion.getY() - 70;
-        float baseX = tResolucion.getX();
-
-        for (int i = 0; i < opcionesResolucion.size(); i++) {
-            Texto opcion = opcionesResolucion.get(i);
-            opcion.setPosition(baseX, baseY - i * 60);
-        }
+        controlVolumen.setPosicion(centroX - 300f, inicio);
+        tPantallaCompleta.setPosition(centroX - tPantallaCompleta.getAncho() / 2f, inicio - espaciado);
+        selectorResolucion.setPosicion(centroX - 300f, inicio - 2 * espaciado);
+        tAplicar.setPosition(centroX - tAplicar.getAncho() / 2f, inicio - 3 * espaciado);
+        tVolver.setPosition(centroX - tVolver.getAncho() / 2f, inicio - 4 * espaciado);
     }
 
     @Override
@@ -220,19 +173,11 @@ public class PantallaOpciones extends Pantalla {
         BATCH.setProjectionMatrix(camara.combined);
         BATCH.begin();
 
-        tVolumen.dibujar();
+        controlVolumen.dibujar(BATCH);
         tPantallaCompleta.dibujar();
-        tResolucion.dibujar();
+        selectorResolucion.dibujar();
         tAplicar.dibujar();
         tVolver.dibujar();
-
-        if (menuResolucionesAbierto) {
-            for (int i = 0; i < Math.min(opcionesResolucion.size(), resoluciones.length); i++) {
-                Texto opcion = opcionesResolucion.get(i);
-                opcion.setColor(i == indiceResolucion ? Color.YELLOW : Color.LIGHT_GRAY);
-                opcion.dibujar();
-            }
-        }
 
         BATCH.end();
     }
