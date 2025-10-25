@@ -7,6 +7,7 @@ import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.entregables.ingredientes.CoccionListener;
 import com.hebergames.letmecook.entregables.ingredientes.EstadoCoccion;
 import com.hebergames.letmecook.entregables.ingredientes.Ingrediente;
+import com.hebergames.letmecook.mapa.indicadores.IndicadorVisual;
 import com.hebergames.letmecook.sonido.GestorAudio;
 import com.hebergames.letmecook.utiles.Recursos;
 
@@ -24,12 +25,18 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
     private Rectangle area;
 
     private TipoCoccion tipoCoccion;
+    private IndicadorVisual indicador;
 
     public Procesadora(Rectangle area, TipoCoccion tipo) {
         this.idInstancia = ++contadorInstancias;
         this.area = area;
         this.tipoCoccion = tipo;
         inicializarIndicador();
+        this.indicador = new IndicadorVisual(
+            area.x + area.width / 2f,
+            area.y + area.height,
+            IndicadorVisual.TipoIndicador.TEMPORIZADOR
+        );
         System.out.println("DEBUG: Creado Procesador #" + idInstancia + " tipo: " + tipo);
     }
 
@@ -62,15 +69,30 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
 
     @Override
     public void actualizarProceso(float delta) {
-        if (!procesando || ingredienteCocinando == null) return;
+        if (!procesando || ingredienteCocinando == null) {
+            if (indicador != null) {
+                indicador.setVisible(false);
+            }
+            return;
+        }
 
         ingredienteCocinando.actualizarCoccion(delta);
+
+        if (indicador != null) {
+            indicador.setVisible(true);
+
+            if (ingredienteCocinando.estaQuemado()) {
+                indicador.setEstado(IndicadorVisual.EstadoIndicador.QUEMANDOSE);
+            } else if (ingredienteCocinando.getEstadoCoccion() == EstadoCoccion.BIEN_HECHO) {
+                indicador.setEstado(IndicadorVisual.EstadoIndicador.LISTO);
+            } else {
+                indicador.setEstado(IndicadorVisual.EstadoIndicador.PROCESANDO);
+            }
+        }
 
         tiempoSonidoTemporizador += delta;
         if (tiempoSonidoTemporizador >= INTERVALO_SONIDO_TEMPORIZADOR) {
             tiempoSonidoTemporizador = 0f;
-            System.out.println(tipoCoccion.getAccionRealizada() + " - Estado:" +
-                ingredienteCocinando.getEstadoCoccion().getESTADO());
         }
 
         if (ingredienteCocinando.estaQuemado()) {
@@ -98,29 +120,29 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
 
     @Override
     public void dibujarIndicador(SpriteBatch batch) {
-        // Solo debug cuando hay algo importante que reportar
-        if (procesando || ingredienteCocinando != null) {
-            System.out.println("DEBUG: HornoProcesador #" + idInstancia + " - dibujarIndicador - procesando: " + procesando +
-                ", ingrediente: " + (ingredienteCocinando != null ? ingredienteCocinando.getNombre() : "null"));
-        }
-
-        String texto;
-        if (procesando && ingredienteCocinando != null) {
-            EstadoCoccion estado = ingredienteCocinando.getEstadoCoccion();
-
-            if (estado == EstadoCoccion.MAL_HECHO) {
-                texto = tipoCoccion.getAccionRealizada();
-            } else {
-                texto = estado.getESTADO();
-            }
-
-            System.out.println("DEBUG: HornoProcesador #" + idInstancia + " - Mostrando: " + texto);
-        } else {
-            texto = tipoCoccion.name() + " Libre";
-        }
-
-        indicadorEstado.setTexto(texto);
-        indicadorEstado.dibujarEnUi(batch);
+//        // Solo debug cuando hay algo importante que reportar
+//        if (procesando || ingredienteCocinando != null) {
+//            System.out.println("DEBUG: HornoProcesador #" + idInstancia + " - dibujarIndicador - procesando: " + procesando +
+//                ", ingrediente: " + (ingredienteCocinando != null ? ingredienteCocinando.getNombre() : "null"));
+//        }
+//
+//        String texto;
+//        if (procesando && ingredienteCocinando != null) {
+//            EstadoCoccion estado = ingredienteCocinando.getEstadoCoccion();
+//
+//            if (estado == EstadoCoccion.MAL_HECHO) {
+//                texto = tipoCoccion.getAccionRealizada();
+//            } else {
+//                texto = estado.getESTADO();
+//            }
+//
+//            System.out.println("DEBUG: HornoProcesador #" + idInstancia + " - Mostrando: " + texto);
+//        } else {
+//            texto = tipoCoccion.name() + " Libre";
+//        }
+//
+//        indicadorEstado.setTexto(texto);
+//        indicadorEstado.dibujarEnUi(batch);
     }
 
     @Override
@@ -147,5 +169,9 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
     public void onIngredienteQuemado() {
         System.out.println("¡Ingrediente quemado!");
         procesando = false;
+    }
+
+    public IndicadorVisual getIndicador() {
+        return this.indicador;
     }
 }

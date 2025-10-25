@@ -7,6 +7,7 @@ import com.hebergames.letmecook.entregables.ObjetoAlmacenable;
 import com.hebergames.letmecook.entregables.ingredientes.Ingrediente;
 import com.hebergames.letmecook.entregables.productos.Producto;
 import com.hebergames.letmecook.estaciones.procesadoras.MaquinaProcesadora;
+import com.hebergames.letmecook.estaciones.procesadoras.Procesadora;
 import com.hebergames.letmecook.pedidos.ResultadoEntrega;
 import com.hebergames.letmecook.utiles.GestorTexturas;
 import com.hebergames.letmecook.utiles.Recursos;
@@ -169,9 +170,7 @@ public abstract class EstacionTrabajo {
     }
 
     public void dibujarIndicador(SpriteBatch batch) {
-        if (procesadora != null) {
-            procesadora.dibujarIndicador(batch);
-        }
+
     }
 
     public void dibujarIndicadorError(SpriteBatch batch) {
@@ -225,4 +224,5 @@ public abstract class EstacionTrabajo {
 
     public abstract void alInteractuar();
 
+    public MaquinaProcesadora getProcesadora() { return this.procesadora; }
 }

@@ -16,12 +16,14 @@ import com.hebergames.letmecook.entregables.productos.Producto;
 import com.hebergames.letmecook.entregables.recetas.GestorRecetas;
 import com.hebergames.letmecook.entregables.recetas.Receta;
 import com.hebergames.letmecook.estaciones.CajaVirtual;
+import com.hebergames.letmecook.estaciones.procesadoras.Procesadora;
 import com.hebergames.letmecook.eventos.eventosaleatorios.EventoMaquinaRota;
 import com.hebergames.letmecook.eventos.eventosaleatorios.EventoPisoMojado;
 import com.hebergames.letmecook.eventos.eventosaleatorios.GestorEventosAleatorios;
 import com.hebergames.letmecook.eventos.hilos.HiloClientes;
 import com.hebergames.letmecook.eventos.puntaje.GestorPuntaje;
 import com.hebergames.letmecook.mapa.*;
+import com.hebergames.letmecook.mapa.indicadores.GestorIndicadores;
 import com.hebergames.letmecook.mapa.niveles.GestorPartida;
 import com.hebergames.letmecook.mapa.niveles.NivelPartida;
 import com.hebergames.letmecook.mapa.niveles.TurnoTrabajo;
@@ -71,6 +73,7 @@ public class PantallaJuego extends Pantalla {
     private GestorAnimacion gestorAnimacionJ2;
     private GestorTiempoJuego gestorTiempo;
     private GestorPartida gestorPartida;
+    private GestorIndicadores gestorIndicadores;
     private NivelPartida nivelActual;
 
     //texturas y animaciones
@@ -115,6 +118,7 @@ public class PantallaJuego extends Pantalla {
     private void inicializarCore() {
         batch = Render.batch;
         gestorTiempo = new GestorTiempoJuego(TIEMPO_OBJETIVO);
+        gestorIndicadores = new GestorIndicadores();
         jugadores = new ArrayList<>();
     }
 
@@ -132,6 +136,16 @@ public class PantallaJuego extends Pantalla {
         gestorMapa.setMapaActual(nivelActual.getMapa());
 
         estaciones = gestorMapa.getEstaciones();
+
+        // Registrar indicadores de las estaciones procesadoras
+        for (EstacionTrabajo estacion : estaciones) {
+            if (estacion.getProcesadora() != null && estacion.getProcesadora() instanceof Procesadora) {
+                Procesadora proc = (Procesadora) estacion.getProcesadora();
+                if (proc.getIndicador() != null) {
+                    gestorIndicadores.registrarIndicador(proc.getIndicador());
+                }
+            }
+        }
 
         jugador1 = new Jugador(1000, 672, gestorAnimacionJ1);
         gestorMapa.asignarColisionesYInteracciones(jugador1);
@@ -328,6 +342,9 @@ public class PantallaJuego extends Pantalla {
             for (Jugador jugador : jugadores) {
                 jugador.actualizar(delta);
             }
+            if (!gestorOverlays.isJuegoEnPausa() && !gestorOverlays.isCalendarioVisible()) {
+                gestorIndicadores.actualizar(delta, gestorViewport.getCamaraJuego());
+            }
             for (EstacionTrabajo estacion : estaciones) {
                 estacion.verificarDistanciaYLiberar();
             }
@@ -340,6 +357,7 @@ public class PantallaJuego extends Pantalla {
 
         gestorMapa.actualizarEstaciones(delta);
         gestorMapa.dibujarIndicadores(batch);
+        gestorIndicadores.dibujar(batch);
 
         // Dibujar todos los jugadores
         for (Jugador jugador : jugadores) {

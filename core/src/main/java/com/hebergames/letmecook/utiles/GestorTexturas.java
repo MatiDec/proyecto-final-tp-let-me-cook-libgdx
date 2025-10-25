@@ -22,6 +22,10 @@ public class GestorTexturas {
     private TextureRegion regionPisoMojado;
     private Texture texturaError;
     private TextureRegion iconoError;
+    private TextureRegion[] texturasTemporizador;
+    private TextureRegion texturaCheck;
+    private TextureRegion texturaAlerta;
+    private TextureRegion texturaFlecha;
 
     private Map<String, TextureRegion> texturasProductos;
     private boolean texturasListas = false;
@@ -117,6 +121,26 @@ public class GestorTexturas {
             System.err.println("No se pudieron cargar las texturas de bebidas: " + e.getMessage());
         }
 
+        try {
+            Texture texturaTemporizadores = new Texture(Gdx.files.internal(
+                "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/temporizadores.png"));
+            TextureRegion[][] tmpTemp = TextureRegion.split(texturaTemporizadores, 32, 32);
+
+            texturasTemporizador = new TextureRegion[3];
+            texturasTemporizador[0] = tmpTemp[0][0]; // Reloj inicial
+            texturasTemporizador[1] = tmpTemp[0][1]; // Reloj medio
+            texturasTemporizador[2] = tmpTemp[0][2]; // Reloj casi listo
+
+            texturaCheck = tmpTemp[1][0]; // Check verde
+            texturaAlerta = tmpTemp[1][1]; // Símbolo alerta rojo
+            Texture texturaFlechaArchivo = new Texture(Gdx.files.internal(
+                "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/texturaFlecha.png"));
+            texturaFlecha = new TextureRegion(texturaFlechaArchivo);
+
+        } catch (Exception e) {
+            System.err.println("No se pudieron cargar texturas de indicadores: " + e.getMessage());
+        }
+
         //carga texturas del piso mojado y la region
         try {
             texturaPisoMojado = new Texture(Gdx.files.internal(
@@ -132,12 +156,26 @@ public class GestorTexturas {
         System.out.println("Texturas cargadas correctamente");
     }
 
+    public TextureRegion getTexturaTemporizador(int frame) {
+        if (texturasTemporizador != null && frame >= 0 && frame < texturasTemporizador.length) {
+            return texturasTemporizador[frame];
+        }
+        return null;
+    }
+
+    public TextureRegion getTexturaCheck() {
+        return this.texturaCheck;
+    }
+
+    public TextureRegion getTexturaAlerta() {
+        return this.texturaAlerta;
+    }
+
     public TextureRegion getTexturaCliente() {
         if (!texturasListas) {
             System.err.println("ADVERTENCIA: Texturas no cargadas aún");
             return null;
         }
-
 
         return texturaClientePresencial;
     }
@@ -161,6 +199,10 @@ public class GestorTexturas {
             return null;
         }
         return regionPisoMojado;
+    }
+
+    public TextureRegion getTexturaFlecha() {
+        return texturaFlecha != null ? texturaFlecha : iconoError;
     }
 
     public void registrarTexturaProducto(String nombreProducto, TextureRegion textura) {
