@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.eventos.entrada.Entrada;
 import com.hebergames.letmecook.eventos.entrada.TextoInteractuable;
+import com.hebergames.letmecook.mapa.niveles.GestorPartida;
 import com.hebergames.letmecook.pantallas.juego.PantallaJuego;
 import com.hebergames.letmecook.utiles.GestorJugadores;
 import com.hebergames.letmecook.elementos.Imagen;
@@ -60,8 +61,10 @@ public class PantallaMenu extends Pantalla {
         opcionesInteractuables = new TextoInteractuable[TOTAL_OPCIONES];
 
         // Crear cada opción interactuable con su acción correspondiente
-        opcionesInteractuables[0] = new TextoInteractuable(opcionesTexto[0], () ->
-            cambiarPantalla(new PantallaJuego()));
+        opcionesInteractuables[0] = new TextoInteractuable(opcionesTexto[0], () -> {
+            GestorPartida.getInstancia().resetearPartida();
+            cambiarPantalla(new PantallaJuego());
+        });
 
         opcionesInteractuables[1] = new TextoInteractuable(opcionesTexto[1], () ->
             System.out.println("Acá debería entrar al modo multijugador online"));

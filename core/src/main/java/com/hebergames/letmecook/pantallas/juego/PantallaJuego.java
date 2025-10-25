@@ -31,9 +31,11 @@ import com.hebergames.letmecook.estaciones.CajaRegistradora;
 import com.hebergames.letmecook.estaciones.EstacionTrabajo;
 import com.hebergames.letmecook.estaciones.MesaRetiro;
 import com.hebergames.letmecook.pantallas.Pantalla;
-import com.hebergames.letmecook.pantallas.PantallaCalendario;
+import com.hebergames.letmecook.pantallas.superposiciones.GestorMostrarCalendario;
+import com.hebergames.letmecook.pantallas.superposiciones.GestorPantallasOverlay;
+import com.hebergames.letmecook.pantallas.superposiciones.PantallaCalendario;
 import com.hebergames.letmecook.pantallas.PantallaFinal;
-import com.hebergames.letmecook.pantallas.PantallaPausa;
+import com.hebergames.letmecook.pantallas.superposiciones.PantallaPausa;
 import com.hebergames.letmecook.pedidos.GestorPedidos;
 import com.hebergames.letmecook.pedidos.Pedido;
 import com.hebergames.letmecook.sonido.CancionNivel;
@@ -48,7 +50,7 @@ import java.util.Map;
 
 public class PantallaJuego extends Pantalla {
 
-    private static final int TIEMPO_OBJETIVO = 90; // 3 minutos
+    private static final int TIEMPO_OBJETIVO = 10; // 3 minutos
     private static final boolean MODO_MULTIJUGADOR = true; // Cambiar a false para un solo jugador
 
     private SpriteBatch batch;
@@ -74,6 +76,7 @@ public class PantallaJuego extends Pantalla {
     private GestorTiempoJuego gestorTiempo;
     private GestorPartida gestorPartida;
     private GestorIndicadores gestorIndicadores;
+    private GestorMostrarCalendario gestorMostrarCalendario;
     private NivelPartida nivelActual;
 
     //texturas y animaciones
@@ -120,6 +123,7 @@ public class PantallaJuego extends Pantalla {
         gestorTiempo = new GestorTiempoJuego(TIEMPO_OBJETIVO);
         gestorIndicadores = new GestorIndicadores();
         jugadores = new ArrayList<>();
+        gestorMostrarCalendario = new GestorMostrarCalendario();
     }
 
     private void inicializarGestores() {
@@ -199,7 +203,9 @@ public class PantallaJuego extends Pantalla {
 
         PantallaPausa pantallaPausa = new PantallaPausa(this);
         PantallaCalendario pantallaCalendario = new PantallaCalendario(this);
-        gestorOverlays = new GestorPantallasOverlay(pantallaPausa, pantallaCalendario, gestorAudio);
+        gestorOverlays = new GestorPantallasOverlay(pantallaPausa, pantallaCalendario, gestorAudio, gestorMostrarCalendario);
+        gestorMostrarCalendario.iniciarMostrar();
+        gestorOverlays.mostrarCalendarioInicial();
 
     }
 
@@ -286,8 +292,19 @@ public class PantallaJuego extends Pantalla {
     public void render(float delta) {
         limpiarPantalla();
         manejarInput();
-        renderizarJuego(delta);
-        renderizarUI();
+        // Actualizar el temporizador del calendario SIEMPRE
+        gestorMostrarCalendario.actualizar(delta);
+
+        // Verificar si debe cerrarse el calendario automático
+        if (!gestorMostrarCalendario.estaMostrando() && gestorOverlays.isCalendarioMostradoAutomaticamente()) {
+            gestorOverlays.cerrarCalendarioAutomatico();
+        }
+
+        // Solo renderizar el juego si el calendario NO está visible
+        if (!gestorOverlays.isCalendarioVisible()) {
+            renderizarJuego(delta);
+            renderizarUI();
+        }
         renderizarOverlays(delta);
         verificarFinDeJuego();
     }
@@ -307,23 +324,23 @@ public class PantallaJuego extends Pantalla {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
-            // Si el calendario está visible, cerrarlo y reanudar
-            if (gestorOverlays.isCalendarioVisible()) {
-                gestorOverlays.toggleCalendario();
-            } else {
-                // Si el juego está en pausa por otra razón, quitarla primero
-                if (gestorOverlays.isJuegoEnPausa()) {
-                    togglePausa();
+            // No permitir toggle si está en mostrado automático
+            if (!gestorMostrarCalendario.estaMostrando()) {
+                if (gestorOverlays.isCalendarioVisible()) {
+                    gestorOverlays.toggleCalendario();
+                } else {
+                    if (gestorOverlays.isJuegoEnPausa()) {
+                        togglePausa();
+                    }
+                    gestorOverlays.toggleCalendario();
                 }
-                gestorOverlays.toggleCalendario();
-            }
 
-            // Reconfigurar entrada solo si el calendario se cerró
-            if (!gestorOverlays.isCalendarioVisible()) {
-                gestorEntrada.configurarEntrada(
-                    gestorViewport.getViewportJuego(),
-                    gestorViewport.getViewportUI()
-                );
+                if (!gestorOverlays.isCalendarioVisible()) {
+                    gestorEntrada.configurarEntrada(
+                        gestorViewport.getViewportJuego(),
+                        gestorViewport.getViewportUI()
+                    );
+                }
             }
         }
     }
@@ -338,11 +355,11 @@ public class PantallaJuego extends Pantalla {
         gestorMapa.renderizar(gestorViewport.getCamaraJuego());
 
 
-        if (!gestorOverlays.isJuegoEnPausa() && !gestorOverlays.isCalendarioVisible()) {
+        if (!gestorOverlays.isJuegoEnPausa() && !gestorOverlays.isCalendarioVisible() && !gestorMostrarCalendario.estaMostrando()) {
             for (Jugador jugador : jugadores) {
                 jugador.actualizar(delta);
             }
-            if (!gestorOverlays.isJuegoEnPausa() && !gestorOverlays.isCalendarioVisible()) {
+            if (!gestorOverlays.isJuegoEnPausa() && !gestorOverlays.isCalendarioVisible() && !gestorMostrarCalendario.estaMostrando()) {
                 gestorIndicadores.actualizar(delta, gestorViewport.getCamaraJuego());
             }
             for (EstacionTrabajo estacion : estaciones) {

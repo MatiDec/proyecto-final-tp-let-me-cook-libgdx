@@ -23,6 +23,7 @@ public class GestorUIJuego {
     private ArrayList<TarjetaPedido> tarjetasPedidos;
 
     private Texto textoPuntaje;
+    private Texto textoIndicadorCalendario;
     private final int MAX_PEDIDOS_VISIBLES = 5;
 
     public GestorUIJuego() {
@@ -40,6 +41,10 @@ public class GestorUIJuego {
         textoPuntaje = new Texto(Recursos.FUENTE_MENU, 32, Color.YELLOW, true);
         textoPuntaje.setTexto("Puntos: 0");
         objetosUI.add(textoPuntaje);
+
+        textoIndicadorCalendario = new Texto(Recursos.FUENTE_MENU, 24, Color.CYAN, true);
+        textoIndicadorCalendario.setTexto("[TAB] Calendario");
+        objetosUI.add(textoIndicadorCalendario);
 
         textosPedidos = new ArrayList<>();
 
@@ -128,6 +133,12 @@ public class GestorUIJuego {
             float yPos = yInicialPedidos - (i * 30);
             texto.setPosition(anchoUI - texto.getAncho() - MARGEN, yPos);
         }
+
+        // Indicador de calendario (abajo, centro)
+        textoIndicadorCalendario.setPosition(
+            anchoUI / 2f - textoIndicadorCalendario.getAncho() / 2f,
+            MARGEN / 2f
+        );
     }
 
     public void dispose() {

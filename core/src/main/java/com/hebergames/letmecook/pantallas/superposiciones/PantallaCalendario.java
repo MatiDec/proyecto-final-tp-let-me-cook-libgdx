@@ -1,4 +1,4 @@
-package com.hebergames.letmecook.pantallas;
+package com.hebergames.letmecook.pantallas.superposiciones;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.mapa.niveles.GestorPartida;
 import com.hebergames.letmecook.mapa.niveles.NivelPartida;
-import com.hebergames.letmecook.pantallas.juego.InfoDiaNivel;
+import com.hebergames.letmecook.pantallas.Pantalla;
 import com.hebergames.letmecook.pantallas.juego.PantallaJuego;
 import com.hebergames.letmecook.utiles.Recursos;
 import com.hebergames.letmecook.utiles.Render;

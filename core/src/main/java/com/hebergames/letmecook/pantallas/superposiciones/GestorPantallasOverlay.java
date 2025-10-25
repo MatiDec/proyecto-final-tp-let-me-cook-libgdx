@@ -1,7 +1,5 @@
-package com.hebergames.letmecook.pantallas.juego;
+package com.hebergames.letmecook.pantallas.superposiciones;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.hebergames.letmecook.pantallas.PantallaCalendario;
-import com.hebergames.letmecook.pantallas.PantallaPausa;
 import com.hebergames.letmecook.sonido.GestorAudio;
 
 public class GestorPantallasOverlay {
@@ -10,18 +8,28 @@ public class GestorPantallasOverlay {
     private PantallaCalendario pantallaCalendario;
     private boolean calendarioVisible;
     private boolean juegoEnPausa;
+    private GestorMostrarCalendario gestorMostrarCalendario;
+    private boolean calendarioMostradoAutomaticamente;
 
     private final GestorAudio gestorAudio;
 
-    public GestorPantallasOverlay(PantallaPausa pantallaPausa, PantallaCalendario pantallaCalendario, GestorAudio gestorAudio) {
+    public GestorPantallasOverlay(PantallaPausa pantallaPausa, PantallaCalendario pantallaCalendario,
+                                  GestorAudio gestorAudio, GestorMostrarCalendario gestorMostrarCalendario) {
         this.pantallaPausa = pantallaPausa;
         this.pantallaCalendario = pantallaCalendario;
         this.gestorAudio = gestorAudio;
+        this.gestorMostrarCalendario = gestorMostrarCalendario;
         this.juegoEnPausa = false;
         this.calendarioVisible = false;
+        this.calendarioMostradoAutomaticamente = false;
     }
 
     public void toggleCalendario() {
+        // Si está en modo automático, no permitir toggle manual
+        if (calendarioMostradoAutomaticamente) {
+            return;
+        }
+
         calendarioVisible = !calendarioVisible;
 
         if (calendarioVisible) {
@@ -29,6 +37,9 @@ public class GestorPantallasOverlay {
                 juegoEnPausa = false;
             }
             pantallaCalendario.show();
+            gestorAudio.pausarMusica();
+        } else {
+            gestorAudio.reanudarMusica();
         }
     }
 
@@ -63,6 +74,27 @@ public class GestorPantallasOverlay {
         if (pantallaCalendario != null) {
             pantallaCalendario.dispose();
         }
+    }
+
+    public void mostrarCalendarioInicial() {
+        if (!calendarioVisible) {
+            calendarioVisible = true;
+            calendarioMostradoAutomaticamente = true;
+            pantallaCalendario.show();
+            gestorAudio.pausarMusica();
+        }
+    }
+
+    public void cerrarCalendarioAutomatico() {
+        if (calendarioMostradoAutomaticamente) {
+            calendarioVisible = false;
+            calendarioMostradoAutomaticamente = false;
+            gestorAudio.reanudarMusica();
+        }
+    }
+
+    public boolean isCalendarioMostradoAutomaticamente() {
+        return calendarioMostradoAutomaticamente;
     }
 
     // Getters

@@ -1,4 +1,4 @@
-package com.hebergames.letmecook.pantallas.juego;
+package com.hebergames.letmecook.pantallas.superposiciones;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
