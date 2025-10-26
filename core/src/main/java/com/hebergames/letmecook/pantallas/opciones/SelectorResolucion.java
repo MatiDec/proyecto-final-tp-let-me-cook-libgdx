@@ -5,33 +5,28 @@ import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.utiles.Recursos;
 
 public class SelectorResolucion {
-    private Texto textoTitulo;
-    private Texto textoFlechaIzq;
-    private Texto textoFlechaDer;
-    private Texto textoResolucionActual;
-    private String[] resoluciones;
+    private final Texto TEXTO_TITULO;
+    private final Texto TEXTO_FLECHA_IZQ;
+    private final Texto TEXTO_FLECHA_DER;
+    private final Texto TEXTO_RESOLUCION_ACTUAL;
+    private final String[] RESOLUCIONES;
     private int indiceActual;
     private float x, y;
 
-    private final float ANCHO_BLOQUE_RESOLUCION = 300f; // ancho fijo del bloque
-    private final float MARGEN_TITULO_A_FLECHA = 20f;
-    private final float MARGEN_FLECHA_A_BLOQUE = 10f;
-    private final float MARGEN_BLOQUE_A_FLECHA = 10f;
-
-    public SelectorResolucion(String[] resoluciones, int indiceInicial) {
-        this.resoluciones = resoluciones;
+    public SelectorResolucion(final String[] RESOLUCIONES, int indiceInicial) {
+        this.RESOLUCIONES = RESOLUCIONES;
         this.indiceActual = indiceInicial;
 
-        textoTitulo = new Texto(Recursos.FUENTE_MENU, 48, Color.WHITE, true);
-        textoTitulo.setTexto("Resolución: ");
+        TEXTO_TITULO = new Texto(Recursos.FUENTE_MENU, 48, Color.WHITE, true);
+        TEXTO_TITULO.setTexto("Resolución: ");
 
-        textoFlechaIzq = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE, true);
-        textoFlechaIzq.setTexto("<");
+        TEXTO_FLECHA_IZQ = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE, true);
+        TEXTO_FLECHA_IZQ.setTexto("<");
 
-        textoFlechaDer = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE, true);
-        textoFlechaDer.setTexto(">");
+        TEXTO_FLECHA_DER = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE, true);
+        TEXTO_FLECHA_DER.setTexto(">");
 
-        textoResolucionActual = new Texto(Recursos.FUENTE_MENU, 48, Color.YELLOW, true);
+        TEXTO_RESOLUCION_ACTUAL = new Texto(Recursos.FUENTE_MENU, 48, Color.YELLOW, true);
         actualizarTextoResolucion();
     }
 
@@ -42,71 +37,59 @@ public class SelectorResolucion {
     }
 
     private void actualizarPosiciones() {
-        textoTitulo.setPosition(x, y);
+        TEXTO_TITULO.setPosition(x, y);
 
-        // Flecha izquierda
-        float flechaIzqX = x + textoTitulo.getAncho() + MARGEN_TITULO_A_FLECHA;
-        textoFlechaIzq.setPosition(flechaIzqX, y);
+        float MARGEN_TITULO_A_FLECHA = 20f;
+        float flechaIzqX = x + TEXTO_TITULO.getAncho() + MARGEN_TITULO_A_FLECHA;
+        TEXTO_FLECHA_IZQ.setPosition(flechaIzqX, y);
 
-        // Centro del bloque fijo
-        float bloqueX = flechaIzqX + textoFlechaIzq.getAncho() + MARGEN_FLECHA_A_BLOQUE;
+        float MARGEN_FLECHA_A_BLOQUE = 10f;
+        float bloqueX = flechaIzqX + TEXTO_FLECHA_IZQ.getAncho() + MARGEN_FLECHA_A_BLOQUE;
+        float ANCHO_BLOQUE_RESOLUCION = 300f;
         float bloqueCentro = bloqueX + ANCHO_BLOQUE_RESOLUCION / 2f;
 
-        // Centrar el texto de resolución dentro del bloque
-        float textoResX = bloqueCentro - (textoResolucionActual.getAncho() / 2f);
-        textoResolucionActual.setPosition(textoResX, y);
+        float textoResX = bloqueCentro - (TEXTO_RESOLUCION_ACTUAL.getAncho() / 2f);
+        TEXTO_RESOLUCION_ACTUAL.setPosition(textoResX, y);
 
-        // Flecha derecha fija al final del bloque
+        float MARGEN_BLOQUE_A_FLECHA = 10f;
         float flechaDerX = bloqueX + ANCHO_BLOQUE_RESOLUCION + MARGEN_BLOQUE_A_FLECHA;
-        textoFlechaDer.setPosition(flechaDerX, y);
+        TEXTO_FLECHA_DER.setPosition(flechaDerX, y);
     }
 
     private void actualizarTextoResolucion() {
-        textoResolucionActual.setTexto(resoluciones[indiceActual]);
+        TEXTO_RESOLUCION_ACTUAL.setTexto(RESOLUCIONES[indiceActual]);
         actualizarPosiciones();
     }
 
     public void siguiente() {
-        indiceActual = (indiceActual + 1) % resoluciones.length;
+        indiceActual = (indiceActual + 1) % RESOLUCIONES.length;
         actualizarTextoResolucion();
         actualizarPosiciones();
     }
 
     public void anterior() {
-        indiceActual = (indiceActual - 1 + resoluciones.length) % resoluciones.length;
+        indiceActual = (indiceActual - 1 + RESOLUCIONES.length) % RESOLUCIONES.length;
         actualizarTextoResolucion();
         actualizarPosiciones();
     }
 
     public void dibujar() {
         actualizarPosiciones();
-        textoTitulo.dibujar();
-        textoFlechaIzq.dibujar();
-        textoResolucionActual.dibujar();
-        textoFlechaDer.dibujar();
-    }
-
-    public boolean clickEnFlechaIzquierda(float mouseX, float mouseY) {
-        return textoFlechaIzq.fueClickeado(mouseX, mouseY);
-    }
-
-    public boolean clickEnFlechaDerecha(float mouseX, float mouseY) {
-        return textoFlechaDer.fueClickeado(mouseX, mouseY);
+        TEXTO_TITULO.dibujar();
+        TEXTO_FLECHA_IZQ.dibujar();
+        TEXTO_RESOLUCION_ACTUAL.dibujar();
+        TEXTO_FLECHA_DER.dibujar();
     }
 
     public String getResolucionActual() {
-        return resoluciones[indiceActual];
-    }
-
-    public int getIndiceActual() {
-        return indiceActual;
+        return this.RESOLUCIONES[indiceActual];
     }
 
     public Texto getTextoFlechaIzq() {
-        return textoFlechaIzq;
+        return this.TEXTO_FLECHA_IZQ;
     }
 
     public Texto getTextoFlechaDer() {
-        return textoFlechaDer;
+        return this.TEXTO_FLECHA_DER;
     }
 }

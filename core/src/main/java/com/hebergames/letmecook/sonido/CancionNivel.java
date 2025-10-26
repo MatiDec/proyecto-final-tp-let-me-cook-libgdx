@@ -4,18 +4,16 @@ public enum CancionNivel {
     NIVEL_1("musica_nivel_1", "core/src/main/java/com/hebergames/letmecook/recursos/audio/musica/musicaFondo1.ogg"),
     NIVEL_2("musica_nivel_2", "core/src/main/java/com/hebergames/letmecook/recursos/audio/musica/musicaFondo1.ogg");
     //TODO NO OLVIDAR CAMBIAR LAS RUTAS POR LA MÚSICA NUEVA
-    //NIVEL_3("musica_nivel_3", "core/src/main/java/com/hebergames/letmecook/recursos/audio/musica/nivel3.ogg"),
-    //NIVEL_4("musica_nivel_4", "core/src/main/java/com/hebergames/letmecook/recursos/audio/musica/nivel4.ogg");
 
-    private String identificador;
-    private String ruta;
+    private final String IDENTIFICADOR;
+    private final String RUTA;
 
-    CancionNivel(String identificador, String ruta) {
-        this.identificador = identificador;
-        this.ruta = ruta;
+    CancionNivel(String IDENTIFICADOR, String RUTA) {
+        this.IDENTIFICADOR = IDENTIFICADOR;
+        this.RUTA = RUTA;
     }
 
-    public String getIdentificador() { return this.identificador; }
+    public String getIdentificador() { return this.IDENTIFICADOR; }
 
-    public String getRuta() { return this.ruta; }
+    public String getRuta() { return this.RUTA; }
 }

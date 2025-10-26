@@ -1,25 +1,14 @@
 package com.hebergames.letmecook.pedidos;
 
 public class ResultadoEntrega {
-    private boolean exitoso;
-    private int puntos;
-    private String mensaje;
+    private final int PUNTOS;
 
-    public ResultadoEntrega(boolean exitoso, int puntos, String mensaje) {
-        this.exitoso = exitoso;
-        this.puntos = puntos;
-        this.mensaje = mensaje;
-    }
-
-    public boolean isExitoso() {
-        return exitoso;
+    public ResultadoEntrega(final int PUNTOS) {
+        this.PUNTOS = PUNTOS;
     }
 
     public int getPuntos() {
-        return puntos;
+        return PUNTOS;
     }
 
-    public String getMensaje() {
-        return mensaje;
-    }
 }

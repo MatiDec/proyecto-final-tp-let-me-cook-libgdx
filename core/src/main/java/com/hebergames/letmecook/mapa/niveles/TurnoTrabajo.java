@@ -7,34 +7,19 @@ public enum TurnoTrabajo {
     TARDE("Tarde", CategoriaProducto.ALMUERZO, CategoriaProducto.BEBIDAS),
     NOCHE("Noche", CategoriaProducto.ALMUERZO, CategoriaProducto.BEBIDAS);
 
-    private String nombre;
-    private CategoriaProducto[] categoriasProductos;
+    private final String NOMBRE;
+    private final CategoriaProducto[] CATEGORIAS_PRODUCTOS;
 
-    TurnoTrabajo(String nombre, CategoriaProducto... categorias) {
-        this.nombre = nombre;
-        this.categoriasProductos = categorias;
+    TurnoTrabajo(String NOMBRE, CategoriaProducto... categorias) {
+        this.NOMBRE = NOMBRE;
+        this.CATEGORIAS_PRODUCTOS = categorias;
     }
 
     public CategoriaProducto[] getCategoriasProductos() {
-        return this.categoriasProductos;
-    }
-
-    // Mantener compatibilidad con código anterior
-    @Deprecated
-    public CategoriaProducto getCategoriaProductos() {
-        return categoriasProductos.length > 0 ? categoriasProductos[0] : null;
-    }
-
-    public boolean aceptaCategoria(CategoriaProducto categoria) {
-        for (CategoriaProducto cat : categoriasProductos) {
-            if (cat == categoria) {
-                return true;
-            }
-        }
-        return false;
+        return this.CATEGORIAS_PRODUCTOS;
     }
 
     public String getNombre() {
-        return this.nombre;
+        return this.NOMBRE;
     }
 }

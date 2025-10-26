@@ -27,12 +27,12 @@ public class GestorTexturas {
     private TextureRegion texturaAlerta;
     private TextureRegion texturaFlecha;
 
-    private Map<String, TextureRegion> texturasProductos;
+    private final Map<String, TextureRegion> TEXTURAS_PRODUCTOS;
     private boolean texturasListas = false;
     private TextureRegion texturaIngrediente;
 
     private GestorTexturas() {
-        texturasProductos = new HashMap<>();
+        TEXTURAS_PRODUCTOS = new HashMap<>();
     }
 
     public static GestorTexturas getInstance() {
@@ -45,7 +45,6 @@ public class GestorTexturas {
     public void cargarTexturas() {
         if (texturasListas) return;
 
-        // Cargar texturas de clientes
         texturaClientes = new Texture(Gdx.files.internal(
             "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/clientes.jpg"));
         TextureRegion[][] tmpClientes = TextureRegion.split(texturaClientes, 32, 32);
@@ -59,14 +58,12 @@ public class GestorTexturas {
         caraImpaciente = tmpCaras[0][1];
         caraEnojada = tmpCaras[0][2];
 
-        // Cargar texturas de productos
         try {
             Texture texturaProductos = new Texture(Gdx.files.internal(
                 "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/productos.png"));
             TextureRegion[][] tmpProductos = TextureRegion.split(texturaProductos, 32, 32);
 
-            // Registrar productos con nombre y región correspondiente
-            texturasProductos.put("hamburguesa", tmpProductos[0][0]);
+            TEXTURAS_PRODUCTOS.put("hamburguesa", tmpProductos[0][0]);
 
         } catch (Exception e) {
             System.err.println("No se pudieron cargar las texturas de productos: " + e.getMessage());
@@ -79,7 +76,6 @@ public class GestorTexturas {
             System.err.println("No se pudo cargar icono de error: " + e.getMessage());
         }
 
-        // AÑADIR: Cargar texturas específicas de bebidas
         try {
             Texture texturaBebidas = new Texture(Gdx.files.internal(
                 "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/bebidas.png"));
@@ -92,7 +88,7 @@ public class GestorTexturas {
             for (int fila = 0; fila < tamanos.length; fila++) {
                 for (int col = 0; col < tiposBebidas.length && col < tmpBebidas[fila].length; col++) {
                     String nombreTex = tiposBebidas[col] + tamanos[fila];
-                    texturasProductos.put(nombreTex, tmpBebidas[fila][col]);
+                    TEXTURAS_PRODUCTOS.put(nombreTex, tmpBebidas[fila][col]);
                 }
             }
         } catch (Exception e) {
@@ -105,12 +101,12 @@ public class GestorTexturas {
             TextureRegion[][] tmpTemp = TextureRegion.split(texturaTemporizadores, 32, 32);
 
             texturasTemporizador = new TextureRegion[3];
-            texturasTemporizador[0] = tmpTemp[0][0]; // Reloj inicial
-            texturasTemporizador[1] = tmpTemp[0][1]; // Reloj medio
-            texturasTemporizador[2] = tmpTemp[0][2]; // Reloj casi listo
+            texturasTemporizador[0] = tmpTemp[0][0];
+            texturasTemporizador[1] = tmpTemp[0][1];
+            texturasTemporizador[2] = tmpTemp[0][2];
 
-            texturaCheck = tmpTemp[1][0]; // Check verde
-            texturaAlerta = tmpTemp[1][1]; // Símbolo alerta rojo
+            texturaCheck = tmpTemp[1][0];
+            texturaAlerta = tmpTemp[1][1];
             Texture texturaFlechaArchivo = new Texture(Gdx.files.internal(
                 "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/texturaFlecha.png"));
             texturaFlecha = new TextureRegion(texturaFlechaArchivo);
@@ -119,7 +115,6 @@ public class GestorTexturas {
             System.err.println("No se pudieron cargar texturas de indicadores: " + e.getMessage());
         }
 
-        //carga texturas del piso mojado y la region
         try {
             texturaPisoMojado = new Texture(Gdx.files.internal(
                 "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/piso_mojado.png"));
@@ -164,7 +159,7 @@ public class GestorTexturas {
             return null;
         }
 
-        TextureRegion textura = texturasProductos.get(nombreProducto);
+        TextureRegion textura = TEXTURAS_PRODUCTOS.get(nombreProducto);
         if (textura == null) {
             return texturaClientePresencial;
         }
@@ -183,21 +178,17 @@ public class GestorTexturas {
         return texturaFlecha != null ? texturaFlecha : iconoError;
     }
 
-    public void registrarTexturaProducto(String nombreProducto, TextureRegion textura) {
-        texturasProductos.put(nombreProducto, textura);
-    }
-
     public boolean estanTexturasListas() {
         return texturasListas;
     }
 
     public TextureRegion getCaraPorTolerancia(float porcentajeTolerancia) {
         if (porcentajeTolerancia > 0.6f) {
-            return caraFeliz;    // Verde
+            return caraFeliz;
         } else if (porcentajeTolerancia > 0.3f) {
-            return caraImpaciente; // Amarillo
+            return caraImpaciente;
         } else {
-            return caraEnojada;   // Rojo
+            return caraEnojada;
         }
     }
 

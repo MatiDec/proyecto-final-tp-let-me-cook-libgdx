@@ -55,7 +55,6 @@ public class Fuente extends EstacionTrabajo {
                 estadoMenu = EstadoMenuBebida.SELECCION_TAMANO;
                 seleccionTamano = 0;
                 seleccionTipo = 0;
-            } else {
             }
         }
     }

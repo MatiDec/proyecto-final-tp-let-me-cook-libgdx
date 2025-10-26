@@ -6,32 +6,27 @@ import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.utiles.Recursos;
 
 public class ControlVolumen {
-    private Texto textoTitulo;
-    private Texto textoFlechaIzq;
-    private Texto textoFlechaDer;
+    private final Texto TEXTO_TITULO;
+    private final Texto TEXTO_FLECHA_IZQ;
+    private final Texto TEXTO_FLECHA_DER;
     private int volumenActual;
     private float x, y;
 
     private final int INCREMENTO = 10;
     private final int CUADRADOS_TOTAL = 10;
     private final float ANCHO_CUADRADO = 20f;
-    private final float ALTO_CUADRADO = 20f;
     private final float ESPACIADO_CUADRADO = 5f;
-
-    private final float MARGEN_TITULO_A_FLECHA = 20f;
-    private final float MARGEN_FLECHA_A_BARRA = 10f;
-    private final float MARGEN_BARRA_A_FLECHA_DER = 10f;
 
     public ControlVolumen(String titulo, int volumenInicial) {
         this.volumenActual = volumenInicial;
-        textoTitulo = new Texto(Recursos.FUENTE_MENU, 48, Color.WHITE, true);
-        textoTitulo.setTexto(titulo);
+        TEXTO_TITULO = new Texto(Recursos.FUENTE_MENU, 48, Color.WHITE, true);
+        TEXTO_TITULO.setTexto(titulo);
 
-        textoFlechaIzq = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE, true);
-        textoFlechaIzq.setTexto("<");
+        TEXTO_FLECHA_IZQ = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE, true);
+        TEXTO_FLECHA_IZQ.setTexto("<");
 
-        textoFlechaDer = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE, true);
-        textoFlechaDer.setTexto(">");
+        TEXTO_FLECHA_DER = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE, true);
+        TEXTO_FLECHA_DER.setTexto(">");
     }
 
     public void setPosicion(float x, float y) {
@@ -41,19 +36,19 @@ public class ControlVolumen {
     }
 
     private void actualizarPosiciones() {
-        textoTitulo.setPosition(x, y);
+        TEXTO_TITULO.setPosition(x, y);
 
         float anchoBarra = (CUADRADOS_TOTAL * ANCHO_CUADRADO) + ((CUADRADOS_TOTAL - 1) * ESPACIADO_CUADRADO);
-        // Flecha izquierda fija después del título
-        float flechaIzqX = x + textoTitulo.getAncho() + MARGEN_TITULO_A_FLECHA;
-        textoFlechaIzq.setPosition(flechaIzqX, y);
+        float MARGEN_TITULO_A_FLECHA = 20f;
+        float flechaIzqX = x + TEXTO_TITULO.getAncho() + MARGEN_TITULO_A_FLECHA;
+        TEXTO_FLECHA_IZQ.setPosition(flechaIzqX, y);
 
-        // Barra comienza después de la flecha izquierda
-        float inicioBarraX = flechaIzqX + textoFlechaIzq.getAncho() + MARGEN_FLECHA_A_BARRA;
+        float MARGEN_FLECHA_A_BARRA = 10f;
+        float inicioBarraX = flechaIzqX + TEXTO_FLECHA_IZQ.getAncho() + MARGEN_FLECHA_A_BARRA;
 
-        // Flecha derecha fija después de la barra completa
+        float MARGEN_BARRA_A_FLECHA_DER = 10f;
         float flechaDerX = inicioBarraX + anchoBarra + MARGEN_BARRA_A_FLECHA_DER;
-        textoFlechaDer.setPosition(flechaDerX, y);
+        TEXTO_FLECHA_DER.setPosition(flechaDerX, y);
     }
 
     public void aumentarVolumen() {
@@ -65,14 +60,13 @@ public class ControlVolumen {
     }
 
     public void dibujar(SpriteBatch batch) {
-        textoTitulo.dibujar();
-        textoFlechaIzq.dibujar();
-        textoFlechaDer.dibujar();
+        TEXTO_TITULO.dibujar();
+        TEXTO_FLECHA_IZQ.dibujar();
+        TEXTO_FLECHA_DER.dibujar();
 
         actualizarPosiciones();
 
-        float anchoBarra = (CUADRADOS_TOTAL * ANCHO_CUADRADO) + ((CUADRADOS_TOTAL - 1) * ESPACIADO_CUADRADO);
-        float inicioBarraX = x + textoTitulo.getAncho() + 30f;
+        float inicioBarraX = x + TEXTO_TITULO.getAncho() + 30f;
         float barraY = y - 15f;
 
         int cuadradosLlenos = volumenActual / INCREMENTO;
@@ -86,18 +80,11 @@ public class ControlVolumen {
                 batch.setColor(Color.DARK_GRAY);
             }
 
+            float ALTO_CUADRADO = 20f;
             batch.draw(Recursos.PIXEL, cuadradoX, barraY, ANCHO_CUADRADO, ALTO_CUADRADO);
         }
 
         batch.setColor(Color.WHITE);
-    }
-
-    public boolean clickEnFlechaIzquierda(float mouseX, float mouseY) {
-        return textoFlechaIzq.fueClickeado(mouseX, mouseY);
-    }
-
-    public boolean clickEnFlechaDerecha(float mouseX, float mouseY) {
-        return textoFlechaDer.fueClickeado(mouseX, mouseY);
     }
 
     public int getVolumen() {
@@ -105,10 +92,10 @@ public class ControlVolumen {
     }
 
     public Texto getTextoFlechaIzq() {
-        return textoFlechaIzq;
+        return TEXTO_FLECHA_IZQ;
     }
 
     public Texto getTextoFlechaDer() {
-        return textoFlechaDer;
+        return TEXTO_FLECHA_DER;
     }
 }

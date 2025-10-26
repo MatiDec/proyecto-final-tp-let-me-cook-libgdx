@@ -10,12 +10,12 @@ import com.hebergames.letmecook.estaciones.MesaRetiro;
 import java.util.ArrayList;
 
 public class GestorPedidos {
-    private GestorClientes gestorClientes;
-    private ArrayList<MesaRetiro> mesasRetiro;
+    private final GestorClientes GESTOR_CLIENTES;
+    private final ArrayList<MesaRetiro> MESAS_RETIRO;
 
-    public GestorPedidos(GestorClientes gestorClientes, ArrayList<MesaRetiro> mesas) {
-        this.gestorClientes = gestorClientes;
-        this.mesasRetiro = mesas;
+    public GestorPedidos(GestorClientes GESTOR_CLIENTES, ArrayList<MesaRetiro> mesas) {
+        this.GESTOR_CLIENTES = GESTOR_CLIENTES;
+        this.MESAS_RETIRO = mesas;
     }
 
     public boolean tomarPedido(CajaRegistradora caja) {
@@ -30,9 +30,8 @@ public class GestorPedidos {
             return false;
         }
 
-        // Cambiar estado del pedido
         logMem("antes setEstado");
-        cliente.getPedido().setEstadoPedido(EstadoPedido.EN_PREPARACION);
+        cliente.getPEDIDO().setEstadoPedido(EstadoPedido.EN_PREPARACION);
         logMem("despues setEstado");
 
         cliente.resetearTiempo();
@@ -48,8 +47,8 @@ public class GestorPedidos {
         logMem("despues liberarCaja");
 
         System.out.println("Pedido tomado. Cliente movido a mesa de retiro");
-        for (int i = 0; i<cliente.getPedido().getProductosSolicitados().size(); i++) {
-            System.out.println(cliente.getPedido().getProductosSolicitados().get(i).getNombre());
+        for (int i = 0; i<cliente.getPEDIDO().getProductosSolicitados().size(); i++) {
+            System.out.println(cliente.getPEDIDO().getProductosSolicitados().get(i).getNombre());
         }
         return true;
     }
@@ -62,13 +61,12 @@ public class GestorPedidos {
     public ResultadoEntrega entregarPedido(EstacionEntrega estacion, Producto productoEntregado) {
         Cliente cliente = estacion.getCliente();
         if (cliente == null) {
-            return new ResultadoEntrega(false, 0, "No hay cliente en esta estación");
+            return new ResultadoEntrega(0);
         }
 
-        Pedido pedido = cliente.getPedido();
+        Pedido pedido = cliente.getPEDIDO();
         ArrayList<Producto> productosEsperados = pedido.getProductosSolicitados();
 
-        // Verificar si el producto entregado está en la lista de esperados
         boolean correcto = false;
         for (Producto esperado : productosEsperados) {
             if (productoEntregado.getNombre().equals(esperado.getNombre())) {
@@ -80,7 +78,6 @@ public class GestorPedidos {
 
         int puntos;
 
-        // Si aún quedan productos por entregar, no completar el pedido
         if (correcto && !productosEsperados.isEmpty()) {
             float porcentajeTiempo = cliente.getPorcentajeTiempo();
             if (porcentajeTiempo < 0.5f) {
@@ -90,8 +87,7 @@ public class GestorPedidos {
             } else {
                 puntos = 25;
             }
-            String mensaje = "Producto correcto. Faltan " + productosEsperados.size() + " más. +" + puntos;
-            return new ResultadoEntrega(true, puntos, mensaje);
+            return new ResultadoEntrega(puntos);
         }
 
         if (correcto) {
@@ -110,14 +106,13 @@ public class GestorPedidos {
         }
 
         estacion.liberarCliente();
-        gestorClientes.removerCliente(cliente);
+        GESTOR_CLIENTES.removerCliente(cliente);
 
-        String mensaje = correcto ? "¡Pedido correcto! +" + puntos : "Pedido incorrecto. " + puntos;
-        return new ResultadoEntrega(correcto, puntos, mensaje);
+        return new ResultadoEntrega(puntos);
     }
 
     private MesaRetiro buscarMesaLibre() {
-        for (MesaRetiro mesa : mesasRetiro) {
+        for (MesaRetiro mesa : MESAS_RETIRO) {
             if (!mesa.tieneCliente()) {
                 return mesa;
             }
@@ -125,14 +120,7 @@ public class GestorPedidos {
         return null;
     }
 
-    public void limpiar() {
-        for (MesaRetiro mesa : mesasRetiro) {
-            mesa.liberarCliente();
-        }
-    }
-
-
     public ArrayList<Cliente> getPedidosActivos() {
-        return gestorClientes.getClientesEnPreparacion();
+        return GESTOR_CLIENTES.getClientesEnPreparacion();
     }
 }

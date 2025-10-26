@@ -18,23 +18,22 @@ import com.hebergames.letmecook.utiles.Recursos;
 import com.hebergames.letmecook.utiles.Render;
 
 public class PantallaDetalleTutorial extends Pantalla {
-    private SpriteBatch batch;
-    private OrthographicCamera camara;
-    private Viewport viewport;
-    private AnimacionTutorial animacion;
+    private final SpriteBatch BATCH;
+    private final OrthographicCamera CAMARA;
+    private final Viewport VIEWPORT;
+    private final AnimacionTutorial ANIMACION;
     private Texture botonCerrar;
     private Rectangle areaCerrar;
-    private PantallaTutorial pantallaTutorial;
-    private Texto textoInfo;
+    private final PantallaTutorial PANTALLA_TUTORIAL;
+    private final Texto TEXTO_INFO;
 
-    public PantallaDetalleTutorial(ElementoTutorial elemento, PantallaTutorial pantallaTutorial) {
-        this.pantallaTutorial = pantallaTutorial;
-        batch = Render.batch;
-        camara = new OrthographicCamera();
-        viewport = new ScreenViewport(camara);
+    public PantallaDetalleTutorial(ElementoTutorial elemento, PantallaTutorial PANTALLA_TUTORIAL) {
+        this.PANTALLA_TUTORIAL = PANTALLA_TUTORIAL;
+        BATCH = Render.batch;
+        CAMARA = new OrthographicCamera();
+        VIEWPORT = new ScreenViewport(CAMARA);
 
-        // Crear animación usando los datos del elemento
-        animacion = new AnimacionTutorial(
+        ANIMACION = new AnimacionTutorial(
             elemento.getRutaSpritesheet(),
             elemento.getFrameWidth(),
             elemento.getFrameHeight(),
@@ -48,17 +47,17 @@ public class PantallaDetalleTutorial extends Pantalla {
             System.err.println("Error cargando botón cerrar");
         }
 
-        textoInfo = new Texto(Recursos.FUENTE_MENU, 24, Color.YELLOW, true);
-        if (!animacion.estaCargado()) {
-            textoInfo.setTexto("Tutorial no disponible");
+        TEXTO_INFO = new Texto(Recursos.FUENTE_MENU, 24, Color.YELLOW, true);
+        if (!ANIMACION.estaCargado()) {
+            TEXTO_INFO.setTexto("Tutorial no disponible");
         } else {
-            textoInfo.setTexto("Presiona ESC o haz clic en X para volver");
+            TEXTO_INFO.setTexto("Presiona ESC o haz clic en X para volver");
         }
     }
 
     @Override
     public void show() {
-        viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+        VIEWPORT.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 
         Entrada entrada = new Entrada();
         Gdx.input.setInputProcessor(entrada);
@@ -66,9 +65,9 @@ public class PantallaDetalleTutorial extends Pantalla {
         float tamanoBtn = 50f;
 
         areaCerrar = new Rectangle(
-            viewport.getWorldWidth() - tamanoBtn - 20f,
-            viewport.getWorldHeight() - tamanoBtn - 20f,  // CAMBIAR tamanoBtn por tamanoBtn
-            tamanoBtn,  // CAMBIAR tamanoBtn por tamanoBtn
+            VIEWPORT.getWorldWidth() - tamanoBtn - 20f,
+            VIEWPORT.getWorldHeight() - tamanoBtn - 20f,
+            tamanoBtn,
             tamanoBtn
         );
 
@@ -90,36 +89,32 @@ public class PantallaDetalleTutorial extends Pantalla {
             return;
         }
 
-        // Actualizar animación
-        if (animacion != null) {
-            animacion.actualizar(delta);
+        if (ANIMACION != null) {
+            ANIMACION.actualizar(delta);
         }
 
-        viewport.apply();
-        camara.update();
+        VIEWPORT.apply();
+        CAMARA.update();
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-        batch.setProjectionMatrix(camara.combined);
-        batch.begin();
+        BATCH.setProjectionMatrix(CAMARA.combined);
+        BATCH.begin();
 
-        // Fondo semi-transparente
-        batch.setColor(0, 0, 0, 0.9f);
-        batch.draw(Recursos.PIXEL, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
-        batch.setColor(1, 1, 1, 1);
+        BATCH.setColor(0, 0, 0, 0.9f);
+        BATCH.draw(Recursos.PIXEL, 0, 0, VIEWPORT.getWorldWidth(), VIEWPORT.getWorldHeight());
+        BATCH.setColor(1, 1, 1, 1);
 
-        // Dibujar animación centrada
-        if (animacion != null && animacion.estaCargado()) {
-            TextureRegion frameActual = animacion.getFrameActual();
+        if (ANIMACION != null && ANIMACION.estaCargado()) {
+            TextureRegion frameActual = ANIMACION.getFrameActual();
             if (frameActual != null) {
-                float escala = 4f; // Escalar el frame para que se vea más grande
+                float escala = 4f;
                 float anchoFrame = frameActual.getRegionWidth() * escala;
                 float altoFrame = frameActual.getRegionHeight() * escala;
 
-                // Limitar el tamaño máximo
-                float maxAncho = viewport.getWorldWidth() * 0.8f;
-                float maxAlto = viewport.getWorldHeight() * 0.8f;
+                float maxAncho = VIEWPORT.getWorldWidth() * 0.8f;
+                float maxAlto = VIEWPORT.getWorldHeight() * 0.8f;
 
                 if (anchoFrame > maxAncho) {
                     float factor = maxAncho / anchoFrame;
@@ -133,53 +128,48 @@ public class PantallaDetalleTutorial extends Pantalla {
                     altoFrame *= factor;
                 }
 
-                float xFrame = (viewport.getWorldWidth() - anchoFrame) / 2f;
-                float yFrame = (viewport.getWorldHeight() - altoFrame) / 2f;
+                float xFrame = (VIEWPORT.getWorldWidth() - anchoFrame) / 2f;
+                float yFrame = (VIEWPORT.getWorldHeight() - altoFrame) / 2f;
 
-                // Marco blanco alrededor
-                batch.setColor(Color.WHITE);
+                BATCH.setColor(Color.WHITE);
                 float grosorMarco = 5f;
-                batch.draw(Recursos.PIXEL, xFrame - grosorMarco, yFrame - grosorMarco,
+                BATCH.draw(Recursos.PIXEL, xFrame - grosorMarco, yFrame - grosorMarco,
                     anchoFrame + 2 * grosorMarco, altoFrame + 2 * grosorMarco);
 
-                // Fondo negro
-                batch.setColor(0.1f, 0.1f, 0.1f, 1f);
-                batch.draw(Recursos.PIXEL, xFrame, yFrame, anchoFrame, altoFrame);
+                BATCH.setColor(0.1f, 0.1f, 0.1f, 1f);
+                BATCH.draw(Recursos.PIXEL, xFrame, yFrame, anchoFrame, altoFrame);
 
-                // Frame de la animación
-                batch.setColor(1, 1, 1, 1);
-                batch.draw(frameActual, xFrame, yFrame, anchoFrame, altoFrame);
+                BATCH.setColor(1, 1, 1, 1);
+                BATCH.draw(frameActual, xFrame, yFrame, anchoFrame, altoFrame);
             }
         }
 
-        // Texto informativo
-        textoInfo.setPosition(
-            viewport.getWorldWidth() / 2f - textoInfo.getAncho() / 2f,
+        TEXTO_INFO.setPosition(
+            VIEWPORT.getWorldWidth() / 2f - TEXTO_INFO.getAncho() / 2f,
             50f
         );
-        textoInfo.dibujar();
+        TEXTO_INFO.dibujar();
 
-        // Botón cerrar
         if (botonCerrar != null) {
-            batch.draw(botonCerrar, areaCerrar.x, areaCerrar.y, areaCerrar.width, areaCerrar.height);
+            BATCH.draw(botonCerrar, areaCerrar.x, areaCerrar.y, areaCerrar.width, areaCerrar.height);
         }
 
-        batch.end();
+        BATCH.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
     private void cerrar() {
-        cambiarPantalla(pantallaTutorial);
+        cambiarPantalla(PANTALLA_TUTORIAL);
     }
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width, height, true);
+        VIEWPORT.update(width, height, true);
 
         float tamanoBton = 50f;
         areaCerrar.set(
-            viewport.getWorldWidth() - tamanoBton - 20f,
-            viewport.getWorldHeight() - tamanoBton - 20f,
+            VIEWPORT.getWorldWidth() - tamanoBton - 20f,
+            VIEWPORT.getWorldHeight() - tamanoBton - 20f,
             tamanoBton,
             tamanoBton
         );
@@ -194,6 +184,5 @@ public class PantallaDetalleTutorial extends Pantalla {
         if (botonCerrar != null) {
             botonCerrar.dispose();
         }
-        // No necesitamos dispose de animación porque usa TextureRegion
     }
 }

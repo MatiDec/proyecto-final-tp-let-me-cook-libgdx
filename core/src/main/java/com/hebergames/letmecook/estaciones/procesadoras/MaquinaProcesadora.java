@@ -1,6 +1,5 @@
 package com.hebergames.letmecook.estaciones.procesadoras;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.hebergames.letmecook.entregables.ingredientes.Ingrediente;
 
 public interface MaquinaProcesadora {
@@ -9,6 +8,4 @@ public interface MaquinaProcesadora {
     void actualizarProceso(float delta);
     boolean tieneProcesandose();
     Ingrediente obtenerResultado();
-    void dibujarIndicador(SpriteBatch batch);
-    void detenerProceso();
 }

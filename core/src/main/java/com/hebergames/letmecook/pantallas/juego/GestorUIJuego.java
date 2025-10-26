@@ -19,11 +19,11 @@ public class GestorUIJuego {
     private final Texto textoInventario2;
 
     private static final float MARGEN = 50f;
-    private ArrayList<Texto> textosPedidos;
-    private ArrayList<TarjetaPedido> tarjetasPedidos;
+    private final ArrayList<Texto> TEXTOS_PEDIDOS;
+    private final ArrayList<TarjetaPedido> TARJETAS_PEDIDOS;
 
-    private Texto textoPuntaje;
-    private Texto textoIndicadorCalendario;
+    private final Texto TEXTO_PUNTAJE;
+    private final Texto TEXTO_INDICADOR_CALENDARIO;
     private final int MAX_PEDIDOS_VISIBLES = 5;
 
     public GestorUIJuego() {
@@ -32,23 +32,23 @@ public class GestorUIJuego {
         textoContador = new Texto(Recursos.FUENTE_MENU, 32, Color.WHITE, true);
         textoContador.setTexto("00:00");
 
-        textoInventario1 = new Texto(Recursos.FUENTE_MENU, 32, Color.GREEN, true); // J1 en verde
+        textoInventario1 = new Texto(Recursos.FUENTE_MENU, 32, Color.GREEN, true);
         textoInventario1.setTexto("J1 Inventario: Vacío");
 
-        textoInventario2 = new Texto(Recursos.FUENTE_MENU, 32, Color.BLUE, true); // J2 en azul
+        textoInventario2 = new Texto(Recursos.FUENTE_MENU, 32, Color.BLUE, true);
         textoInventario2.setTexto("J2 Inventario: Vacío");
 
-        textoPuntaje = new Texto(Recursos.FUENTE_MENU, 32, Color.YELLOW, true);
-        textoPuntaje.setTexto("Puntos: 0");
-        objetosUI.add(textoPuntaje);
+        TEXTO_PUNTAJE = new Texto(Recursos.FUENTE_MENU, 32, Color.YELLOW, true);
+        TEXTO_PUNTAJE.setTexto("Puntos: 0");
+        objetosUI.add(TEXTO_PUNTAJE);
 
-        textoIndicadorCalendario = new Texto(Recursos.FUENTE_MENU, 24, Color.CYAN, true);
-        textoIndicadorCalendario.setTexto("[TAB] Calendario");
-        objetosUI.add(textoIndicadorCalendario);
+        TEXTO_INDICADOR_CALENDARIO = new Texto(Recursos.FUENTE_MENU, 24, Color.CYAN, true);
+        TEXTO_INDICADOR_CALENDARIO.setTexto("[TAB] Calendario");
+        objetosUI.add(TEXTO_INDICADOR_CALENDARIO);
 
-        textosPedidos = new ArrayList<>();
+        TEXTOS_PEDIDOS = new ArrayList<>();
 
-        tarjetasPedidos = new ArrayList<>();
+        TARJETAS_PEDIDOS = new ArrayList<>();
 
         objetosUI.add(textoContador);
         objetosUI.add(textoInventario1);
@@ -58,16 +58,15 @@ public class GestorUIJuego {
     }
 
     public void actualizarPedidosActivos(ArrayList<Cliente> clientes) {
-        // Liberar tarjetas anteriores antes de limpiar
-        for (TarjetaPedido t : tarjetasPedidos) {
+        for (TarjetaPedido t : TARJETAS_PEDIDOS) {
             t.dispose();
         }
-        tarjetasPedidos.clear();
-        textosPedidos.clear();
+        TARJETAS_PEDIDOS.clear();
+        TEXTOS_PEDIDOS.clear();
 
         for (int i = 0; i < Math.min(clientes.size(), MAX_PEDIDOS_VISIBLES); i++) {
             TarjetaPedido tarjeta = new TarjetaPedido();
-            tarjetasPedidos.add(tarjeta);
+            TARJETAS_PEDIDOS.add(tarjeta);
         }
     }
 
@@ -80,7 +79,7 @@ public class GestorUIJuego {
     }
 
     public void actualizarPuntaje(int puntos) {
-        textoPuntaje.setTexto("Puntos: " + puntos);
+        TEXTO_PUNTAJE.setTexto("Puntos: " + puntos);
     }
 
     public void actualizarInventario(String nombreItem1, String nombreItem2) {
@@ -97,55 +96,51 @@ public class GestorUIJuego {
         for (ObjetoVisualizable obj : objetosUI) {
             obj.dibujarEnUi(batch);
         }
-        for (Texto texto : textosPedidos) {
+        for (Texto texto : TEXTOS_PEDIDOS) {
             texto.dibujarEnUi(batch);
         }
     }
 
     public void dibujarPedidos(SpriteBatch batch, ArrayList<Cliente> clientes, float anchoUI, float altoUI) {
         float yInicial = altoUI / 2f;
-        float x = anchoUI - 220f; // 200 (ancho tarjeta) + 20 (margen)
+        float x = anchoUI - 220f;
 
         for (int i = 0; i < Math.min(clientes.size(), MAX_PEDIDOS_VISIBLES); i++) {
             Cliente cliente = clientes.get(i);
-            float y = yInicial - (i * 120f); // 100 (alto tarjeta) + 20 (espaciado)
+            float y = yInicial - (i * 120f);
 
-            if (i < tarjetasPedidos.size()) {
-                tarjetasPedidos.get(i).dibujar(batch, cliente, x, y,
+            if (i < TARJETAS_PEDIDOS.size()) {
+                TARJETAS_PEDIDOS.get(i).dibujar(batch, cliente, x, y,
                     GestorTexturas.getInstance().getTexturaCliente(), null);
             }
         }
     }
 
     public void actualizarPosiciones(float anchoUI, float altoUI) {
-        // Contador de tiempo (Arriba, centro)
         textoContador.setPosition(anchoUI / 2f - textoContador.getAncho() / 2f, altoUI - MARGEN);
-        // Inventario Jugador 1 (Arriba, izquierda)
         textoInventario1.setPosition(MARGEN, altoUI - MARGEN);
-        // Inventario Jugador 2 (Arriba, derecha)
         textoInventario2.setPosition(anchoUI - textoInventario2.getAncho() - MARGEN, altoUI - MARGEN);
-        textoPuntaje.setPosition(MARGEN, altoUI - MARGEN * 2);
+        TEXTO_PUNTAJE.setPosition(MARGEN, altoUI - MARGEN * 2);
 
         float margenPedidos = 100f;
         float yInicialPedidos = altoUI - margenPedidos;
-        for (int i = 0; i < textosPedidos.size(); i++) {
-            Texto texto = textosPedidos.get(i);
+        for (int i = 0; i < TEXTOS_PEDIDOS.size(); i++) {
+            Texto texto = TEXTOS_PEDIDOS.get(i);
             float yPos = yInicialPedidos - (i * 30);
             texto.setPosition(anchoUI - texto.getAncho() - MARGEN, yPos);
         }
 
-        // Indicador de calendario (abajo, centro)
-        textoIndicadorCalendario.setPosition(
-            anchoUI / 2f - textoIndicadorCalendario.getAncho() / 2f,
+        TEXTO_INDICADOR_CALENDARIO.setPosition(
+            anchoUI / 2f - TEXTO_INDICADOR_CALENDARIO.getAncho() / 2f,
             MARGEN / 2f
         );
     }
 
     public void dispose() {
-        for (TarjetaPedido tarjeta : tarjetasPedidos) {
+        for (TarjetaPedido tarjeta : TARJETAS_PEDIDOS) {
             tarjeta.dispose();
         }
-        tarjetasPedidos.clear();
+        TARJETAS_PEDIDOS.clear();
     }
 
 }

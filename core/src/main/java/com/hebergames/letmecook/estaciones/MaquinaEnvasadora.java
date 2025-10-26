@@ -20,9 +20,6 @@ import java.util.List;
 
 public class MaquinaEnvasadora extends EstacionTrabajo {
 
-    private static final float MARGEN = 50f;
-    private static final float ESPACIADO = 40f;
-
     private List<OpcionMenu> opcionesMenu;
     private List<Texto> textosMenu;
 
@@ -32,13 +29,11 @@ public class MaquinaEnvasadora extends EstacionTrabajo {
     }
 
     @Override
-    protected void alLiberar() {
-        // No necesita limpiar nada especial
-    }
+    protected void alLiberar() {}
 
     private void inicializarOpciones() {
         opcionesMenu = new ArrayList<>();
-        opcionesMenu.add(new OpcionMenu(1, "Envasar Ingrediente", () -> envasarIngrediente()));
+        opcionesMenu.add(new OpcionMenu(1, "Envasar Ingrediente", this::envasarIngrediente));
     }
 
     private void envasarIngrediente() {
@@ -56,17 +51,14 @@ public class MaquinaEnvasadora extends EstacionTrabajo {
         Ingrediente ingrediente = (Ingrediente) objetoInventario;
         String nombreIngrediente = ingrediente.getNombre();
 
-        // Verificar si este ingrediente se puede envasar
         TipoEnvase tipoEnvase = TipoEnvase.obtenerPorIngrediente(nombreIngrediente);
 
         if (tipoEnvase == null) {
             return;
         }
 
-        // Crear el envase como ingrediente temporal
         Ingrediente envase = tipoEnvase.crearEnvase();
 
-        // Buscar receta que combine el envase con el ingrediente
         ArrayList<Ingrediente> ingredientes = new ArrayList<>();
         ingredientes.add(envase);
         ingredientes.add(ingrediente);
@@ -77,10 +69,8 @@ public class MaquinaEnvasadora extends EstacionTrabajo {
             return;
         }
 
-        // Preparar el producto
         Producto productoEnvasado = receta.preparar();
 
-        // Retirar el ingrediente del inventario y darle el producto
         jugador.sacarDeInventario();
         jugador.guardarEnInventario(productoEnvasado);
     }
@@ -119,7 +109,6 @@ public class MaquinaEnvasadora extends EstacionTrabajo {
                     opcion.ejecutarAccion();
                     iniciarMenu(jugador);
 
-                    // Salir del menú automáticamente después de envasar
                     if (getJugadorOcupante() != null) {
                         jugador.salirDeMenu();
                         alLiberar();
@@ -135,11 +124,13 @@ public class MaquinaEnvasadora extends EstacionTrabajo {
         if (textosMenu == null || textosMenu.isEmpty()) return;
 
         List<Jugador> jugadores = GestorJugadores.getInstancia().getJugadores();
-        boolean esJugador1 = (jugadores.size() > 0 && jugador == jugadores.get(0));
+        boolean esJugador1 = (!jugadores.isEmpty() && jugador == jugadores.get(0));
 
         float anchoMenu = 500f;
+        float MARGEN = 50f;
         float x = esJugador1 ? MARGEN : Gdx.graphics.getWidth() - anchoMenu - MARGEN;
 
+        float ESPACIADO = 40f;
         float alturaTotal = textosMenu.size() * ESPACIADO;
         float y = (Gdx.graphics.getHeight() / 2f) + (alturaTotal / 2f);
 

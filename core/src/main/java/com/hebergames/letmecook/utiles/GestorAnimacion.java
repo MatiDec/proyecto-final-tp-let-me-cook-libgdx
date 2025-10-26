@@ -8,16 +8,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GestorAnimacion {
-    private Texture spritesheet;
-    private TextureRegion[][] regiones;
-    private float duracionFrame;
-    private Map<String, Integer> animaciones; // Mapa nombre -> fila
+    private final Texture SPRITESHEET;
+    private final TextureRegion[][] REGIONES;
+    private final float DURACION_FRAME;
+    private final Map<String, Integer> ANIMACIONES;
 
     public GestorAnimacion(String ruta, int frameWidth, int frameHeight, float duracion) {
-        spritesheet = new Texture(Gdx.files.internal(ruta));
-        regiones = TextureRegion.split(spritesheet, frameWidth, frameHeight);
-        this.duracionFrame = duracion;
-        animaciones = new HashMap<>();
+        SPRITESHEET = new Texture(Gdx.files.internal(ruta));
+        REGIONES = TextureRegion.split(SPRITESHEET, frameWidth, frameHeight);
+        this.DURACION_FRAME = duracion;
+        ANIMACIONES = new HashMap<>();
 
         registrarAnimacion("vacio", 0);
         registrarAnimacion("carne", 1);
@@ -25,21 +25,21 @@ public class GestorAnimacion {
     }
 
     public void registrarAnimacion(String nombre, int filaAnimacion) {
-        animaciones.put(nombre.toLowerCase(), filaAnimacion);
+        ANIMACIONES.put(nombre.toLowerCase(), filaAnimacion);
     }
 
     public Animation<TextureRegion> getAnimacionPorObjeto(String nombreObjeto) {
-        int fila = animaciones.getOrDefault(nombreObjeto.toLowerCase(), animaciones.get("vacio"));
+        int fila = ANIMACIONES.getOrDefault(nombreObjeto.toLowerCase(), ANIMACIONES.get("vacio"));
         return getAnimacion(fila);
     }
 
     public Animation<TextureRegion> getAnimacion(int fila) {
-        return new Animation<>(duracionFrame, regiones[fila]);
+        return new Animation<>(DURACION_FRAME, REGIONES[fila]);
     }
 
     public void dispose() {
-        if (spritesheet != null) {
-            spritesheet.dispose();
+        if (SPRITESHEET != null) {
+            SPRITESHEET.dispose();
         }
     }
 }

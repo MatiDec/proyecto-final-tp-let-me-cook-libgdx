@@ -27,12 +27,8 @@ public class PantallaMenu extends Pantalla {
     private Texto[] opcionesTexto;
     private TextoInteractuable[] opcionesInteractuables;
 
-    private static final int TOTAL_OPCIONES = OpcionMenuPrincipal.values().length;
+    private final int TOTAL_OPCIONES = OpcionMenuPrincipal.values().length;
 
-    private static final float DISENO_ANCHO = 1920f;
-    private static final float DISENO_ALTO = 1080f;
-
-    // Viewport y cámara
     private Viewport viewport;
     private OrthographicCamera camara;
     private Vector3 coordenadasMouse;
@@ -59,10 +55,8 @@ public class PantallaMenu extends Pantalla {
         Entrada entrada = new Entrada();
         Gdx.input.setInputProcessor(entrada);
 
-        // Inicializar array de interactuables
         opcionesInteractuables = new TextoInteractuable[TOTAL_OPCIONES];
 
-        // Crear cada opción interactuable con su acción correspondiente
         opcionesInteractuables[0] = new TextoInteractuable(opcionesTexto[0], () -> {
             GestorPartida.getInstancia().resetearPartida();
             cambiarPantalla(new PantallaJuego());
@@ -82,7 +76,6 @@ public class PantallaMenu extends Pantalla {
             Gdx.app.exit();
         });
 
-        // Registrar todas las opciones
         for (TextoInteractuable opcion : opcionesInteractuables) {
             entrada.registrar(opcion);
         }
@@ -91,7 +84,6 @@ public class PantallaMenu extends Pantalla {
     private void inicializarTextos() {
         opcionesTexto = new Texto[TOTAL_OPCIONES];
 
-        // Crear todos los textos
         for (int i = 0; i < TOTAL_OPCIONES; i++) {
             opcionesTexto[i] = new Texto(Recursos.FUENTE_MENU, 72, Color.WHITE, true);
             opcionesTexto[i].setTexto(OpcionMenuPrincipal.values()[i].getNombre());
@@ -106,7 +98,6 @@ public class PantallaMenu extends Pantalla {
         camara.update();
         actualizarFondo();
 
-        // Actualizar efectos hover
         actualizarHover();
 
         BATCH.setProjectionMatrix(camara.combined);
@@ -114,7 +105,6 @@ public class PantallaMenu extends Pantalla {
 
         fondo.dibujar();
 
-        // Dibujar todas las opciones
         for (Texto opcion : opcionesTexto) {
             opcion.dibujar();
         }
@@ -153,11 +143,9 @@ public class PantallaMenu extends Pantalla {
         float espaciado = Math.max(40, altoVirtual * 0.08f);
         float alturaOpcion = opcionesTexto[0].getAlto();
 
-        // Calcular altura total del menú
         float alturaTotal = (alturaOpcion * TOTAL_OPCIONES) + (espaciado * (TOTAL_OPCIONES - 1));
         float posicionInicial = centroY + (alturaTotal / 2f) - (alturaOpcion / 2f);
 
-        // Posicionar todas las opciones
         for (int i = 0; i < TOTAL_OPCIONES; i++) {
             float yPos = posicionInicial - (alturaOpcion + espaciado) * i;
             opcionesTexto[i].setPosition(

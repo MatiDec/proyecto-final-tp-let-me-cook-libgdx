@@ -42,14 +42,13 @@ public class MesaRetiro extends EstacionTrabajo implements EstacionEntrega {
         if (gestorPedidos != null && tieneCliente() && producto != null) {
             ResultadoEntrega resultado = gestorPedidos.entregarPedido(this, producto);
 
-            // Notificar puntos mediante callback
             if (callbackPuntaje != null) {
                 callbackPuntaje.onPuntosObtenidos(resultado.getPuntos());
             }
 
             return resultado;
         }
-        return new ResultadoEntrega(false, 0, "No se puede entregar el pedido");
+        return new ResultadoEntrega(0);
     }
 
     public void liberarCliente() {
@@ -57,27 +56,17 @@ public class MesaRetiro extends EstacionTrabajo implements EstacionEntrega {
     }
 
     @Override
-    public void alInteractuar() {
-        // Se maneja en EstacionTrabajo
-    }
+    public void alInteractuar() {}
 
     @Override
-    protected void iniciarMenu(Jugador jugador) {
-        // No necesita menú
-    }
+    protected void iniciarMenu(Jugador jugador) {}
 
     @Override
-    public void manejarSeleccionMenu(Jugador jugador, int numeroSeleccion) {
-        // No necesita menú
-    }
+    public void manejarSeleccionMenu(Jugador jugador, int numeroSeleccion) {}
 
     @Override
-    protected void dibujarMenu(SpriteBatch batch, Jugador jugador) {
-        // Aquí dibujar info del cliente esperando
-    }
+    protected void dibujarMenu(SpriteBatch batch, Jugador jugador) {}
 
     @Override
-    protected void alLiberar() {
-        // El cliente se libera cuando se entrega el pedido
-    }
+    protected void alLiberar() {}
 }

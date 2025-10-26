@@ -37,7 +37,7 @@ public class CajaRegistradora extends EstacionTrabajo {
 
     public boolean tomarPedido() {
         if (gestorPedidos != null && tieneCliente() &&
-                clienteAsignado.getPedido().getEstadoPedido() == EstadoPedido.EN_ESPERA) {
+                clienteAsignado.getPEDIDO().getEstadoPedido() == EstadoPedido.EN_ESPERA) {
             return gestorPedidos.tomarPedido(this);
         }
         return false;

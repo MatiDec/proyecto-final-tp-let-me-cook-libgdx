@@ -18,14 +18,12 @@ public class Heladera extends EstacionTrabajo {
 
     private List<OpcionMenu> opcionesMenu;
     private List<Texto> textosMenu;
-    private static final float MARGEN = 50f;
-    private static final float ESPACIADO = 40f;
 
-    private GestorIngredientes gestorIngredientes;
+    private final GestorIngredientes GESTOR_INGREDIENTES;
 
     public Heladera(Rectangle area) {
         super(area);
-        gestorIngredientes = GestorIngredientes.getInstance();
+        GESTOR_INGREDIENTES = GestorIngredientes.getInstance();
         inicializarOpciones();
     }
 
@@ -34,23 +32,21 @@ public class Heladera extends EstacionTrabajo {
 
         int numero = 1;
         for (TipoIngrediente tipo : TipoIngrediente.values()) {
-            TipoIngrediente tipoFinal = tipo;
             int numeroFinal = numero;
 
             opcionesMenu.add(new OpcionMenu(
                 numeroFinal,
                 tipo.getNombre(),
-                () -> gestorIngredientes.crearIngrediente(tipoFinal)
+                () -> GESTOR_INGREDIENTES.crearIngrediente(tipo)
             ));
 
             numero++;
-            if (numero > 9) break; // Límite de 9 opciones
+            if (numero > 9) break;
         }
     }
 
     @Override
     protected void alLiberar() {
-        // Limpiar los textos del menú para que se inicialicen de nuevo al interactuar
         textosMenu = null;
     }
 
@@ -81,7 +77,6 @@ public class Heladera extends EstacionTrabajo {
                     if (objeto != null) {
                         jugador.guardarEnInventario(objeto);
                     }
-                } else {
                 }
             }
 
@@ -95,19 +90,17 @@ public class Heladera extends EstacionTrabajo {
             return;
         }
 
-        // Determinar si es jugador 1 o 2 para posicionar el menú
         List<Jugador> jugadores = GestorJugadores.getInstancia().getJugadores();
-        boolean esJugador1 = (jugadores.size() > 0 && jugador == jugadores.get(0));
+        boolean esJugador1 = (!jugadores.isEmpty() && jugador == jugadores.get(0));
 
-        // Posición X: izquierda para J1, derecha para J2
         float anchoMenu = 200f;
+        float MARGEN = 50f;
         float x = esJugador1 ? MARGEN : Gdx.graphics.getWidth() - anchoMenu - MARGEN;
 
-        // Posición Y: centrado verticalmente
+        float ESPACIADO = 40f;
         float alturaTotal = textosMenu.size() * ESPACIADO;
         float y = (Gdx.graphics.getHeight() / 2f) + (alturaTotal / 2f);
 
-        // Dibujar cada opción del menú
         for (Texto texto : textosMenu) {
             texto.setPosition(x, y);
             texto.dibujarEnUi(batch);
@@ -122,7 +115,6 @@ public class Heladera extends EstacionTrabajo {
             return;
         }
 
-        // Llamar a iniciarMenu solo si aún no se ha hecho (si textosMenu es null)
         if (textosMenu == null) {
             iniciarMenu(jugador);
         }

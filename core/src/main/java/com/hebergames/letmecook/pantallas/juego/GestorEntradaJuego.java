@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hebergames.letmecook.entidades.Jugador;
-import com.hebergames.letmecook.eventos.entrada.DatosEntrada;
 import com.hebergames.letmecook.eventos.entrada.Entrada;
 import com.hebergames.letmecook.eventos.entrada.ConfiguracionTeclas;
 import com.hebergames.letmecook.estaciones.EstacionTrabajo;
@@ -19,24 +18,22 @@ public class GestorEntradaJuego {
     private final ArrayList<EstacionTrabajo> estaciones;
     private static GestorEntradaJuego instancia;
 
-    // Configuración de teclas para Jugador 1 (WASD + E + Left Shift)
     private static final ConfiguracionTeclas CONFIG_JUGADOR_1 = new ConfiguracionTeclas(
-        Input.Keys.W,           // arriba
-        Input.Keys.S,           // abajo
-        Input.Keys.A,           // izquierda
-        Input.Keys.D,           // derecha
-        Input.Keys.E,           // interactuar
-        Input.Keys.SHIFT_LEFT   // correr
+        Input.Keys.W,
+        Input.Keys.S,
+        Input.Keys.A,
+        Input.Keys.D,
+        Input.Keys.E,
+        Input.Keys.SHIFT_LEFT
     );
 
-    // Configuración de teclas para Jugador 2 (Flechas + Enter + Right Shift)
     private static final ConfiguracionTeclas CONFIG_JUGADOR_2 = new ConfiguracionTeclas(
-        Input.Keys.UP,          // arriba
-        Input.Keys.DOWN,        // abajo
-        Input.Keys.LEFT,        // izquierda
-        Input.Keys.RIGHT,       // derecha
-        Input.Keys.ENTER,       // interactuar
-        Input.Keys.SHIFT_RIGHT  // correr
+        Input.Keys.UP,
+        Input.Keys.DOWN,
+        Input.Keys.LEFT,
+        Input.Keys.RIGHT,
+        Input.Keys.ENTER,
+        Input.Keys.SHIFT_RIGHT
     );
 
     public static final int[] TECLAS_MENU_JUGADOR_1 = {
@@ -66,7 +63,6 @@ public class GestorEntradaJuego {
         entrada.setViewportUI(viewportUI);
         Gdx.input.setInputProcessor(entrada);
 
-        // Registrar todos los jugadores con sus configuraciones
         for (int i = 0; i < jugadores.size(); i++) {
             Jugador jugador = jugadores.get(i);
             ConfiguracionTeclas config = obtenerConfiguracionTeclas(i);
@@ -92,18 +88,8 @@ public class GestorEntradaJuego {
         entrada.actualizarEntradas();
     }
 
-    public DatosEntrada getDatosEntradaParaJugador(Jugador jugador) {
-        return entrada.getDatosEntrada(jugador);
-    }
-
     public Entrada getEntrada() {
         return entrada;
     }
 
-    /**
-     * Obtiene la configuración de teclas predeterminada para un jugador específico
-     */
-    public static ConfiguracionTeclas getConfiguracionPredeterminada(int numeroJugador) {
-        return numeroJugador == 1 ? CONFIG_JUGADOR_1 : CONFIG_JUGADOR_2;
-    }
 }

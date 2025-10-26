@@ -9,15 +9,15 @@ public enum SonidoJuego {
     ITEM_RECOGIDO("item_recogido", "core/src/main/java/com/hebergames/letmecook/recursos/audio/sonidos/pickup.ogg"),
     NIVEL_COMPLETADO("nivel_completado", "core/src/main/java/com/hebergames/letmecook/recursos/audio/sonidos/nivel_completo.ogg");
 
-    private String identificador;
-    private String ruta;
+    private final String IDENTIFICADOR;
+    private final String RUTA;
 
-    SonidoJuego(String identificador, String ruta) {
-        this.identificador = identificador;
-        this.ruta = ruta;
+    SonidoJuego(String IDENTIFICADOR, String RUTA) {
+        this.IDENTIFICADOR = IDENTIFICADOR;
+        this.RUTA = RUTA;
     }
 
-    public String getIdentificador() { return this.identificador; }
+    public String getIdentificador() { return this.IDENTIFICADOR; }
 
-    public String getRuta() { return this.ruta; }
+    public String getRuta() { return this.RUTA; }
 }

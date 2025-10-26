@@ -13,7 +13,7 @@ public class TextoInteractuable implements BotonInteractuable {
     private boolean estaEnHover = false;
 
     public TextoInteractuable(Texto texto, Runnable accion) {
-        this(texto, accion, new Color(1f, 0.8f, 0.2f, 1f));//un color default de hover
+        this(texto, accion, new Color(1f, 0.8f, 0.2f, 1f));
     }
 
     public TextoInteractuable(Texto texto, Runnable accion, Color colorHover) {
@@ -37,17 +37,11 @@ public class TextoInteractuable implements BotonInteractuable {
         boolean mouseEncima = TEXTO.fueClickeado(mouseX, mouseY);
 
         if (mouseEncima && !estaEnHover) {
-            // El mouse acaba de entrar al área del botón
             TEXTO.getFuente().setColor(colorHover);
             estaEnHover = true;
         } else if (!mouseEncima && estaEnHover) {
-            // El mouse acaba de salir del área del botón
             TEXTO.getFuente().setColor(colorOriginal);
             estaEnHover = false;
         }
-    }
-
-    public boolean isEnHover() {
-        return estaEnHover;
     }
 }

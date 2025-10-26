@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class GestorEventosAleatorios {
-    private ArrayList<EventoAleatorio> eventosActivos;
-    private ArrayList<EventoAleatorio> eventosPosibles;
-    private Random random;
+    private final ArrayList<EventoAleatorio> EVENTOS_ACTIVOS;
+    private final ArrayList<EventoAleatorio> EVENTOS_POSIBLES;
+    private final Random RANDOM;
     private static GestorEventosAleatorios instancia;
 
     private GestorEventosAleatorios() {
-        this.eventosActivos = new ArrayList<>();
-        this.eventosPosibles = new ArrayList<>();
-        this.random = new Random();
+        this.EVENTOS_ACTIVOS = new ArrayList<>();
+        this.EVENTOS_POSIBLES = new ArrayList<>();
+        this.RANDOM = new Random();
     }
 
     public static GestorEventosAleatorios getInstancia() {
@@ -23,16 +23,16 @@ public class GestorEventosAleatorios {
     }
 
     public void registrarEventoPosible(EventoAleatorio evento) {
-        eventosPosibles.add(evento);
+        EVENTOS_POSIBLES.add(evento);
     }
 
     public void iniciarRonda() {
         desactivarTodosLosEventos();
 
-        for (EventoAleatorio evento : eventosPosibles) {
-            if (random.nextFloat() < evento.getProbabilidad()) {
+        for (EventoAleatorio evento : EVENTOS_POSIBLES) {
+            if (RANDOM.nextFloat() < evento.getProbabilidad()) {
                 evento.activar();
-                eventosActivos.add(evento);
+                EVENTOS_ACTIVOS.add(evento);
             }
         }
     }
@@ -42,23 +42,19 @@ public class GestorEventosAleatorios {
     }
 
     private void desactivarTodosLosEventos() {
-        for (EventoAleatorio evento : eventosActivos) {
+        for (EventoAleatorio evento : EVENTOS_ACTIVOS) {
             evento.desactivar();
         }
-        eventosActivos.clear();
+        EVENTOS_ACTIVOS.clear();
     }
 
     public void limpiarEventos() {
         desactivarTodosLosEventos();
-        eventosPosibles.clear();
-    }
-
-    public ArrayList<EventoAleatorio> getEventosActivos() {
-        return eventosActivos;
+        EVENTOS_POSIBLES.clear();
     }
 
     public EventoPisoMojado getEventoPisoMojado() {
-        for (EventoAleatorio evento : eventosActivos) {
+        for (EventoAleatorio evento : EVENTOS_ACTIVOS) {
             if (evento instanceof EventoPisoMojado) {
                 return (EventoPisoMojado) evento;
             }

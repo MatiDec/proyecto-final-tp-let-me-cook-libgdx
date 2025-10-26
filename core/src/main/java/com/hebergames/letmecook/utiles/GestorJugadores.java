@@ -30,10 +30,4 @@ public class GestorJugadores {
         return jugadores;
     }
 
-    public Jugador getJugador(int indice) {
-        if(indice >= 0 && indice < jugadores.size()) {
-            return jugadores.get(indice);
-        }
-        return null;
-    }
 }

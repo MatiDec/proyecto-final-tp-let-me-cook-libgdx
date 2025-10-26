@@ -15,24 +15,24 @@ public enum TipoProducto {
     CAFE("Cafe", CategoriaProducto.BEBIDAS),
     GASEOSA("Gaseosa", CategoriaProducto.BEBIDAS);
 
-    private final String nombre;
-    private final CategoriaProducto categoria;
+    private final String NOMBRE;
+    private final CategoriaProducto CATEGORIA;
 
-    TipoProducto(String nombre, CategoriaProducto categoria) {
-        this.nombre = nombre;
-        this.categoria = categoria;
+    TipoProducto(final String NOMBRE, CategoriaProducto CATEGORIA) {
+        this.NOMBRE = NOMBRE;
+        this.CATEGORIA = CATEGORIA;
     }
 
     public ProductoGenerico crear() {
-        TextureRegion textura = GestorTexturas.getInstance().getTexturaProducto(nombre.toLowerCase());
-        return new ProductoGenerico(nombre, textura, categoria);
+        TextureRegion textura = GestorTexturas.getInstance().getTexturaProducto(NOMBRE.toLowerCase());
+        return new ProductoGenerico(NOMBRE, textura, CATEGORIA);
     }
 
-    public String getNombre() { return this.nombre; }
-    public CategoriaProducto getCategoria() { return this.categoria; }
+    public String getNombre() { return this.NOMBRE; }
+    public CategoriaProducto getCategoria() { return this.CATEGORIA; }
 
     public TextureRegion getTextura() {
-        return GestorTexturas.getInstance().getTexturaProducto(nombre.toLowerCase());
+        return GestorTexturas.getInstance().getTexturaProducto(NOMBRE.toLowerCase());
     }
 
 }

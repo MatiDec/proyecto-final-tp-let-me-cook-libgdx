@@ -30,14 +30,6 @@ public class GestorMapa {
         this.estaciones = mapa.getEstacionesTrabajo();
     }
 
-    public void cargarMapa(String ruta, String nombreSucursal) {
-        if (mapaActual != null) {
-            mapaActual.dispose();
-        }
-        mapaActual = new Mapa(ruta, nombreSucursal);
-        estaciones = mapaActual.getEstacionesTrabajo();
-    }
-
     public void renderizar(OrthographicCamera camara) {
         if (mapaActual != null) {
             mapaActual.render(camara);
@@ -58,7 +50,6 @@ public class GestorMapa {
             eventoPiso.dibujar(batch);
         }
 
-        // Dibujar indicadores y estados de estaciones
         for (EstacionTrabajo estacion : estaciones) {
             estacion.dibujarIndicador(batch);
             estacion.dibujarIndicadorError(batch);
@@ -74,31 +65,7 @@ public class GestorMapa {
     }
 
     public ArrayList<EstacionTrabajo> getEstaciones() {
-        return estaciones;
-    }
-
-    public Mapa getMapaActual() {
-        return mapaActual;
-    }
-
-    public ArrayList<CajaRegistradora> getCajas() {
-        ArrayList<CajaRegistradora> cajas = new ArrayList<>();
-        for (EstacionTrabajo e : estaciones) {
-            if (e instanceof CajaRegistradora) {
-                cajas.add((CajaRegistradora) e);
-            }
-        }
-        return cajas;
-    }
-
-    public ArrayList<MesaRetiro> getMesas() {
-        ArrayList<MesaRetiro> mesas = new ArrayList<>();
-        for (EstacionTrabajo e : estaciones) {
-            if (e instanceof MesaRetiro) {
-                mesas.add((MesaRetiro) e);
-            }
-        }
-        return mesas;
+        return this.estaciones;
     }
 
     public ArrayList<Rectangle> getTilesCaminables() {

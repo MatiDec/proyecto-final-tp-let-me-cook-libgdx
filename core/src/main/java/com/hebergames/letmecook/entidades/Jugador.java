@@ -23,14 +23,12 @@ public class Jugador {
     protected Animation<TextureRegion> animacion;
     protected float estadoTiempo;
     protected float anguloRotacion = 0f;
-    private Rectangle hitbox;
+    private final Rectangle HITBOX;
     private final float ANCHO_HITBOX = 120;
-    private final float ALTO_HITBOX = 120;
     private final float OFFSET_HITBOX_X = 0;
     private final float OFFSET_HITBOX_Y = 0;
 
 
-    private boolean interactuarPresionado = false;
     private boolean estaEnMenu = false;
     private EstacionTrabajo estacionActual = null;
 
@@ -43,27 +41,21 @@ public class Jugador {
     public final int DISTANCIA_MOVIMIENTO = 400;
     public final int DISTANCIA_CORRIENDO = 800;
 
-    // Variables para el sistema de deslizamiento
     private boolean estaDeslizando = false;
-    private Vector2 velocidadDeslizamiento = new Vector2(0, 0);
+    private final Vector2 VELOCIDAD_DESLIZAMIENTO = new Vector2(0, 0);
     private float tiempoDeslizamiento = 0f;
-    private final float DURACION_DESLIZAMIENTO = 0.3f;
-    private final float FACTOR_DESLIZAMIENTO = 1.5f;
 
     protected GestorAnimacion gestorAnimacion;
     private String objetoEnMano = "vacio";
 
     public Jugador(float x, float y, GestorAnimacion gestorAnimacion) {
-        this(x, y, gestorAnimacion, false);
-    }
-
-    public Jugador(float x, float y, GestorAnimacion gestorAnimacion, boolean esJugadorPrincipal) {
         this.posicion = new Vector2(x, y);
         this.velocidad = new Vector2(0, 0);
         this.gestorAnimacion = gestorAnimacion;
         this.animacion = gestorAnimacion.getAnimacionPorObjeto(objetoEnMano);
         this.estadoTiempo = 0;
-        this.hitbox = new Rectangle(x + OFFSET_HITBOX_X, y + OFFSET_HITBOX_Y, ANCHO_HITBOX, ALTO_HITBOX);
+        float ALTO_HITBOX = 120;
+        this.HITBOX = new Rectangle(x + OFFSET_HITBOX_X, y + OFFSET_HITBOX_Y, ANCHO_HITBOX, ALTO_HITBOX);
     }
 
     public void actualizar(float delta) {
@@ -82,11 +74,12 @@ public class Jugador {
         if (estaDeslizando) {
             tiempoDeslizamiento += delta;
 
+            float DURACION_DESLIZAMIENTO = 0.3f;
             float progreso = tiempoDeslizamiento / DURACION_DESLIZAMIENTO;
             float factorReduccion = Math.max(0f, 1f - progreso);
 
-            velocidad.set(velocidadDeslizamiento.x * factorReduccion,
-                velocidadDeslizamiento.y * factorReduccion);
+            velocidad.set(VELOCIDAD_DESLIZAMIENTO.x * factorReduccion,
+                VELOCIDAD_DESLIZAMIENTO.y * factorReduccion);
 
             float desplazamientoX = velocidad.x * delta;
             float desplazamientoY = velocidad.y * delta;
@@ -103,16 +96,16 @@ public class Jugador {
                 estaDeslizando = false;
                 tiempoDeslizamiento = 0f;
                 velocidad.set(0, 0);
-                velocidadDeslizamiento.set(0, 0);
+                VELOCIDAD_DESLIZAMIENTO.set(0, 0);
             } else {
                 posicion.add(desplazamientoX, desplazamientoY);
-                hitbox.setPosition(posicion.x + OFFSET_HITBOX_X, posicion.y + OFFSET_HITBOX_Y);
+                HITBOX.setPosition(posicion.x + OFFSET_HITBOX_X, posicion.y + OFFSET_HITBOX_Y);
 
                 if (tiempoDeslizamiento >= DURACION_DESLIZAMIENTO) {
                     estaDeslizando = false;
                     tiempoDeslizamiento = 0f;
                     velocidad.set(0, 0);
-                    velocidadDeslizamiento.set(0, 0);
+                    VELOCIDAD_DESLIZAMIENTO.set(0, 0);
                 }
             }
             return;
@@ -125,7 +118,7 @@ public class Jugador {
             velocidad.set(0, 0);
         } else {
             posicion.add(desplazamientoX, desplazamientoY);
-            hitbox.setPosition(posicion.x + OFFSET_HITBOX_X, posicion.y + OFFSET_HITBOX_Y);
+            HITBOX.setPosition(posicion.x + OFFSET_HITBOX_X, posicion.y + OFFSET_HITBOX_Y);
         }
     }
 
@@ -181,7 +174,7 @@ public class Jugador {
         }
 
         for (Jugador otro : otrosJugadores) {
-            if (otro != this && otro.getHitbox().overlaps(rect))
+            if (otro != this && otro.getHITBOX().overlaps(rect))
             {
                 return true;
             }
@@ -201,10 +194,10 @@ public class Jugador {
         float desplazamientoX = dx * deltaTime;
         float desplazamientoY = dy * deltaTime;
 
-        float nuevaX = hitbox.x + desplazamientoX;
-        float nuevaY = hitbox.y + desplazamientoY;
+        float nuevaX = HITBOX.x + desplazamientoX;
+        float nuevaY = HITBOX.y + desplazamientoY;
 
-        Rectangle areaFutura = new Rectangle(nuevaX, nuevaY, hitbox.width, hitbox.height);
+        Rectangle areaFutura = new Rectangle(nuevaX, nuevaY, HITBOX.width, HITBOX.height);
 
         if (!colisiona(areaFutura)) {
             velocidad.set(dx, dy);
@@ -215,12 +208,12 @@ public class Jugador {
         boolean puedeMoverY = false;
 
         if (dx != 0) {
-            Rectangle areaFuturaX = new Rectangle(hitbox.x + desplazamientoX, hitbox.y, hitbox.width, hitbox.height);
+            Rectangle areaFuturaX = new Rectangle(HITBOX.x + desplazamientoX, HITBOX.y, HITBOX.width, HITBOX.height);
             puedeMoverX = !colisiona(areaFuturaX);
         }
 
         if (dy != 0) {
-            Rectangle areaFuturaY = new Rectangle(hitbox.x, hitbox.y + desplazamientoY, hitbox.width, hitbox.height);
+            Rectangle areaFuturaY = new Rectangle(HITBOX.x, HITBOX.y + desplazamientoY, HITBOX.width, HITBOX.height);
             puedeMoverY = !colisiona(areaFuturaY);
         }
 
@@ -244,13 +237,13 @@ public class Jugador {
         float pasoX = dx / pasos;
         float pasoY = dy / pasos;
 
-        float px = hitbox.x;
-        float py = hitbox.y;
+        float px = HITBOX.x;
+        float py = HITBOX.y;
 
         for (int i = 0; i < pasos; i++) {
             px += pasoX;
             py += pasoY;
-            Rectangle area = new Rectangle(px, py, hitbox.width, hitbox.height);
+            Rectangle area = new Rectangle(px, py, HITBOX.width, HITBOX.height);
             if (colisiona(area)) {
                 return true;
             }
@@ -258,19 +251,13 @@ public class Jugador {
         return false;
     }
 
-
-
-
-    /**
-     * Inicia el deslizamiento del jugador en la dirección actual
-     */
     public void iniciarDeslizamiento() {
         if (velocidad.len() > 0 && !estaDeslizando) {
             estaDeslizando = true;
             tiempoDeslizamiento = 0f;
 
-            // Guardar la dirección y velocidad actual con un multiplicador
-            velocidadDeslizamiento.set(velocidad).scl(FACTOR_DESLIZAMIENTO);
+            float FACTOR_DESLIZAMIENTO = 1.5f;
+            VELOCIDAD_DESLIZAMIENTO.set(velocidad).scl(FACTOR_DESLIZAMIENTO);
         }
     }
 
@@ -278,29 +265,22 @@ public class Jugador {
         return this.inventario != null;
     }
 
-    public boolean guardarEnInventario(ObjetoAlmacenable objeto) {
+    public void guardarEnInventario(ObjetoAlmacenable objeto) {
         if (this.inventario == null) {
             this.inventario = objeto;
             setObjetoEnMano(objeto.getNombre());
-            return true;
         }
-        return false;
     }
 
-    public ObjetoAlmacenable sacarDeInventario() {
+    public void sacarDeInventario() {
         ObjetoAlmacenable item = this.inventario;
         this.inventario = null;
         setObjetoEnMano("vacio");
-        return item;
     }
 
     public void descartarInventario(){
         this.inventario = null;
         setObjetoEnMano("vacio");
-    }
-
-    public boolean isInteractuarPresionado() {
-        return interactuarPresionado;
     }
 
     public boolean estaEnMenu() {
@@ -342,10 +322,6 @@ public class Jugador {
         this.colisionables = colisionables;
     }
 
-    public void setInteractuables(List<Rectangle> interactuables) {
-        this.interactuables = interactuables;
-    }
-
     public void setAnguloRotacion(float angulo) {
         this.anguloRotacion = angulo;
     }
@@ -358,13 +334,9 @@ public class Jugador {
         }
     }
 
-    public Rectangle getHitbox() { return this.hitbox; }
+    public Rectangle getHITBOX() { return this.HITBOX; }
 
-    public String getObjetoEnMano() {
-        return objetoEnMano;
-    }
-
-    public boolean estaDeslizando() {
-        return estaDeslizando;
+    public void setInteractuables(ArrayList<Rectangle> rectangulosInteractuables) {
+        this.interactuables = rectangulosInteractuables;
     }
 }

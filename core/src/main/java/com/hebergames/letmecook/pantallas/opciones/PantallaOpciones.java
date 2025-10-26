@@ -13,7 +13,6 @@ import com.hebergames.letmecook.eventos.entrada.TextoInteractuable;
 import com.hebergames.letmecook.pantallas.Pantalla;
 import com.hebergames.letmecook.pantallas.PantallaMenu;
 import com.hebergames.letmecook.pantallas.juego.GestorConfiguracion;
-import com.hebergames.letmecook.pantallas.juego.PantallaJuego;
 import com.hebergames.letmecook.pantallas.superposiciones.PantallaPausa;
 import com.hebergames.letmecook.sonido.GestorAudio;
 import com.hebergames.letmecook.utiles.Recursos;
@@ -30,18 +29,13 @@ public class PantallaOpciones extends Pantalla {
     private SelectorResolucion selectorResolucion;
     private Texto tPantallaCompleta, tAplicar, tVolver;
     private boolean pantallaCompleta;
-    private String[] resoluciones = {"840x680", "1280x720", "1366x768", "1600x900", "1920x1080", "2560x1440"};
+    private final String[] RESOLUCIONES = {"840x680", "1280x720", "1366x768", "1600x900", "1920x1080", "2560x1440"};
 
-    private boolean esDesdePausa = false;
-    private PantallaPausa pantallaPausa = null;
+    private final boolean ES_DESDE_PAUSA;
+    private final PantallaPausa PANTALLA_PAUSA = null;
 
     public PantallaOpciones() {
-        this.esDesdePausa = false;
-    }
-
-    public PantallaOpciones(PantallaPausa pantallaPausa) {
-        this.esDesdePausa = true;
-        this.pantallaPausa = pantallaPausa;
+        this.ES_DESDE_PAUSA = false;
     }
 
     @Override
@@ -66,15 +60,15 @@ public class PantallaOpciones extends Pantalla {
         String resActual = GestorConfiguracion.get("resolucion", "1920x1080");
 
         int indiceResolucion = 0;
-        for (int i = 0; i < resoluciones.length; i++) {
-            if (resoluciones[i].equals(resActual)) {
+        for (int i = 0; i < RESOLUCIONES.length; i++) {
+            if (RESOLUCIONES[i].equals(resActual)) {
                 indiceResolucion = i;
                 break;
             }
         }
 
         controlVolumen = new ControlVolumen("Volumen: ", volumenInicial);
-        selectorResolucion = new SelectorResolucion(resoluciones, indiceResolucion);
+        selectorResolucion = new SelectorResolucion(RESOLUCIONES, indiceResolucion);
 
         tPantallaCompleta = new Texto(Recursos.FUENTE_MENU, 48, Color.WHITE, true);
         actualizarTextoPantallaCompleta();
@@ -134,10 +128,8 @@ public class PantallaOpciones extends Pantalla {
         }));
 
         entrada.registrar(new TextoInteractuable(tVolver, () -> {
-            // Verificar de dónde venimos
-            if (esDesdePausa) {
-                // Volver a la pantalla de pausa
-                cambiarPantalla(pantallaPausa);
+            if (ES_DESDE_PAUSA) {
+                cambiarPantalla(PANTALLA_PAUSA);
             } else {
                 cambiarPantalla(new PantallaMenu());
             }

@@ -33,7 +33,7 @@ public class GestorClientes {
 
 
     public GestorClientes(ArrayList<CajaRegistradora> cajas, ArrayList<CajaVirtual> cajasVirtuales,
-                          ArrayList<Producto> productos, float intervaloSpawn, TurnoTrabajo turno) {
+                          float intervaloSpawn, TurnoTrabajo turno) {
         this.CLIENTES_ACTIVOS = new ArrayList<>();
         this.CAJAS_DISPONIBLES = cajas;
         this.CAJAS_VIRTUALES = cajasVirtuales;
@@ -55,7 +55,7 @@ public class GestorClientes {
             Cliente cliente = CLIENTES_ACTIVOS.get(i);
             cliente.actualizar(delta);
 
-            EstadoPedido estado = cliente.getPedido().getEstadoPedido();
+            EstadoPedido estado = cliente.getPEDIDO().getEstadoPedido();
 
             if (estado == EstadoPedido.COMPLETADO) {
                 liberarEstacion(cliente);
@@ -65,7 +65,7 @@ public class GestorClientes {
 
             } else if (cliente.haExpiradoTiempo() && estado == EstadoPedido.EN_PREPARACION) {
                 aplicarPenalizacion(-50, "Cliente se fue por timeout en preparación");
-                cliente.getPedido().setEstadoPedido(EstadoPedido.CANCELADO);
+                cliente.getPEDIDO().setEstadoPedido(EstadoPedido.CANCELADO);
                 liberarEstacion(cliente);
                 cliente.liberarRecursos();
                 CLIENTES_ACTIVOS.remove(i);
@@ -73,7 +73,7 @@ public class GestorClientes {
 
             } else if (cliente.haExpiradoTiempoCaja() && estado == EstadoPedido.EN_ESPERA) {
                 aplicarPenalizacion(-30, "Cliente se fue sin ser atendido");
-                cliente.getPedido().setEstadoPedido(EstadoPedido.CANCELADO);
+                cliente.getPEDIDO().setEstadoPedido(EstadoPedido.CANCELADO);
                 liberarEstacion(cliente);
                 cliente.liberarRecursos();
                 CLIENTES_ACTIVOS.remove(i);
@@ -183,14 +183,14 @@ public class GestorClientes {
         liberarEstacion(cliente);
     }
 
-    public ArrayList<Cliente> getCLIENTES_ACTIVOS() {
+    public ArrayList<Cliente> getClientesActivos() {
         return this.CLIENTES_ACTIVOS;
     }
 
     public ArrayList<Cliente> getClientesEnPreparacion() {
         ArrayList<Cliente> enPreparacion = new ArrayList<>();
         for (Cliente cliente : CLIENTES_ACTIVOS) {
-            if (cliente.getPedido().getEstadoPedido() == EstadoPedido.EN_PREPARACION) {
+            if (cliente.getPEDIDO().getEstadoPedido() == EstadoPedido.EN_PREPARACION) {
                 enPreparacion.add(cliente);
             }
         }
@@ -208,16 +208,5 @@ public class GestorClientes {
     public boolean haAlcanzadoLimiteClientes() {
         return (clientesAtendidos + clientesPerdidos) >= MAX_CLIENTES_TOTALES;
     }
-
-    public void limpiar() {
-        for (Cliente cliente : new ArrayList<>(CLIENTES_ACTIVOS)) {
-            liberarEstacion(cliente);
-        }
-        CLIENTES_ACTIVOS.clear();
-        clientesAtendidos = 0;
-        clientesPerdidos = 0;
-        tiempoParaSiguienteCliente = INTERVALO_SPAWN;
-    }
-
 
 }

@@ -15,12 +15,4 @@ public class DatosEntrada {
     public void soltar(int keycode) {
         this.TECLAS_PRESIONADAS.remove(keycode);
     }
-
-    public boolean estaPresionada(int keycode) {
-        return this.TECLAS_PRESIONADAS.contains(keycode);
-    }
-
-    public Set<Integer> getTeclasPresionadas() {
-        return this.TECLAS_PRESIONADAS;
-    }
 }

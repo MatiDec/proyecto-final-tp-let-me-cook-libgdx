@@ -58,9 +58,9 @@ public class CajaVirtual extends EstacionTrabajo implements EstacionEntrega {
         Jugador jugador = getJugadorOcupante();
         if (jugador == null) return;
 
-        if (tieneCliente() && clienteVirtual.getPedido().getEstadoPedido() == EstadoPedido.EN_ESPERA) {
+        if (tieneCliente() && clienteVirtual.getPEDIDO().getEstadoPedido() == EstadoPedido.EN_ESPERA) {
             if (gestorPedidos != null) {
-                clienteVirtual.getPedido().setEstadoPedido(EstadoPedido.EN_PREPARACION);
+                clienteVirtual.getPEDIDO().setEstadoPedido(EstadoPedido.EN_PREPARACION);
                 clienteVirtual.resetearTiempo();
             }
             jugador.salirDeMenu();
@@ -68,7 +68,7 @@ public class CajaVirtual extends EstacionTrabajo implements EstacionEntrega {
         }
 
         else if (tieneCliente() &&
-            clienteVirtual.getPedido().getEstadoPedido() == EstadoPedido.EN_PREPARACION &&
+            clienteVirtual.getPEDIDO().getEstadoPedido() == EstadoPedido.EN_PREPARACION &&
             jugador.getInventario() instanceof Producto) {
 
             Producto productoJugador = (Producto) jugador.getInventario();
@@ -101,24 +101,19 @@ public class CajaVirtual extends EstacionTrabajo implements EstacionEntrega {
         }
     }
 
-    @Override
     public void dibujarEstado(SpriteBatch batch) {
         dibujarEstadoCaja(batch);
     }
 
     @Override
-    protected void iniciarMenu(Jugador jugador) {
-    }
+    protected void iniciarMenu(Jugador jugador) {}
 
     @Override
-    public void manejarSeleccionMenu(Jugador jugador, int numeroSeleccion) {
-    }
+    public void manejarSeleccionMenu(Jugador jugador, int numeroSeleccion) {}
 
     @Override
-    protected void dibujarMenu(SpriteBatch batch, Jugador jugador) {
-    }
+    protected void dibujarMenu(SpriteBatch batch, Jugador jugador) {}
 
     @Override
-    protected void alLiberar() {
-    }
+    protected void alLiberar() {}
 }

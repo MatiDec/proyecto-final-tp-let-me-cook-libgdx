@@ -3,48 +3,38 @@ package com.hebergames.letmecook.eventos.eventosaleatorios;
 import com.hebergames.letmecook.estaciones.EstacionTrabajo;
 
 public class EventoMaquinaRota implements EventoAleatorio {
-    private EstacionTrabajo estacionAfectada;
+    private final EstacionTrabajo ESTACION_AFECTADA;
     private boolean activo;
-    private static final String NOMBRE = "Máquina Fuera de Servicio";
-    private static final float PROBABILIDAD = 0.15f; // 15% por ronda
+    private final float PROBABILIDAD = 0.15f;
 
     public EventoMaquinaRota(EstacionTrabajo estacion) {
-        this.estacionAfectada = estacion;
+        this.ESTACION_AFECTADA = estacion;
         this.activo = false;
     }
 
     @Override
     public void activar() {
-        if (estacionAfectada != null && !activo) {
-            estacionAfectada.setFueraDeServicio(true);
+        if (ESTACION_AFECTADA != null && !activo) {
+            ESTACION_AFECTADA.setFueraDeServicio(true);
             activo = true;
         }
     }
 
     @Override
     public void desactivar() {
-        if (estacionAfectada != null && activo) {
-            estacionAfectada.setFueraDeServicio(false);
+        if (ESTACION_AFECTADA != null && activo) {
+            ESTACION_AFECTADA.setFueraDeServicio(false);
             activo = false;
         }
     }
 
     @Override
-    public boolean estaActivo() {
-        return activo;
-    }
-
-    @Override
     public String getNombre() {
-        return NOMBRE;
+        return "Máquina Fuera de Servicio";
     }
 
     @Override
     public float getProbabilidad() {
-        return PROBABILIDAD;
-    }
-
-    public EstacionTrabajo getEstacionAfectada() {
-        return estacionAfectada;
+        return this.PROBABILIDAD;
     }
 }

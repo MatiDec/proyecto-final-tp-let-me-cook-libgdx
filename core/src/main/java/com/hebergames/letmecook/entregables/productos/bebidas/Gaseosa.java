@@ -1,6 +1,5 @@
 package com.hebergames.letmecook.entregables.productos.bebidas;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.hebergames.letmecook.entregables.productos.CategoriaProducto;
 import com.hebergames.letmecook.utiles.GestorTexturas;
 
@@ -19,19 +18,19 @@ public class Gaseosa extends Bebida {
         TIPOS_GASEOSA.put("CocaCola", 2f);
     }
 
-    private String tipo;
+    private final String TIPO;
 
-    public Gaseosa(String tipo, TamanoBebida tamano) {
-        super(tipo + " " + tamano.getNombre(),
-            GestorTexturas.getInstance().getTexturaProducto((tipo + tamano.getNombre()).toLowerCase().replace(" ", "")),
+    public Gaseosa(final String TIPO, TamanoBebida tamano) {
+        super(TIPO + " " + tamano.getNombre(),
+            GestorTexturas.getInstance().getTexturaProducto((TIPO + tamano.getNombre()).toLowerCase().replace(" ", "")),
             CategoriaProducto.BEBIDAS,
             tamano,
-            TIPOS_GASEOSA.getOrDefault(tipo, 2f));
-        this.tipo = tipo;
+            TIPOS_GASEOSA.getOrDefault(TIPO, 2f));
+        this.TIPO = TIPO;
     }
 
     public String getTipo() {
-        return tipo;
+        return this.TIPO;
     }
 
     public static Map<String, Float> getTiposGaseosa() {

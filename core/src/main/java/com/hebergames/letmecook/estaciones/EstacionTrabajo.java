@@ -7,7 +7,6 @@ import com.hebergames.letmecook.entregables.ObjetoAlmacenable;
 import com.hebergames.letmecook.entregables.ingredientes.Ingrediente;
 import com.hebergames.letmecook.entregables.productos.Producto;
 import com.hebergames.letmecook.estaciones.procesadoras.MaquinaProcesadora;
-import com.hebergames.letmecook.estaciones.procesadoras.Procesadora;
 import com.hebergames.letmecook.pedidos.ResultadoEntrega;
 import com.hebergames.letmecook.utiles.GestorTexturas;
 import com.hebergames.letmecook.utiles.Recursos;
@@ -120,7 +119,6 @@ public abstract class EstacionTrabajo {
                 if (resultado != null) {
                     jugador.guardarEnInventario(resultado);
                 }
-            } else {
             }
             return;
         }
@@ -132,9 +130,7 @@ public abstract class EstacionTrabajo {
 
             if (procesadora.iniciarProceso(ingrediente)) {
                 jugador.sacarDeInventario();
-            } else {
             }
-        } else {
         }
     }
 
@@ -144,9 +140,7 @@ public abstract class EstacionTrabajo {
         }
     }
 
-    public void dibujarIndicador(SpriteBatch batch) {
-
-    }
+    public void dibujarIndicador(SpriteBatch batch) {}
 
     public void dibujarIndicadorError(SpriteBatch batch) {
         if (fueraDeServicio) {
@@ -156,8 +150,7 @@ public abstract class EstacionTrabajo {
         }
     }
 
-    public void dibujarEstado(SpriteBatch batch) {
-    }
+    public void dibujarEstado(SpriteBatch batch) {}
 
     public void dibujar(SpriteBatch batch, Jugador jugador) {
         if (jugadorOcupante == jugador && jugador.estaEnMenu()) {

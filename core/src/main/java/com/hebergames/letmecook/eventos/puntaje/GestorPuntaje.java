@@ -20,8 +20,4 @@ public class GestorPuntaje implements CallbackPuntaje {
     public int getPuntajeActual() {
         return puntajeActual;
     }
-
-    public void resetearPuntaje() {
-        puntajeActual = 0;
-    }
 }

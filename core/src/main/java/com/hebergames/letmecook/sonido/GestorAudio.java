@@ -13,10 +13,9 @@ public class GestorAudio implements Disposable {
 
     private static GestorAudio instancia;
 
-    private Map<String, Music> canciones;
-    private Map<String, Sound> sonidos;
+    private final Map<String, Music> CANCIONES;
+    private final Map<String, Sound> SONIDOS;
 
-    // Control de volúmenes (Por defecto, esto luego lo va a poder cambiar el usuario)
     private float volumenMusica = 0.6f;
     private float volumenSonidos = 0.6f;
 
@@ -24,8 +23,8 @@ public class GestorAudio implements Disposable {
     private String nombreMusicaActual;
 
     private GestorAudio() {
-        canciones = new HashMap<>();
-        sonidos = new HashMap<>();
+        CANCIONES = new HashMap<>();
+        SONIDOS = new HashMap<>();
         cargarVolumenDesdeConfiguracion();
     }
 
@@ -36,8 +35,6 @@ public class GestorAudio implements Disposable {
         this.volumenSonidos = volumenConfig / 100f;
     }
 
-    //Patrón de diseño Singleton, se asegura de que una clase tenga una única instancia en
-    // la totalidad del programa y provee un punto de acceso global a esa única instancia, haciendola static.
     public static GestorAudio getInstance() {
         if (instancia == null) {
             instancia = new GestorAudio();
@@ -62,7 +59,7 @@ public class GestorAudio implements Disposable {
     public void cargarMusica(String nombre, String rutaArchivo) {
         try {
             Music musica = Gdx.audio.newMusic(Gdx.files.internal(rutaArchivo));
-            canciones.put(nombre, musica);
+            CANCIONES.put(nombre, musica);
             System.out.println("Música cargada: " + nombre);
         } catch (Exception e) {
             System.err.println("Error al cargar música: " + nombre + " - " + e.getMessage());
@@ -72,7 +69,7 @@ public class GestorAudio implements Disposable {
     public void cargarSonido(String nombre, String rutaArchivo) {
         try {
             Sound sonido = Gdx.audio.newSound(Gdx.files.internal(rutaArchivo));
-            sonidos.put(nombre, sonido);
+            SONIDOS.put(nombre, sonido);
             System.out.println("Sonido cargado: " + nombre);
         } catch (Exception e) {
             System.err.println("Error al cargar sonido: " + nombre + " - " + e.getMessage());
@@ -83,17 +80,13 @@ public class GestorAudio implements Disposable {
         reproducirCancion(musica.getIdentificador(), true);
     }
 
-    public void reproducirCancion(String nombre) {
-        reproducirCancion(nombre, true);
-    }
-
     public void reproducirCancion(String nombre, boolean enBucle) {
 
         if (musicaActual != null && !nombre.equals(nombreMusicaActual)) {
             detenerMusica();
         }
 
-        Music musica = canciones.get(nombre);
+        Music musica = CANCIONES.get(nombre);
         if (musica != null) {
             musica.setVolume(volumenMusica);
             musica.setLooping(enBucle);
@@ -129,23 +122,10 @@ public class GestorAudio implements Disposable {
         reproducirSonido(sonido.getIdentificador());
     }
 
-    public void reproducirSonido(SonidoJuego sonido, float volumen) {
-        reproducirSonido(sonido.getIdentificador(), volumen);
-    }
-
     public void reproducirSonido(String nombre) {
-        Sound sonido = sonidos.get(nombre);
+        Sound sonido = SONIDOS.get(nombre);
         if (sonido != null) {
             sonido.play(volumenSonidos);
-        } else {
-            System.err.println("Sonido no encontrado: " + nombre);
-        }
-    }
-
-    public void reproducirSonido(String nombre, float volumen) {
-        Sound sonido = sonidos.get(nombre);
-        if (sonido != null) {
-            sonido.play(volumen);
         } else {
             System.err.println("Sonido no encontrado: " + nombre);
         }
@@ -158,44 +138,18 @@ public class GestorAudio implements Disposable {
         }
     }
 
-    public void setVolumenSonidos(float volumen) {
-        this.volumenSonidos = Math.max(0.0f, Math.min(1.0f, volumen));
-    }
-
-    public float getVolumenMusica() {
-        return volumenMusica;
-    }
-
-    public float getVolumenSonidos() {
-        return volumenSonidos;
-    }
-
-    public boolean isMusicaReproduciendo() {
-        return musicaActual != null && musicaActual.isPlaying();
-    }
-
-    public String getNombreMusicaActual() {
-        return nombreMusicaActual;
-    }
-
-    public void mutearMusica(boolean mutear) {
-        if (musicaActual != null) {
-            musicaActual.setVolume(mutear ? 0.0f : volumenMusica);
-        }
-    }
-
     @Override
     public void dispose() {
 
-        for (Music musica : canciones.values()) {
+        for (Music musica : CANCIONES.values()) {
             musica.dispose();
         }
-        canciones.clear();
+        CANCIONES.clear();
 
-        for (Sound sonido : sonidos.values()) {
+        for (Sound sonido : SONIDOS.values()) {
             sonido.dispose();
         }
-        sonidos.clear();
+        SONIDOS.clear();
 
         musicaActual = null;
         nombreMusicaActual = null;

@@ -61,7 +61,7 @@ public class PantallaTutorial extends Pantalla {
             "Controles Básicos",
             "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/tutoriales/miniatura_controles.jpg",
             "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/tutoriales/spritesheet_controles.jpg",
-            128, 64, 12, 10f // 64x64 pixeles por frame, 12 frames, 10 fps
+            128, 64, 12, 10f
         ));
 
         elementosTutorial.add(new ElementoTutorial(
@@ -90,10 +90,8 @@ public class PantallaTutorial extends Pantalla {
         float anchoViewport = viewport.getWorldWidth();
         float altoViewport = viewport.getWorldHeight();
 
-        // Posicionar título
         titulo.setPosition(anchoViewport / 2f - titulo.getAncho() / 2f, altoViewport - 80f);
 
-        // Posicionar botón cerrar
         float tamanoBton = 50f;
         areaCerrar = new Rectangle(
             anchoViewport - tamanoBton - 20f,
@@ -102,18 +100,13 @@ public class PantallaTutorial extends Pantalla {
             tamanoBton
         );
 
-        // Calcular grid de tutoriales
-        int columnas = 3; // Puedes ajustar esto
+        int columnas = 3;
         float espaciadoX = 50f;
         float espaciadoY = 80f;
         float anchoElemento = 200f;
         float altoElemento = 250f;
 
-        int totalElementos = elementosTutorial.size();
-        int filas = (int) Math.ceil(totalElementos / (float) columnas);
-
         float anchoTotal = (columnas * anchoElemento) + ((columnas - 1) * espaciadoX);
-        float altoTotal = (filas * altoElemento) + ((filas - 1) * espaciadoY);
 
         float inicioX = (anchoViewport - anchoTotal) / 2f;
         float inicioY = altoViewport - 150f;
@@ -134,14 +127,12 @@ public class PantallaTutorial extends Pantalla {
             System.out.println("Click en PantallaTutorial: " + worldX + ", " + worldY);
             System.out.println("Área cerrar: " + areaCerrar);
 
-            // Verificar click en botón cerrar
             if (areaCerrar.contains(worldX, worldY)) {
                 System.out.println("Cerrando tutorial principal");
                 cambiarPantalla(new PantallaMenu());
                 return;
             }
 
-            // Verificar click en elementos de tutorial
             for (int i = 0; i < elementosTutorial.size(); i++) {
                 ElementoTutorial elemento = elementosTutorial.get(i);
                 if (elemento.fueClickeado(worldX, worldY)) {
@@ -172,7 +163,6 @@ public class PantallaTutorial extends Pantalla {
 
         titulo.dibujar();
 
-        // Actualizar y dibujar elementos
         float mouseX = Gdx.input.getX();
         float mouseY = viewport.getWorldHeight() - Gdx.input.getY();
 
@@ -181,7 +171,6 @@ public class PantallaTutorial extends Pantalla {
             elemento.dibujar(batch);
         }
 
-        // Dibujar botón cerrar
         if (botonCerrar != null) {
             batch.draw(botonCerrar, areaCerrar.x, areaCerrar.y, areaCerrar.width, areaCerrar.height);
         }

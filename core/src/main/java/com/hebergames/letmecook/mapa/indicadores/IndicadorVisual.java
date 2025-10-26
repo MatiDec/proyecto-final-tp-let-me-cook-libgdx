@@ -9,11 +9,10 @@ import com.hebergames.letmecook.utiles.GestorTexturas;
 
 public class IndicadorVisual {
     private TextureRegion texturaActual;
-    private Vector2 posicionMundo;
-    private Vector2 posicionPantalla;
+    private final Vector2 POSICION_MUNDO;
+    private final Vector2 POSICION_PANTALLA;
     private boolean visible;
     private boolean enBorde;
-    private TipoIndicador tipo;
     private float tiempoAnimacion;
     private float anguloFlecha;
     private EstadoIndicador estado;
@@ -21,23 +20,9 @@ public class IndicadorVisual {
     private static final float OFFSET_Y = 40f;
     private static final float TAMANO = 32f;
 
-    public enum TipoIndicador {
-        TEMPORIZADOR,
-        ALERTA,
-        CLIENTE_NUEVO
-    }
-
-    public enum EstadoIndicador {
-        PROCESANDO,
-        LISTO,
-        QUEMANDOSE,
-        INACTIVO
-    }
-
-    public IndicadorVisual(float x, float y, TipoIndicador tipo) {
-        this.posicionMundo = new Vector2(x, y + OFFSET_Y);
-        this.posicionPantalla = new Vector2();
-        this.tipo = tipo;
+    public IndicadorVisual(float x, float y) {
+        this.POSICION_MUNDO = new Vector2(x, y + OFFSET_Y);
+        this.POSICION_PANTALLA = new Vector2();
         this.visible = false;
         this.enBorde = false;
         this.tiempoAnimacion = 0f;
@@ -47,22 +32,21 @@ public class IndicadorVisual {
     public void actualizar(float delta, OrthographicCamera camara, Rectangle areaVisible) {
         tiempoAnimacion += delta;
 
-        // Actualizar textura continuamente si está procesando
         if (estado == EstadoIndicador.PROCESANDO) {
             actualizarTextura();
         }
 
-        if (!estaEnVista(camara, areaVisible)) {
+        if (!estaEnVista(areaVisible)) {
             enBorde = true;
             calcularPosicionBorde(camara);
         } else {
             enBorde = false;
-            posicionPantalla.set(posicionMundo);
+            POSICION_PANTALLA.set(POSICION_MUNDO);
         }
     }
 
-    private boolean estaEnVista(OrthographicCamera camara, Rectangle areaVisible) {
-        return areaVisible.contains(posicionMundo.x, posicionMundo.y);
+    private boolean estaEnVista(Rectangle areaVisible) {
+        return areaVisible.contains(POSICION_MUNDO.x, POSICION_MUNDO.y);
     }
 
 
@@ -79,7 +63,7 @@ public class IndicadorVisual {
         float minY = camaraY - altoVista / 2f + margen;
         float maxY = camaraY + altoVista / 2f - margen;
 
-        Vector2 direccion = new Vector2(posicionMundo).sub(camaraX, camaraY).nor();
+        Vector2 direccion = new Vector2(POSICION_MUNDO).sub(camaraX, camaraY).nor();
 
         float t1 = (maxX - camaraX) / direccion.x;
         float t2 = (minX - camaraX) / direccion.x;
@@ -93,7 +77,7 @@ public class IndicadorVisual {
         if (direccion.y > 0 && t3 > 0) t = Math.min(t, t3);
         if (direccion.y < 0 && t4 > 0) t = Math.min(t, t4);
 
-        posicionPantalla.set(camaraX + direccion.x * t, camaraY + direccion.y * t);
+        POSICION_PANTALLA.set(camaraX + direccion.x * t, camaraY + direccion.y * t);
 
         anguloFlecha = (float) Math.toDegrees(Math.atan2(direccion.y, direccion.x));
     }
@@ -101,20 +85,19 @@ public class IndicadorVisual {
     public void dibujar(SpriteBatch batch) {
         if (!visible || texturaActual == null) return;
 
-        float x = posicionPantalla.x - TAMANO / 2f;
-        float y = posicionPantalla.y - TAMANO / 2f;
+        float x = POSICION_PANTALLA.x - TAMANO / 2f;
+        float y = POSICION_PANTALLA.y - TAMANO / 2f;
 
         if (enBorde) {
-            // Dibujar flecha direccional
             GestorTexturas gestor = GestorTexturas.getInstance();
             TextureRegion flecha = gestor.getTexturaFlecha();
 
             if (flecha != null) {
                 float rad = (float) Math.toRadians(anguloFlecha);
-                float distancia = TAMANO * 1.2f; // separación desde el indicador
+                float distancia = TAMANO * 1.2f;
 
-                float flechaX = posicionPantalla.x + (float) Math.cos(rad) * distancia;
-                float flechaY = posicionPantalla.y + (float) Math.sin(rad) * distancia;
+                float flechaX = POSICION_PANTALLA.x + (float) Math.cos(rad) * distancia;
+                float flechaY = POSICION_PANTALLA.y + (float) Math.sin(rad) * distancia;
 
                 batch.draw(flecha,
                     flechaX - TAMANO / 2f,
@@ -165,10 +148,6 @@ public class IndicadorVisual {
 
     public void setVisible(boolean visible) {
         this.visible = visible;
-    }
-
-    public void setPosicionMundo(float x, float y) {
-        this.posicionMundo.set(x, y + OFFSET_Y);
     }
 
     public boolean isVisible() {

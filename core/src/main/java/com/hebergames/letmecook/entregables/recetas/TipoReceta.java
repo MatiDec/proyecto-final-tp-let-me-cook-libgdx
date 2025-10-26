@@ -15,21 +15,21 @@ public enum TipoReceta {
     MILANESA_CARNE("Milanesa de Carne", TipoProducto.MILANESA_CARNE, "Bandeja para Milanesa de Carne", "Milanesa de Carne (Bien hecho)"),
     MILANESA_POLLO("Milanesa de Pollo", TipoProducto.MILANESA_POLLO, "Bandeja para Milanesa de Pollo", "Milanesa de Pollo (Bien hecho)");
 
-    private final String nombre;
-    private final TipoProducto tipoProducto;
-    private final String[] ingredientesRequeridos;
+    private final String NOMBRE;
+    private final TipoProducto TIPO_PRODUCTO;
+    private final String[] INGREDIENTES_REQUERIDOS;
 
-    TipoReceta(String nombre, TipoProducto tipoProducto, String... ingredientes) {
-        this.nombre = nombre;
-        this.tipoProducto = tipoProducto;
-        this.ingredientesRequeridos = ingredientes;
+    TipoReceta(final String NOMBRE, final TipoProducto TIPO_PRODUCTO, final String... ingredientes) {
+        this.NOMBRE = NOMBRE;
+        this.TIPO_PRODUCTO = TIPO_PRODUCTO;
+        this.INGREDIENTES_REQUERIDOS = ingredientes;
     }
 
     public RecetaGenerica crear() {
-        ArrayList<String> ingredientes = new ArrayList<>(Arrays.asList(ingredientesRequeridos));
-        return new RecetaGenerica(nombre, ingredientes, tipoProducto);
+        ArrayList<String> ingredientes = new ArrayList<>(Arrays.asList(INGREDIENTES_REQUERIDOS));
+        return new RecetaGenerica(NOMBRE, ingredientes, TIPO_PRODUCTO);
     }
 
-    public String getNombre() { return nombre; }
-    public TipoProducto getTipoProducto() { return tipoProducto; }
+    public String getNombre() { return this.NOMBRE; }
+    public TipoProducto getTipoProducto() { return this.TIPO_PRODUCTO; }
 }

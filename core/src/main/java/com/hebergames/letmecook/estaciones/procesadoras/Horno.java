@@ -9,28 +9,20 @@ public class Horno extends EstacionTrabajo {
 
     public Horno(Rectangle area) {
         super(area);
-        procesadora = new Procesadora(area, TipoCoccion.HORNO);
+        procesadora = new Procesadora(area);
     }
 
     @Override
-    protected void alLiberar() {
-
-    }
+    protected void alLiberar() {}
 
     @Override
-    protected void iniciarMenu(Jugador jugador) {
-
-    }
+    protected void iniciarMenu(Jugador jugador) {}
 
     @Override
-    public void manejarSeleccionMenu(Jugador jugador, int direccion) {
-
-    }
+    public void manejarSeleccionMenu(Jugador jugador, int direccion) {}
 
     @Override
-    protected void dibujarMenu(SpriteBatch batch, Jugador jugador) {
-
-    }
+    protected void dibujarMenu(SpriteBatch batch, Jugador jugador) {}
 
     @Override
     public void alInteractuar() {

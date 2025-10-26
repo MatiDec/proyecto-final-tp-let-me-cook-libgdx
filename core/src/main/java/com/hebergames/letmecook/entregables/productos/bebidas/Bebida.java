@@ -16,11 +16,11 @@ public abstract class Bebida extends Producto {
     }
 
     public float getTiempoPreparacion() {
-        return tiempoPreparacion;
+        return this.tiempoPreparacion;
     }
 
     public TamanoBebida getTamano() {
-        return tamano;
+        return this.tamano;
     }
 
     public abstract String getTipo();

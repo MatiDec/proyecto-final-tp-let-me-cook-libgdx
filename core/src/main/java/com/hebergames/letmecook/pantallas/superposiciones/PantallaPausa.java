@@ -24,22 +24,22 @@ public class PantallaPausa extends Pantalla {
     private Texto oContinuar, oMenuPrincipal;
     private Entrada entrada;
 
-    private Viewport viewport;
-    private OrthographicCamera camara;
+    private final Viewport VIEWPORT;
+    private final OrthographicCamera CAMARA;
 
     public PantallaPausa(PantallaJuego pantallaJuego) {
         this.PANTALLA_JUEGO = pantallaJuego;
         this.BATCH = Render.batch;
-        this.camara = new OrthographicCamera();
-        this.viewport = new ScreenViewport(camara);
+        this.CAMARA = new OrthographicCamera();
+        this.VIEWPORT = new ScreenViewport(CAMARA);
 
-        viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+        VIEWPORT.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
     }
 
     @Override
     public void show() {
 
-        viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+        VIEWPORT.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 
         entrada = new Entrada();
         Gdx.input.setInputProcessor(entrada);
@@ -69,8 +69,8 @@ public class PantallaPausa extends Pantalla {
     }
 
     private void posicionarTextos() {
-        float anchoViewport = viewport.getWorldWidth();
-        float altoViewport = viewport.getWorldHeight();
+        float anchoViewport = VIEWPORT.getWorldWidth();
+        float altoViewport = VIEWPORT.getWorldHeight();
 
         float centroX = anchoViewport / 2f;
         float centroY = altoViewport / 2f;
@@ -87,20 +87,20 @@ public class PantallaPausa extends Pantalla {
     @Override
     public void render(float delta) {
         entrada.actualizarEntradas();
-        viewport.apply();
-        camara.update();
+        VIEWPORT.apply();
+        CAMARA.update();
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-        BATCH.setProjectionMatrix(camara.combined);
+        BATCH.setProjectionMatrix(CAMARA.combined);
         BATCH.begin();
 
         BATCH.setColor(0, 0, 0, 0.5f);
 
 
-        float anchoViewport = viewport.getWorldWidth();
-        float altoViewport = viewport.getWorldHeight();
+        float anchoViewport = VIEWPORT.getWorldWidth();
+        float altoViewport = VIEWPORT.getWorldHeight();
         BATCH.draw(Recursos.PIXEL, 0, 0, anchoViewport, altoViewport);
         BATCH.setColor(1, 1, 1, 1);
 
@@ -114,7 +114,7 @@ public class PantallaPausa extends Pantalla {
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width, height, true);
+        VIEWPORT.update(width, height, true);
 
         if (oContinuar != null && oMenuPrincipal != null) {
             posicionarTextos();

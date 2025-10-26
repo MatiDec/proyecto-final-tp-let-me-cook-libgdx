@@ -25,10 +25,7 @@ public class GestorMostrarCalendario {
     }
 
     public boolean estaMostrando() {
-        return mostrandoCalendario;
+        return !mostrandoCalendario;
     }
 
-    public void cerrar() {
-        mostrandoCalendario = false;
-    }
 }

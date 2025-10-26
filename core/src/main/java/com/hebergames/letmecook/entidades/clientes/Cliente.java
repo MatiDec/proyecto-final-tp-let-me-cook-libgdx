@@ -11,7 +11,7 @@ import com.hebergames.letmecook.utiles.GestorTexturas;
 import java.util.ArrayList;
 
 public class Cliente {
-    private Pedido pedido;
+    private final Pedido PEDIDO;
     private EstacionTrabajo estacionAsignada;
     private float tiempoEspera;
     private final float TIEMPO_MAXIMO_ESPERA;
@@ -23,7 +23,7 @@ public class Cliente {
 
     public Cliente(ArrayList<Producto> productosSolicitados, float tiempoMaximoEspera, TipoCliente tipo) {
         int id = contadorId++;
-        this.pedido = new Pedido(id, productosSolicitados);
+        this.PEDIDO = new Pedido(productosSolicitados);
         this.TIEMPO_MAXIMO_ESPERA = tiempoMaximoEspera;
         this.tiempoEspera = 0f;
         this.visualizador = null;
@@ -32,7 +32,7 @@ public class Cliente {
     }
 
     public void actualizar(float delta) {
-        EstadoPedido estado = this.pedido.getEstadoPedido();
+        EstadoPedido estado = this.PEDIDO.getEstadoPedido();
 
         if (estado == EstadoPedido.EN_ESPERA) {
             tiempoEsperaEnCaja += delta;
@@ -53,11 +53,11 @@ public class Cliente {
     }
 
     public void dibujar(SpriteBatch batch) {
-        if (visualizador == null || estacionAsignada == null || pedido == null) {
+        if (visualizador == null || estacionAsignada == null || PEDIDO == null) {
             return;
         }
 
-        EstadoPedido estado = pedido.getEstadoPedido();
+        EstadoPedido estado = PEDIDO.getEstadoPedido();
         if (estado == EstadoPedido.CANCELADO || estado == EstadoPedido.COMPLETADO) {
             return;
         }
@@ -85,8 +85,8 @@ public class Cliente {
         return this.tiempoEspera / this.TIEMPO_MAXIMO_ESPERA;
     }
 
-    public Pedido getPedido() {
-        return this.pedido;
+    public Pedido getPEDIDO() {
+        return this.PEDIDO;
     }
 
     public EstacionTrabajo getEstacionAsignada() {
@@ -106,9 +106,9 @@ public class Cliente {
     }
 
     public float getPorcentajeToleranciaActual() {
-        if (pedido.getEstadoPedido() == EstadoPedido.EN_ESPERA) {
+        if (PEDIDO.getEstadoPedido() == EstadoPedido.EN_ESPERA) {
             return 1f - getPorcentajeTiempoCaja();
-        } else if (pedido.getEstadoPedido() == EstadoPedido.EN_PREPARACION) {
+        } else if (PEDIDO.getEstadoPedido() == EstadoPedido.EN_PREPARACION) {
             return 1f - getPorcentajeTiempo();
         }
         return 1f;

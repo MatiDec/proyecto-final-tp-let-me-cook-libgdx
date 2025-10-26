@@ -18,28 +18,28 @@ import com.hebergames.letmecook.utiles.Render;
 import java.util.ArrayList;
 
 public class PantallaCalendario extends Pantalla {
-    private final PantallaJuego PANTALLA_JUEGO;
     private final SpriteBatch BATCH;
+    private final PantallaJuego PANTALLA_JUEGO;
 
-    private GestorPartida gestorPartida;
-    private Viewport viewport;
-    private OrthographicCamera camara;
+    private final GestorPartida GESTOR_PARTIDA;
+    private final Viewport VIEWPORT;
+    private final OrthographicCamera CAMARA;
 
     private Texto tituloCalendario;
-    private ArrayList<InfoDiaNivel> diasNiveles;
+    private final ArrayList<InfoDiaNivel> DIAS_NIVELES;
 
-    public PantallaCalendario(PantallaJuego pantallaJuego) {
-        this.PANTALLA_JUEGO = pantallaJuego;
+    public PantallaCalendario(PantallaJuego PANTALLA_JUEGO) {
+        this.PANTALLA_JUEGO = PANTALLA_JUEGO;
         this.BATCH = Render.batch;
-        this.camara = new OrthographicCamera();
-        this.viewport = new ScreenViewport(camara);
-        this.gestorPartida = GestorPartida.getInstancia();
-        this.diasNiveles = new ArrayList<>();
+        this.CAMARA = new OrthographicCamera();
+        this.VIEWPORT = new ScreenViewport(CAMARA);
+        this.GESTOR_PARTIDA = GestorPartida.getInstancia();
+        this.DIAS_NIVELES = new ArrayList<>();
     }
 
     @Override
     public void show() {
-        viewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+        VIEWPORT.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         inicializarCalendario();
     }
 
@@ -47,21 +47,21 @@ public class PantallaCalendario extends Pantalla {
         tituloCalendario = new Texto(Recursos.FUENTE_MENU, 48, Color.WHITE, true);
         tituloCalendario.setTexto("Calendario de actividades");
 
-        diasNiveles.clear();
-        ArrayList<NivelPartida> niveles = gestorPartida.getTodosLosNiveles();
+        DIAS_NIVELES.clear();
+        ArrayList<NivelPartida> niveles = GESTOR_PARTIDA.getTodosLosNiveles();
 
         for (int i = 0; i < niveles.size(); i++) {
             NivelPartida nivel = niveles.get(i);
             InfoDiaNivel info = new InfoDiaNivel(i + 1, nivel);
-            diasNiveles.add(info);
+            DIAS_NIVELES.add(info);
         }
 
         posicionarElementos();
     }
 
     private void posicionarElementos() {
-        float anchoViewport = viewport.getWorldWidth();
-        float altoViewport = viewport.getWorldHeight();
+        float anchoViewport = VIEWPORT.getWorldWidth();
+        float altoViewport = VIEWPORT.getWorldHeight();
         float centroX = anchoViewport / 2f;
 
         tituloCalendario.setPosition(
@@ -69,13 +69,13 @@ public class PantallaCalendario extends Pantalla {
             altoViewport - 80f
         );
 
-        int cantidadDias = diasNiveles.size();
+        int cantidadDias = DIAS_NIVELES.size();
         float anchoTotal = (cantidadDias * Recursos.ANCHO_DIA) + ((cantidadDias - 1) * Recursos.ESPACIADO);
         float inicioX = centroX - (anchoTotal / 2f);
         float posY = altoViewport / 2f;
 
-        for (int i = 0; i < diasNiveles.size(); i++) {
-            InfoDiaNivel info = diasNiveles.get(i);
+        for (int i = 0; i < DIAS_NIVELES.size(); i++) {
+            InfoDiaNivel info = DIAS_NIVELES.get(i);
             float posX = inicioX + (i * (Recursos.ANCHO_DIA + Recursos.ESPACIADO));
             info.setPosicion(posX, posY);
         }
@@ -83,26 +83,26 @@ public class PantallaCalendario extends Pantalla {
 
     @Override
     public void render(float delta) {
-        viewport.apply();
-        camara.update();
+        VIEWPORT.apply();
+        CAMARA.update();
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-        BATCH.setProjectionMatrix(camara.combined);
+        BATCH.setProjectionMatrix(CAMARA.combined);
         BATCH.begin();
 
         BATCH.setColor(0, 0, 0, 0.7f);
-        float anchoViewport = viewport.getWorldWidth();
-        float altoViewport = viewport.getWorldHeight();
+        float anchoViewport = VIEWPORT.getWorldWidth();
+        float altoViewport = VIEWPORT.getWorldHeight();
         BATCH.draw(Recursos.PIXEL, 0, 0, anchoViewport, altoViewport);
         BATCH.setColor(1, 1, 1, 1);
 
         tituloCalendario.dibujar();
 
-        int nivelActualIndex = gestorPartida.getNivelActualIndex();
-        for (int i = 0; i < diasNiveles.size(); i++) {
-            InfoDiaNivel info = diasNiveles.get(i);
+        int nivelActualIndex = GESTOR_PARTIDA.getNivelActualIndex();
+        for (int i = 0; i < DIAS_NIVELES.size(); i++) {
+            InfoDiaNivel info = DIAS_NIVELES.get(i);
             boolean esNivelActual = (i == nivelActualIndex);
             info.dibujar(BATCH, esNivelActual);
         }
@@ -113,7 +113,7 @@ public class PantallaCalendario extends Pantalla {
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width, height, true);
+        VIEWPORT.update(width, height, true);
         if (tituloCalendario != null) {
             posicionarElementos();
         }

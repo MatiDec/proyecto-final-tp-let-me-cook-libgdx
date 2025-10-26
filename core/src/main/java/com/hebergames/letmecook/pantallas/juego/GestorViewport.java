@@ -12,9 +12,8 @@ public class GestorViewport {
 
     private static final float MUNDO_ANCHO = 1920f;
     private static final float MUNDO_ALTO = 1080f;
-    //zoom dinamico <3
     private static final float MAX_DISTANCIA_PARA_ZOOM = 1500f;
-    private static final float MIN_ZOOM = 1.0f; // Más alejado (muestra más mapa)
+    private static final float MIN_ZOOM = 1.0f;
     private static final float MID_ZOOM = 1.2f;
     private static final float MAX_ZOOM = 1.5f;
 
@@ -40,25 +39,19 @@ public class GestorViewport {
         float centerY = jugador1.getPosicion().y;
         float zoom = MAX_ZOOM;
 
-        // Comprobación de si existe un segundo jugador
         if (jugador2 != null) {
-            // 1. Calcular punto central
             centerX = (jugador1.getPosicion().x + jugador2.getPosicion().x) / 2f;
             centerY = (jugador1.getPosicion().y + jugador2.getPosicion().y) / 2f;
 
-            // 2. Calcular la distancia máxima
             float dist_x = Math.abs(jugador1.getPosicion().x - jugador2.getPosicion().x);
             float dist_y = Math.abs(jugador1.getPosicion().y - jugador2.getPosicion().y);
             float max_dist = Math.max(dist_x, dist_y);
 
-            // 3. Normalizar la distancia para obtener un factor de zoom entre 0 y 1
             float normalized_dist = Math.min(max_dist, MAX_DISTANCIA_PARA_ZOOM) / MAX_DISTANCIA_PARA_ZOOM;
 
-            // 4. Interpolación: cuanto mayor la distancia, menor el zoom (más alejado)
             zoom = MIN_ZOOM + (MAX_ZOOM - MIN_ZOOM) * normalized_dist;
         }
 
-        // Aplicar la posición y el zoom
         camaraJuego.zoom = zoom;
         camaraJuego.position.set(centerX, centerY, 0);
         camaraJuego.update();

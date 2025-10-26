@@ -21,7 +21,6 @@ public class Entrada implements InputProcessor {
     private final ArrayList<EstacionTrabajo> ESTACIONES = new ArrayList<>();
     private Viewport viewportJuego;
     private Viewport viewportUI;
-    private float ultimoClickX = 0f;
 
     private final Map<Jugador, int[]> TECLAS_MENU_POR_JUGADOR = new HashMap<>();
     private final Map<Jugador, Integer> NUMERO_SELECCIONADO = new HashMap<>();
@@ -37,7 +36,6 @@ public class Entrada implements InputProcessor {
         ENTRADAS_POR_JUGADOR.put(jugador, datos);
         CONFIG_TECLAS_JUGADOR.put(jugador, config);
 
-        // Mapear todas las teclas del jugador
         MAPA_TECLAS_JUGADOR.put(config.getArriba(), jugador);
         MAPA_TECLAS_JUGADOR.put(config.getAbajo(), jugador);
         MAPA_TECLAS_JUGADOR.put(config.getIzquierda(), jugador);
@@ -88,21 +86,18 @@ public class Entrada implements InputProcessor {
         if(jugador != null) {
             ConfiguracionTeclas config = CONFIG_TECLAS_JUGADOR.get(jugador);
 
-            // Si es la tecla de interacción, interactuar con estaciones
             if (config != null && keycode == config.getInteractuar()) {
                 interactuarConEstacionCercana(jugador);
             }
 
             ENTRADAS_POR_JUGADOR.get(jugador).presionar(keycode);
             return true;
-        } else {
         }
 
         for (Map.Entry<Jugador, int[]> entry : TECLAS_MENU_POR_JUGADOR.entrySet()) {
             jugador = entry.getKey();
             int[] teclas = entry.getValue();
 
-            // Solo procesar si el jugador está en menú
             if (jugador.estaEnMenu()) {
                 for (int i = 0; i < teclas.length; i++) {
                     if (keycode == teclas[i]) {
@@ -119,11 +114,9 @@ public class Entrada implements InputProcessor {
     private void interactuarConEstacionCercana(Jugador jugador) {
         Vector2 posJugador = jugador.getPosicion();
 
-
         EstacionTrabajo estacionMasCercana = null;
         float distanciaMasCercana = Float.MAX_VALUE;
 
-        // Buscar la estación MÁS CERCANA dentro del radio
         for (EstacionTrabajo estacion : ESTACIONES) {
 
             if (estacion.estaCerca(posJugador.x, posJugador.y)) {
@@ -136,10 +129,8 @@ public class Entrada implements InputProcessor {
             }
         }
 
-        // Interactuar con la estación más cercana encontrada
         if (estacionMasCercana != null) {
             estacionMasCercana.interactuarConJugador(jugador);
-        } else {
         }
     }
 
@@ -149,7 +140,6 @@ public class Entrada implements InputProcessor {
         if(jugador != null) {
             ConfiguracionTeclas config = CONFIG_TECLAS_JUGADOR.get(jugador);
 
-            // Si se suelta la tecla de correr, iniciar deslizamiento
             if (config != null && keycode == config.getCorrer()) {
                 jugador.iniciarDeslizamiento();
             }
@@ -168,9 +158,7 @@ public class Entrada implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Vector2 coordenadasUI = new Vector2(screenX, Gdx.graphics.getHeight() - screenY);
-        ultimoClickX = screenX * (Gdx.graphics.getWidth() / (float) Gdx.graphics.getWidth());
 
-        // Solo permitir clicks en elementos de UI (botones de menú, etc.)
         for (BotonInteractuable i : ELEMENTOS_INTERACTUABLES) {
             if(i.fueClickeado(coordenadasUI.x, coordenadasUI.y)) {
                 i.alClick();
@@ -179,7 +167,6 @@ public class Entrada implements InputProcessor {
         }
 
         if (callbackClick != null) {
-            // Pasar coordenadas ya convertidas (coordenadas del mundo)
             callbackClick.onClick(coordenadasUI.x, coordenadasUI.y);
         }
 
@@ -232,7 +219,4 @@ public class Entrada implements InputProcessor {
         this.viewportUI = viewport;
     }
 
-    public float getUltimoClickX() {
-        return this.ultimoClickX;
-    }
 }

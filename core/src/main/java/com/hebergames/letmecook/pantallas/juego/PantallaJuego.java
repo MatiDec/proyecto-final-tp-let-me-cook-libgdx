@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.hebergames.letmecook.entidades.clientes.Cliente;
 import com.hebergames.letmecook.entidades.clientes.GestorClientes;
 import com.hebergames.letmecook.entidades.Jugador;
@@ -37,7 +36,6 @@ import com.hebergames.letmecook.pantallas.superposiciones.PantallaCalendario;
 import com.hebergames.letmecook.pantallas.PantallaFinal;
 import com.hebergames.letmecook.pantallas.superposiciones.PantallaPausa;
 import com.hebergames.letmecook.pedidos.GestorPedidos;
-import com.hebergames.letmecook.pedidos.Pedido;
 import com.hebergames.letmecook.sonido.CancionNivel;
 import com.hebergames.letmecook.sonido.GestorAudio;
 import com.hebergames.letmecook.sonido.SonidoJuego;
@@ -45,13 +43,12 @@ import com.hebergames.letmecook.utiles.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class PantallaJuego extends Pantalla {
 
-    private static final int TIEMPO_OBJETIVO = 3000; // 3 minutos
-    private static final boolean MODO_MULTIJUGADOR = true; // Cambiar a false para un solo jugador
+    private final int TIEMPO_OBJETIVO = 3000;
+    private final boolean MODO_MULTIJUGADOR = true;
 
     private SpriteBatch batch;
     private Jugador jugador1;
@@ -65,7 +62,6 @@ public class PantallaJuego extends Pantalla {
     private HiloClientes hiloClientes;
     private GestorPuntaje gestorPuntaje;
 
-    //gestores
     private GestorViewport gestorViewport;
     private GestorUIJuego gestorUI;
     private GestorEntradaJuego gestorEntrada;
@@ -79,18 +75,9 @@ public class PantallaJuego extends Pantalla {
     private GestorMostrarCalendario gestorMostrarCalendario;
     private NivelPartida nivelActual;
 
-    //texturas y animaciones
     private GestorTexturas gestorTexturas;
-    private Texture jugadorSheet;
-    private Texture texturaClientes;
-    private TextureRegion texturaClientePresencial;
-    private TextureRegion texturaVirtualInactiva;
-    private TextureRegion texturaVirtualActiva;
     private Map<String, Animation<TextureRegion>> animacionesConItem = new HashMap<>();
     private Animation<TextureRegion> animacionJugadorNormal;
-
-    //pedidos
-    private ArrayList<Pedido> pedidosEnEspera;
 
     @Override
     public void show() {
@@ -100,9 +87,7 @@ public class PantallaJuego extends Pantalla {
 
         if(gestorPartida.getNivelActual() == null) {
             ArrayList<String> rutasMapas = new ArrayList<>();
-            rutasMapas.add("core/src/main/java/com/hebergames/letmecook/recursos/mapas/Prueba.tmx");
-            rutasMapas.add("core/src/main/java/com/hebergames/letmecook/recursos/mapas/PruebaMoral.tmx");
-            //Acá van a tener q ir añadiendose todos los mapas
+            rutasMapas.add("core/src/main/java/com/hebergames/letmecook/recursos/mapas/Sucursal_1.tmx");
 
             gestorPartida.generarNuevaPartida(rutasMapas, rutasMapas.size());
         }
@@ -141,7 +126,6 @@ public class PantallaJuego extends Pantalla {
 
         estaciones = gestorMapa.getEstaciones();
 
-        // Registrar indicadores de las estaciones procesadoras
         for (EstacionTrabajo estacion : estaciones) {
             if (estacion.getProcesadora() != null && estacion.getProcesadora() instanceof Procesadora) {
                 Procesadora proc = (Procesadora) estacion.getProcesadora();
@@ -170,16 +154,14 @@ public class PantallaJuego extends Pantalla {
     }
 
     private void configurarTexturasJugadores() {
-        // Gestor de animación para Jugador 1
         gestorAnimacionJ1 = new GestorAnimacion(
             "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/Jugador.png",
             32, 32, 0.2f
         );
 
-        // Gestor de animación para Jugador 2 (puedes usar otra textura diferente)
         if (MODO_MULTIJUGADOR) {
             gestorAnimacionJ2 = new GestorAnimacion(
-                "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/Jugador.png", // Cambia si tienes otra textura
+                "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/Jugador.png",
                 32, 32, 0.2f
             );
         }
@@ -203,14 +185,13 @@ public class PantallaJuego extends Pantalla {
 
         PantallaPausa pantallaPausa = new PantallaPausa(this);
         PantallaCalendario pantallaCalendario = new PantallaCalendario(this);
-        gestorOverlays = new GestorPantallasOverlay(pantallaPausa, pantallaCalendario, gestorAudio, gestorMostrarCalendario);
+        gestorOverlays = new GestorPantallasOverlay(pantallaPausa, pantallaCalendario, gestorAudio);
         gestorMostrarCalendario.iniciarMostrar();
         gestorOverlays.mostrarCalendarioInicial();
 
     }
 
     private void inicializarSistemaPedidos() {
-        // Filtrar cajas y mesas de las estaciones
         ArrayList<CajaRegistradora> cajas = new ArrayList<>();
         ArrayList<MesaRetiro> mesas = new ArrayList<>();
         ArrayList<CajaVirtual> cajasVirtuales = new ArrayList<>();
@@ -225,7 +206,6 @@ public class PantallaJuego extends Pantalla {
             }
         }
 
-        // Usar GestorRecetas para obtener productos disponibles
         GestorRecetas gestorRecetas = GestorRecetas.getInstance();
         ArrayList<Producto> productosDisponibles = new ArrayList<>();
 
@@ -235,14 +215,13 @@ public class PantallaJuego extends Pantalla {
 
         TurnoTrabajo turnoActual = nivelActual.getTurno();
 
-        gestorClientes = new GestorClientes(cajas, cajasVirtuales, productosDisponibles, 15f, turnoActual);
+        gestorClientes = new GestorClientes(cajas, cajasVirtuales, 15f, turnoActual);
         gestorPedidos = new GestorPedidos(gestorClientes, mesas);
 
         gestorClientes.setCallbackPenalizacion((puntos, razon) -> {
             gestorPuntaje.agregarPuntos(puntos);
         });
 
-        // Asignar gestor a las cajas
         for (CajaRegistradora caja : cajas) {
             caja.setGestorPedidos(gestorPedidos);
         }
@@ -252,22 +231,18 @@ public class PantallaJuego extends Pantalla {
             cajaVirtual.setCallbackPuntaje(gestorPuntaje);
         }
 
-        // Asignar gestor y callback a las mesas
         for (MesaRetiro mesa : mesas) {
             mesa.setGestorPedidos(gestorPedidos);
             mesa.setCallbackPuntaje(gestorPuntaje);
         }
 
-        // Iniciar hilo de clientes DESPUÉS de cargar texturas
         hiloClientes = new HiloClientes(gestorClientes);
         hiloClientes.start();
 
         GestorEventosAleatorios gestorEventos = GestorEventosAleatorios.getInstancia();
         gestorEventos.reset();
 
-        // Registrar eventos de máquinas rotas
         for (EstacionTrabajo estacion : estaciones) {
-            // No aplicar a cajas ni mesas de retiro
             if (!(estacion instanceof CajaRegistradora) &&
                 !(estacion instanceof MesaRetiro) &&
                 !(estacion instanceof CajaVirtual)) {
@@ -275,13 +250,11 @@ public class PantallaJuego extends Pantalla {
             }
         }
 
-        // Registrar evento de piso mojado
         ArrayList<Rectangle> tilesCaminables = gestorMapa.getTilesCaminables();
         if (!tilesCaminables.isEmpty()) {
             gestorEventos.registrarEventoPosible(new EventoPisoMojado(tilesCaminables));
         }
 
-        // Activar eventos para la primera ronda
         gestorEventos.iniciarRonda();
     }
 
@@ -291,15 +264,12 @@ public class PantallaJuego extends Pantalla {
     public void render(float delta) {
         limpiarPantalla();
         manejarInput();
-        // Actualizar el temporizador del calendario SIEMPRE
         gestorMostrarCalendario.actualizar(delta);
 
-        // Verificar si debe cerrarse el calendario automático
-        if (!gestorMostrarCalendario.estaMostrando() && gestorOverlays.isCalendarioMostradoAutomaticamente()) {
+        if (gestorMostrarCalendario.estaMostrando() && gestorOverlays.isCalendarioMostradoAutomaticamente()) {
             gestorOverlays.cerrarCalendarioAutomatico();
         }
 
-        // Solo renderizar el juego si el calendario NO está visible
         if (!gestorOverlays.isCalendarioVisible()) {
             renderizarJuego(delta);
             renderizarUI();
@@ -323,8 +293,7 @@ public class PantallaJuego extends Pantalla {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
-            // No permitir toggle si está en mostrado automático
-            if (!gestorMostrarCalendario.estaMostrando()) {
+            if (gestorMostrarCalendario.estaMostrando()) {
                 if (gestorOverlays.isCalendarioVisible()) {
                     gestorOverlays.toggleCalendario();
                 } else {
@@ -347,18 +316,16 @@ public class PantallaJuego extends Pantalla {
     private void renderizarJuego(float delta) {
         gestorViewport.getViewportJuego().apply();
 
-        // La cámara sigue al jugador 1 (puedes cambiar esto para seguir a ambos o al centro)
-        Vector2 posicionJugador = jugador1.getPosicion();
         gestorViewport.actualizarCamaraDinamica(jugador1, jugador2);
 
         gestorMapa.renderizar(gestorViewport.getCamaraJuego());
 
 
-        if (!gestorOverlays.isJuegoEnPausa() && !gestorOverlays.isCalendarioVisible() && !gestorMostrarCalendario.estaMostrando()) {
+        if (!gestorOverlays.isJuegoEnPausa() && !gestorOverlays.isCalendarioVisible() && gestorMostrarCalendario.estaMostrando()) {
             for (Jugador jugador : jugadores) {
                 jugador.actualizar(delta);
             }
-            if (!gestorOverlays.isJuegoEnPausa() && !gestorOverlays.isCalendarioVisible() && !gestorMostrarCalendario.estaMostrando()) {
+            if (!gestorOverlays.isJuegoEnPausa() && !gestorOverlays.isCalendarioVisible() && gestorMostrarCalendario.estaMostrando()) {
                 gestorIndicadores.actualizar(delta, gestorViewport.getCamaraJuego());
             }
             for (EstacionTrabajo estacion : estaciones) {
@@ -375,13 +342,12 @@ public class PantallaJuego extends Pantalla {
         gestorMapa.dibujarIndicadores(batch);
         gestorIndicadores.dibujar(batch);
 
-        // Dibujar todos los jugadores
         for (Jugador jugador : jugadores) {
             jugador.dibujar(batch);
         }
 
         if (gestorClientes != null) {
-            for (Cliente cliente : gestorClientes.getCLIENTES_ACTIVOS()) {
+            for (Cliente cliente : gestorClientes.getClientesActivos()) {
                 cliente.dibujar(batch);
             }
         }
@@ -398,12 +364,12 @@ public class PantallaJuego extends Pantalla {
         String itemJ2 = (jugador2 != null) ? jugador2.getNombreItemInventario() : null;
         gestorUI.actualizarInventario(
             jugador1.getNombreItemInventario(),
-            itemJ2 // Pasa null si jugador2 no existe
+            itemJ2
         );
         if (gestorClientes != null) {
-            int cantidadActual = gestorClientes.getCLIENTES_ACTIVOS().size();
+            int cantidadActual = gestorClientes.getClientesActivos().size();
             if (cantidadActual != gestorClientes.getUltimaCantidadClientes()) {
-                gestorUI.actualizarPedidosActivos(gestorClientes.getCLIENTES_ACTIVOS());
+                gestorUI.actualizarPedidosActivos(gestorClientes.getClientesActivos());
                 gestorClientes.actualizarUltimaCantidadClientes();
             }
         }
@@ -430,10 +396,6 @@ public class PantallaJuego extends Pantalla {
         batch.end();
     }
 
-    public void agregarPuntos(int puntos) {
-        gestorPuntaje.agregarPuntos(puntos);
-    }
-
     private void renderizarOverlays(float delta) {
         batch.setProjectionMatrix(gestorViewport.getCamaraUI().combined);
         gestorOverlays.renderOverlays(delta, batch);
@@ -445,7 +407,6 @@ public class PantallaJuego extends Pantalla {
             return;
         }
 
-        // Verificar si se acabó el tiempo
         if (gestorTiempo.haTerminadoTiempo()) {
             terminarJuego(calcularPuntajeFinal());
         }
@@ -491,30 +452,6 @@ public class PantallaJuego extends Pantalla {
         return animacion;
     }
 
-    public Animation<TextureRegion> getAnimacionNormal() {
-        return animacionJugadorNormal;
-    }
-
-    public Vector2 getCoordenadasJuego(int screenX, int screenY) {
-        return gestorViewport.convertirCoordenadasJuego(screenX, screenY);
-    }
-
-    public Vector2 getCoordenadasUi(int screenX, int screenY) {
-        return gestorViewport.convertirCoordenadasUI(screenX, screenY);
-    }
-
-    public Jugador getJugador1() {
-        return jugador1;
-    }
-
-    public Jugador getJugador2() {
-        return jugador2;
-    }
-
-    public List<Jugador> getJugadores() {
-        return jugadores;
-    }
-
     @Override
     public void resize(int width, int height) {
         gestorViewport.resize(width, height);
@@ -543,14 +480,11 @@ public class PantallaJuego extends Pantalla {
 
     @Override
     public void dispose() {
-        if (jugadorSheet != null) {
-            jugadorSheet.dispose();
-        }
 
         gestorOverlays.dispose();
 
         if (gestorUI != null) {
-            gestorUI.dispose(); // Agregar esta línea
+            gestorUI.dispose();
         }
 
         if (gestorAudio != null) {

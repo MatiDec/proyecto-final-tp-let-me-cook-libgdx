@@ -33,7 +33,7 @@ public class TarjetaPedido {
     public void dibujar(SpriteBatch batch, Cliente cliente, float x, float y,
                         TextureRegion texturaCliente, TextureRegion texturaProducto) {
 
-        if (cliente.getPedido().getEstadoPedido() != EstadoPedido.EN_PREPARACION) {
+        if (cliente.getPEDIDO().getEstadoPedido() != EstadoPedido.EN_PREPARACION) {
             return;
         }
 
@@ -68,7 +68,7 @@ public class TarjetaPedido {
                 24f, 24f);
         }
 
-        ArrayList<Producto> productos = cliente.getPedido().getProductosSolicitados();
+        ArrayList<Producto> productos = cliente.getPEDIDO().getProductosSolicitados();
         int cantidadAMostrar = Math.min(productos.size(), 3);
 
         for (int i = 0; i < cantidadAMostrar; i++) {

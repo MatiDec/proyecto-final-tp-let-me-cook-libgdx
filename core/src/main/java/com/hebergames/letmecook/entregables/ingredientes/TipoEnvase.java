@@ -9,6 +9,7 @@ public enum TipoEnvase {
     ENVASE_AROS_CEBOLLA("Envase de Aros de Cebolla", "Aros de Cebolla (Bien hecho)"),
     ENVASE_RABAS("Envase de Rabas", "Rabas (Bien hecho)"),
     ENVASE_MILANESA_CARNE("Bandeja para Milanesa de Carne", "Milanesa de Carne (Bien hecho)"),
+    ENVASE_TOSTADA("Bandeja con acompañamiento para tostadas", "Pan (Bien hecho)"),
     ENVASE_MILANESA_POLLO("Bandeja para Milanesa de Pollo", "Milanesa de Pollo (Bien hecho)");
 
     private final String nombre;
@@ -37,7 +38,4 @@ public enum TipoEnvase {
         return nombre;
     }
 
-    public String getIngredienteRequerido() {
-        return ingredienteRequerido;
-    }
 }

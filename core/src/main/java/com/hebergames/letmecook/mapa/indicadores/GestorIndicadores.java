@@ -8,29 +8,21 @@ import com.hebergames.letmecook.sonido.GestorAudio;
 import java.util.ArrayList;
 
 public class GestorIndicadores {
-    private ArrayList<IndicadorVisual> indicadores;
-    private Rectangle areaVisibleCache;
-    private boolean sonidoAlertaReproducido;
+    private final ArrayList<IndicadorVisual> INDICADORES;
+    private final Rectangle areaVisibleCache;
     private float tiempoUltimaAlerta;
 
     private static final float INTERVALO_SONIDO_ALERTA = 2f;
 
     public GestorIndicadores() {
-        indicadores = new ArrayList<>();
+        INDICADORES = new ArrayList<>();
         areaVisibleCache = new Rectangle();
-        sonidoAlertaReproducido = false;
         tiempoUltimaAlerta = 0f;
     }
 
-    public IndicadorVisual crearIndicador(float x, float y, IndicadorVisual.TipoIndicador tipo) {
-        IndicadorVisual indicador = new IndicadorVisual(x, y, tipo);
-        indicadores.add(indicador);
-        return indicador;
-    }
-
     public void registrarIndicador(IndicadorVisual indicador) {
-        if (indicador != null && !indicadores.contains(indicador)) {
-            indicadores.add(indicador);
+        if (indicador != null && !INDICADORES.contains(indicador)) {
+            INDICADORES.add(indicador);
         }
     }
 
@@ -40,11 +32,11 @@ public class GestorIndicadores {
         boolean hayAlertaActiva = false;
         tiempoUltimaAlerta += delta;
 
-        for (IndicadorVisual indicador : indicadores) {
+        for (IndicadorVisual indicador : INDICADORES) {
             indicador.actualizar(delta, camara, areaVisibleCache);
 
             if (indicador.isVisible() &&
-                indicador.getEstado() == IndicadorVisual.EstadoIndicador.QUEMANDOSE &&
+                indicador.getEstado() == EstadoIndicador.QUEMANDOSE &&
                 indicador.isEnBorde()) {
                 hayAlertaActiva = true;
             }
@@ -69,12 +61,9 @@ public class GestorIndicadores {
     }
 
     public void dibujar(SpriteBatch batch) {
-        for (IndicadorVisual indicador : indicadores) {
+        for (IndicadorVisual indicador : INDICADORES) {
             indicador.dibujar(batch);
         }
     }
 
-    public void limpiar() {
-        indicadores.clear();
-    }
 }

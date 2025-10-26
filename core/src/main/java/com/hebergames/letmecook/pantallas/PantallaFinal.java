@@ -24,7 +24,6 @@ public class PantallaFinal extends Pantalla {
     private Texto resumenPuntaje;
     private Texto opcionMenu;
     private ArrayList<InfoDiaNivel> diasNiveles;
-    private GestorPartida gestorPartida;
 
     private SpriteBatch batch;
 
@@ -36,7 +35,7 @@ public class PantallaFinal extends Pantalla {
     @Override
     public void show() {
         batch = Render.batch;
-        gestorPartida = GestorPartida.getInstancia();
+        GestorPartida gestorPartida = GestorPartida.getInstancia();
 
         titulo = new Texto(Recursos.FUENTE_MENU, 64, Color.WHITE, true);
         titulo.setTexto("¡Partida Finalizada!");
@@ -57,7 +56,6 @@ public class PantallaFinal extends Pantalla {
         resumenTiempo.setPosition(Gdx.graphics.getWidth()/2f - resumenTiempo.getAncho()/2f,
             Gdx.graphics.getHeight() - 230);
 
-        // Crear las tarjetas de niveles
         diasNiveles = new ArrayList<>();
         ArrayList<NivelPartida> niveles = gestorPartida.getTodosLosNiveles();
         System.out.println("Cantidad de niveles cargados: " + niveles.size());
@@ -98,7 +96,7 @@ public class PantallaFinal extends Pantalla {
         resumenTiempo.dibujarEnUi(batch);
         resumenPuntaje.dibujarEnUi(batch);
         opcionMenu.dibujarEnUi(batch);
-        // Dibujar tarjetas de niveles
+
         for (InfoDiaNivel info : diasNiveles) {
             info.dibujar(batch, false);
         }

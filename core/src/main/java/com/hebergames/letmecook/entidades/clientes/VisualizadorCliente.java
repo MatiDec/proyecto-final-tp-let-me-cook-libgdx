@@ -22,7 +22,7 @@ public class VisualizadorCliente {
 
         if (estacion == null || cliente.esVirtual()) return;
 
-        Pedido pedido = cliente.getPedido();
+        Pedido pedido = cliente.getPEDIDO();
         if (pedido == null) return;
 
         EstadoPedido estado = pedido.getEstadoPedido();

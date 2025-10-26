@@ -4,21 +4,20 @@ import com.hebergames.letmecook.entidades.clientes.GestorClientes;
 
 public class HiloClientes extends Thread {
 
-    private GestorClientes gestorClientes;
+    private final GestorClientes GESTOR_CLIENTES;
     private boolean ejecutando;
     private boolean pausado;
     private final Object pauseLock = new Object();
 
-    //toda esta parte del código es un arreglo para que no se utilice tanta cpu en el proceso del juego
     private static final int FPS_TARGET = 60;
-    private static final long FRAME_TIME = 1000 / FPS_TARGET; // en milisegundos
+    private static final long FRAME_TIME = 1000 / FPS_TARGET;
 
-    public HiloClientes(GestorClientes gestorClientes) {
-        this.gestorClientes = gestorClientes;
+    public HiloClientes(GestorClientes GESTOR_CLIENTES) {
+        this.GESTOR_CLIENTES = GESTOR_CLIENTES;
         this.ejecutando = false;
         this.pausado = false;
-        this.setName("HiloClientes");//Esto le pone un nombre al hilo, sirve para el manejo de múltiples hilos sin confundirlos
-        this.setDaemon(true);//Convierte al hilo a tipo Daemon
+        this.setName("HiloClientes");
+        this.setDaemon(true);
     }
 
     @Override
@@ -39,14 +38,13 @@ public class HiloClientes extends Thread {
             }
 
             long tiempoActual = System.currentTimeMillis();
-            float delta = (tiempoActual - tiempoAnterior) / 1000f; // Convertir a segundos
+            float delta = (tiempoActual - tiempoAnterior) / 1000f;
             tiempoAnterior = tiempoActual;
 
-            if (gestorClientes != null) {
-                gestorClientes.actualizar(delta);
+            if (GESTOR_CLIENTES != null) {
+                GESTOR_CLIENTES.actualizar(delta);
             }
 
-            // Control de FPS por lo del uso de cpu
             try {
                 long tiempoRestante = FRAME_TIME - (System.currentTimeMillis() - tiempoActual);
                 if (tiempoRestante > 0) {
@@ -57,10 +55,6 @@ public class HiloClientes extends Thread {
                 break;
             }
         }
-    }
-
-    public void pausar() {
-        pausado = true;
     }
 
     public void reanudar() {

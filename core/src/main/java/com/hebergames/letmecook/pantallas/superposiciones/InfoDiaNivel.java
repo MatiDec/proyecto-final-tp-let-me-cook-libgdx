@@ -8,8 +8,8 @@ import com.hebergames.letmecook.utiles.Recursos;
 
 public class InfoDiaNivel {
 
-    private int numeroDia;
-    private NivelPartida nivel;
+    private final int NUMERO_DIA;
+    private final NivelPartida NIVEL;
     private float x, y;
 
     private Texto textoDia;
@@ -17,25 +17,25 @@ public class InfoDiaNivel {
     private Texto textoTurno;
     private Texto textoPuntos;
 
-    public InfoDiaNivel(int numeroDia, NivelPartida nivel) {
-        this.numeroDia = numeroDia;
-        this.nivel = nivel;
+    public InfoDiaNivel(final int NUMERO_DIA, final NivelPartida NIVEL) {
+        this.NUMERO_DIA = NUMERO_DIA;
+        this.NIVEL = NIVEL;
         inicializarTextos();
     }
 
     private void inicializarTextos() {
         textoDia = new Texto(Recursos.FUENTE_MENU, 32, Color.WHITE, true);
-        textoDia.setTexto("Día " + numeroDia);
+        textoDia.setTexto("Día " + NUMERO_DIA);
 
         textoMapa = new Texto(Recursos.FUENTE_MENU, 20, Color.LIGHT_GRAY, true);
-        String nombreMapa = nivel.getMapa().getNombre();
+        String nombreMapa = NIVEL.getMapa().getNombre();
         textoMapa.setTexto(nombreMapa);
 
         textoTurno = new Texto(Recursos.FUENTE_MENU, 20, Color.LIGHT_GRAY, true);
         textoTurno.setTexto("Turno");
 
         Texto textoTurnoNombre = new Texto(Recursos.FUENTE_MENU, 24, Color.YELLOW, true);
-        textoTurnoNombre.setTexto(nivel.getTurno().getNombre());
+        textoTurnoNombre.setTexto(NIVEL.getTurno().getNombre());
 
         textoPuntos = new Texto(Recursos.FUENTE_MENU, 20, Color.LIGHT_GRAY, true);
         textoPuntos.setTexto("Puntos");
@@ -78,7 +78,7 @@ public class InfoDiaNivel {
         offsetY -= 30f;
         Texto turnoNombre = new Texto(Recursos.FUENTE_MENU, 24,
             esNivelActual ? Color.YELLOW : Color.LIGHT_GRAY, true);
-        turnoNombre.setTexto(nivel.getTurno().getNombre());
+        turnoNombre.setTexto(NIVEL.getTurno().getNombre());
         turnoNombre.setPosition(centroX - turnoNombre.getAncho() / 2f, offsetY);
         turnoNombre.dibujar();
 
@@ -87,10 +87,10 @@ public class InfoDiaNivel {
         textoPuntos.dibujar();
 
         offsetY -= 30f;
-        String puntosTexto = nivel.isCompletado() ?
-            String.valueOf(nivel.getPuntajeObtenido()) : "---";
+        String puntosTexto = NIVEL.isCompletado() ?
+            String.valueOf(NIVEL.getPuntajeObtenido()) : "---";
         Texto textoPuntosValor = new Texto(Recursos.FUENTE_MENU, 28,
-            nivel.isCompletado() ? Color.GREEN : Color.GRAY, true);
+            NIVEL.isCompletado() ? Color.GREEN : Color.GRAY, true);
         textoPuntosValor.setTexto(puntosTexto);
         textoPuntosValor.setPosition(centroX - textoPuntosValor.getAncho() / 2f, offsetY);
         textoPuntosValor.dibujar();

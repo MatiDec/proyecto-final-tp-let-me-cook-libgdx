@@ -10,10 +10,6 @@ public class HiloPrincipal extends Thread {
         this.setDaemon(true);
     }
 
-    public synchronized void pausar() {
-        pausado = true;
-    }
-
     public synchronized void reanudar() {
         pausado = false;
         notify();

@@ -19,23 +19,23 @@ import java.util.ArrayList;
 
 public class Mapa {
 
-    private TiledMap mapa;
-    private OrthogonalTiledMapRenderer renderer;
-    private String nombreSucursal;
+    private final TiledMap MAPA;
+    private final OrthogonalTiledMapRenderer RENDERER;
+    private final String NOMBRE_SUCURSAL;
 
-    public Mapa(String ruta, String nombreSucursal) {
+    public Mapa(String ruta, String NOMBRE_SUCURSAL) {
         TmxMapLoader loader = new TmxMapLoader();
-        this.mapa = loader.load(ruta);
-        this.renderer = new OrthogonalTiledMapRenderer(mapa);
-        this.nombreSucursal = nombreSucursal;
+        this.MAPA = loader.load(ruta);
+        this.RENDERER = new OrthogonalTiledMapRenderer(MAPA);
+        this.NOMBRE_SUCURSAL = NOMBRE_SUCURSAL;
     }
 
     private ArrayList<Rectangle> obtenerRectangulosDeCapa(String nombreCapa) {
         ArrayList<Rectangle> rectangulos = new ArrayList<>();
-        MapObjects objetos = mapa.getLayers().get(nombreCapa).getObjects(); //gracias video del chabon que hizo un pokemon
+        MapObjects objetos = MAPA.getLayers().get(nombreCapa).getObjects();
 
         for (MapObject objeto : objetos) {
-            if (objeto instanceof RectangleMapObject) { //gracias chatty
+            if (objeto instanceof RectangleMapObject) {
                 rectangulos.add(((RectangleMapObject) objeto).getRectangle());
             }
         }
@@ -46,15 +46,13 @@ public class Mapa {
     public ArrayList<Rectangle> getTilesCaminables() {
         ArrayList<Rectangle> tiles = new ArrayList<>();
 
-        // Obtener dimensiones del mapa
-        int mapWidth = mapa.getProperties().get("width", Integer.class);
-        int mapHeight = mapa.getProperties().get("height", Integer.class);
-        int tileWidth = mapa.getProperties().get("tilewidth", Integer.class);
-        int tileHeight = mapa.getProperties().get("tileheight", Integer.class);
+        int mapWidth = MAPA.getProperties().get("width", Integer.class);
+        int mapHeight = MAPA.getProperties().get("height", Integer.class);
+        int tileWidth = MAPA.getProperties().get("tilewidth", Integer.class);
+        int tileHeight = MAPA.getProperties().get("tileheight", Integer.class);
 
         ArrayList<Rectangle> colisionables = getRectangulosColision();
 
-        // Generar tiles caminables (excluir colisionables)
         for (int x = 0; x < mapWidth; x++) {
             for (int y = 0; y < mapHeight; y++) {
                 Rectangle tile = new Rectangle(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
@@ -76,24 +74,6 @@ public class Mapa {
         return tiles;
     }
 
-    public ArrayList<Rectangle> obtenerLimites() {
-        ArrayList<Rectangle> limites = new ArrayList<>();
-        MapObjects objetos = mapa.getLayers().get("Colisionables").getObjects();
-
-        for (MapObject objeto : objetos) {
-            if (objeto instanceof RectangleMapObject) {
-                String tipo = objeto.getProperties().get("tipo", String.class);
-                if (tipo != null && tipo.equalsIgnoreCase("Limite")) {
-                    limites.add(((RectangleMapObject) objeto).getRectangle());
-                }
-            }
-        }
-
-        return limites;
-    }
-
-    public String getNombreSucursal() { return this.nombreSucursal; }
-
     public ArrayList<Rectangle> getRectangulosColision() {
         return obtenerRectangulosDeCapa("Colisionables");
     }
@@ -102,31 +82,23 @@ public class Mapa {
         return obtenerRectangulosDeCapa("Interactuables");
     }
 
-    public ArrayList<Rectangle> getRectangulosClientes() {
-        return obtenerRectangulosDeCapa("Clientes");
-    }
-
     public void render(OrthographicCamera camara) {
-        renderer.setView(camara);
-        renderer.render();
+        RENDERER.setView(camara);
+        RENDERER.render();
     }
 
     public void dispose() {
-        mapa.dispose();
-        renderer.dispose();
+        MAPA.dispose();
+        RENDERER.dispose();
     }
 
     public TiledMap getMapa() {
-        return mapa;
-    }
-
-    public OrthogonalTiledMapRenderer getRenderer() {
-        return renderer;
+        return MAPA;
     }
 
     public ArrayList<EstacionTrabajo> getEstacionesTrabajo() {
         ArrayList<EstacionTrabajo> estaciones = new ArrayList<>();
-        MapObjects objetos = mapa.getLayers().get("Interactuables").getObjects();
+        MapObjects objetos = MAPA.getLayers().get("Interactuables").getObjects();
 
         for (MapObject objeto : objetos) {
             String tipo = objeto.getName();
@@ -187,5 +159,5 @@ public class Mapa {
         return estaciones;
     }
 
-    public String getNombre() { return this.nombreSucursal; }
+    public String getNombre() { return this.NOMBRE_SUCURSAL; }
 }

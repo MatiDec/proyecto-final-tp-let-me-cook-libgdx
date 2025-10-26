@@ -9,36 +9,36 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class EventoPisoMojado implements EventoAleatorio {
-    private ArrayList<Rectangle> tilesAfectadas;
+    private final ArrayList<Rectangle> TILES_AFECTADAS;
     private boolean activo;
-    private static final String NOMBRE = "Piso Mojado";
-    private static final float PROBABILIDAD = 0.20f; // 20% por ronda
-    private static final int MIN_TILES = 3;
-    private static final int MAX_TILES = 8;
+    private final String NOMBRE = "Piso Mojado";
+    private final float PROBABILIDAD = 0.20f;
 
-    private ArrayList<Rectangle> todasLasTiles;
-    private Random random;
+    private final ArrayList<Rectangle> TODAS_LAS_TILES;
+    private final Random RANDOM;
 
     public EventoPisoMojado(ArrayList<Rectangle> tilesDisponibles) {
-        this.todasLasTiles = tilesDisponibles;
-        this.tilesAfectadas = new ArrayList<>();
-        this.random = new Random();
+        this.TODAS_LAS_TILES = tilesDisponibles;
+        this.TILES_AFECTADAS = new ArrayList<>();
+        this.RANDOM = new Random();
         this.activo = false;
     }
 
     @Override
     public void activar() {
-        if (!activo && todasLasTiles != null && !todasLasTiles.isEmpty()) {
-            tilesAfectadas.clear();
+        if (!activo && TODAS_LAS_TILES != null && !TODAS_LAS_TILES.isEmpty()) {
+            TILES_AFECTADAS.clear();
 
-            int cantidadTiles = MIN_TILES + random.nextInt(MAX_TILES - MIN_TILES + 1);
-            cantidadTiles = Math.min(cantidadTiles, todasLasTiles.size());
+            int MIN_TILES = 3;
+            int MAX_TILES = 8;
+            int cantidadTiles = MIN_TILES + RANDOM.nextInt(MAX_TILES - MIN_TILES + 1);
+            cantidadTiles = Math.min(cantidadTiles, TODAS_LAS_TILES.size());
 
-            ArrayList<Rectangle> tilesDisponibles = new ArrayList<>(todasLasTiles);
+            ArrayList<Rectangle> tilesDisponibles = new ArrayList<>(TODAS_LAS_TILES);
 
             for (int i = 0; i < cantidadTiles; i++) {
-                int index = random.nextInt(tilesDisponibles.size());
-                tilesAfectadas.add(tilesDisponibles.remove(index));
+                int index = RANDOM.nextInt(tilesDisponibles.size());
+                TILES_AFECTADAS.add(tilesDisponibles.remove(index));
             }
 
             activo = true;
@@ -47,38 +47,29 @@ public class EventoPisoMojado implements EventoAleatorio {
 
     @Override
     public void desactivar() {
-        tilesAfectadas.clear();
+        TILES_AFECTADAS.clear();
         activo = false;
     }
 
     @Override
-    public boolean estaActivo() {
-        return activo;
-    }
-
-    @Override
     public String getNombre() {
-        return NOMBRE;
+        return this.NOMBRE;
     }
 
     @Override
     public float getProbabilidad() {
-        return PROBABILIDAD;
+        return this.PROBABILIDAD;
     }
 
     public boolean estaSobrePisoMojado(float x, float y) {
         if (!activo) return false;
 
-        for (Rectangle tile : tilesAfectadas) {
+        for (Rectangle tile : TILES_AFECTADAS) {
             if (tile.contains(x, y)) {
                 return true;
             }
         }
         return false;
-    }
-
-    public ArrayList<Rectangle> getTilesAfectadas() {
-        return tilesAfectadas;
     }
 
     public void dibujar(SpriteBatch batch) {
@@ -87,7 +78,7 @@ public class EventoPisoMojado implements EventoAleatorio {
         TextureRegion textura = GestorTexturas.getInstance().getTexturaPisoMojado();
         if (textura == null) return;
 
-        for (Rectangle tile : tilesAfectadas) {
+        for (Rectangle tile : TILES_AFECTADAS) {
             batch.draw(textura, tile.x, tile.y, tile.width, tile.height);
         }
     }

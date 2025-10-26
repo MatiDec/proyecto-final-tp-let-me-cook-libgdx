@@ -1,6 +1,5 @@
 package com.hebergames.letmecook.entregables.productos.bebidas;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.hebergames.letmecook.entregables.productos.CategoriaProducto;
 import com.hebergames.letmecook.utiles.GestorTexturas;
 
@@ -17,19 +16,19 @@ public class Cafe extends Bebida {
         TIPOS_CAFE.put("Cortado", 5f);
     }
 
-    private String tipo;
+    private final String TIPO;
 
-    public Cafe(String tipo, TamanoBebida tamano) {
-        super(tipo + " " + tamano.getNombre(),
-            GestorTexturas.getInstance().getTexturaProducto((tipo + tamano.getNombre()).toLowerCase().replace(" ", "")),
+    public Cafe(final String TIPO, TamanoBebida tamano) {
+        super(TIPO + " " + tamano.getNombre(),
+            GestorTexturas.getInstance().getTexturaProducto((TIPO + tamano.getNombre()).toLowerCase().replace(" ", "")),
             CategoriaProducto.BEBIDAS,
             tamano,
-            TIPOS_CAFE.getOrDefault(tipo, 3f));
-        this.tipo = tipo;
+            TIPOS_CAFE.getOrDefault(TIPO, 3f));
+        this.TIPO = TIPO;
     }
 
     public String getTipo() {
-        return tipo;
+        return this.TIPO;
     }
 
     public static Map<String, Float> getTiposCafe() {

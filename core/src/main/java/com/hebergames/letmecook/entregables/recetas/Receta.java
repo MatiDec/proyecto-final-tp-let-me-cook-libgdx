@@ -40,5 +40,4 @@ public abstract class Receta {
 
     public String getNombre() { return nombre; }
 
-    public CategoriaProducto getCategoria() { return this.categoria; }
 }

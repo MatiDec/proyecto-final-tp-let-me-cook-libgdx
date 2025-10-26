@@ -77,8 +77,8 @@ public abstract class Ingrediente implements ObjetoAlmacenable {
         if (esCocinableInterna && estadoCoccion != EstadoCoccion.MAL_HECHO) {
             return nombre + " (" + estadoCoccion.getESTADO() + ")";
         }
-        return nombre;
+        return this.nombre;
     }
 
-    public TextureRegion getTextura() { return textura; }
+    public TextureRegion getTextura() { return this.textura; }
 }

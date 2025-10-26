@@ -6,7 +6,6 @@ import com.hebergames.letmecook.pantallas.Pantalla;
 import com.hebergames.letmecook.pantallas.PantallaMenu;
 import com.hebergames.letmecook.utiles.Render;
 
-/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class LetMeCookPrincipal extends Game {
 
     @Override

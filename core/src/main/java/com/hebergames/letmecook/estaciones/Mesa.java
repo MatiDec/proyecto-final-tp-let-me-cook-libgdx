@@ -19,21 +19,17 @@ import java.util.List;
 
 public class Mesa extends EstacionTrabajo {
 
-    private static final int MAX_SLOTS = 2;
+    private final int MAX_SLOTS = 2;
     private List<OpcionMenu> opcionesMenu;
     private List<Texto> textosMenu;
-    private static final float MARGEN = 50f;
-    private static final float ESPACIADO = 40f;
 
-    // Slots para ingredientes
-    private ObjetoAlmacenable[] slots;
+    private final ObjetoAlmacenable[] SLOTS;
 
-    // Producto preparado listo para retirar
     private Producto productoPreparado;
 
     public Mesa(Rectangle area) {
         super(area);
-        slots = new ObjetoAlmacenable[MAX_SLOTS];
+        SLOTS = new ObjetoAlmacenable[MAX_SLOTS];
         productoPreparado = null;
         inicializarOpciones();
     }
@@ -46,14 +42,9 @@ public class Mesa extends EstacionTrabajo {
     private void inicializarOpciones() {
         opcionesMenu = new ArrayList<>();
 
-        // Opciones para depositar en cada slot
         opcionesMenu.add(new OpcionMenu(1, "Slot 1", () -> depositarEnSlot(0)));
         opcionesMenu.add(new OpcionMenu(2, "Slot 2", () -> depositarEnSlot(1)));
-
-        // Opción para crear producto
         opcionesMenu.add(new OpcionMenu(3, "Crear Producto", () -> crearProducto()));
-
-        // Opción para retirar producto
         opcionesMenu.add(new OpcionMenu(4, "Retirar Producto", () -> retirarProducto()));
     }
 
@@ -67,26 +58,22 @@ public class Mesa extends EstacionTrabajo {
             return;
         }
 
-        // Si el slot ya tiene algo, retirar el item al inventario del jugador
-        if (slots[slotIndex] != null) {
+        if (SLOTS[slotIndex] != null) {
             if (!jugador.tieneInventarioLleno()) {
-                ObjetoAlmacenable objetoRetirado = slots[slotIndex];
-                slots[slotIndex] = null;
+                ObjetoAlmacenable objetoRetirado = SLOTS[slotIndex];
+                SLOTS[slotIndex] = null;
                 jugador.guardarEnInventario(objetoRetirado);
-            } else {
             }
             return;
         }
 
-        // Si el slot está vacío, depositar del inventario
         ObjetoAlmacenable objeto = jugador.getInventario();
 
         if (objeto == null) {
             return;
         }
 
-        // Depositar el objeto del inventario en el slot
-        slots[slotIndex] = objeto;
+        SLOTS[slotIndex] = objeto;
         jugador.sacarDeInventario();
     }
 
@@ -95,9 +82,8 @@ public class Mesa extends EstacionTrabajo {
             return;
         }
 
-        // Recopilar solo ingredientes de los slots
         ArrayList<Ingrediente> ingredientesDisponibles = new ArrayList<>();
-        for (ObjetoAlmacenable objeto : slots) {
+        for (ObjetoAlmacenable objeto : SLOTS) {
             if (objeto instanceof Ingrediente) {
                 ingredientesDisponibles.add((Ingrediente) objeto);
             }
@@ -107,19 +93,16 @@ public class Mesa extends EstacionTrabajo {
             return;
         }
 
-        // Buscar receta que coincida
         Receta receta = GestorRecetas.getInstance().buscarReceta(ingredientesDisponibles);
 
         if (receta == null) {
             return;
         }
 
-        // Preparar el producto
         productoPreparado = receta.preparar();
 
-        // Limpiar los slots
-        for (int i = 0; i < slots.length; i++) {
-            slots[i] = null;
+        for (int i = 0; i < SLOTS.length; i++) {
+            SLOTS[i] = null;
         }
     }
 
@@ -137,7 +120,6 @@ public class Mesa extends EstacionTrabajo {
             return;
         }
 
-        // Dar el producto al jugador
         jugador.guardarEnInventario(productoPreparado);
         productoPreparado = null;
     }
@@ -149,17 +131,15 @@ public class Mesa extends EstacionTrabajo {
         for (OpcionMenu opcion : opcionesMenu) {
             Texto texto = new Texto(Recursos.FUENTE_MENU, 24, Color.WHITE, true);
 
-            // Mostrar información de cada slot
             String textoOpcion = opcion.getTextoMenu();
             if (opcion.getNumero() <= MAX_SLOTS) {
                 int slotIndex = opcion.getNumero() - 1;
-                if (slots[slotIndex] != null) {
-                    textoOpcion += " [" + slots[slotIndex].getNombre() + "]";
+                if (SLOTS[slotIndex] != null) {
+                    textoOpcion += " [" + SLOTS[slotIndex].getNombre() + "]";
                 } else {
                     textoOpcion += " [Vacío]";
                 }
             } else if (opcion.getNumero() == 4) {
-                // Mostrar si hay producto preparado
                 if (productoPreparado != null) {
                     textoOpcion += " [" + productoPreparado.getNombre() + "]";
                 } else {
@@ -174,12 +154,10 @@ public class Mesa extends EstacionTrabajo {
 
     @Override
     public void manejarSeleccionMenu(Jugador jugador, int numeroSeleccion) {
-        // Buscar y ejecutar la opción seleccionada
         for (OpcionMenu opcion : opcionesMenu) {
             if (opcion.getNumero() == numeroSeleccion) {
                 if (opcion.esAccionSimple()) {
                     opcion.ejecutarAccion();
-                    // Actualizar el menú después de la acción
                     iniciarMenu(jugador);
                 }
                 break;
@@ -192,11 +170,13 @@ public class Mesa extends EstacionTrabajo {
         if (textosMenu == null || textosMenu.isEmpty()) return;
 
         List<Jugador> jugadores = GestorJugadores.getInstancia().getJugadores();
-        boolean esJugador1 = (jugadores.size() > 0 && jugador == jugadores.get(0));
+        boolean esJugador1 = (!jugadores.isEmpty() && jugador == jugadores.get(0));
 
         float anchoMenu = 400f;
+        float MARGEN = 50f;
         float x = esJugador1 ? MARGEN : Gdx.graphics.getWidth() - anchoMenu - MARGEN;
 
+        float ESPACIADO = 40f;
         float alturaTotal = textosMenu.size() * ESPACIADO;
         float y = (Gdx.graphics.getHeight() / 2f) + (alturaTotal / 2f);
 
@@ -212,26 +192,4 @@ public class Mesa extends EstacionTrabajo {
         iniciarMenu(getJugadorOcupante());
     }
 
-    public void limpiarMesa() {
-        for (int i = 0; i < slots.length; i++) {
-            slots[i] = null;
-        }
-        productoPreparado = null;
-    }
-
-    // Getters útiles para debugging o interfaz
-    public ObjetoAlmacenable getObjetoEnSlot(int index) {
-        if (index >= 0 && index < MAX_SLOTS) {
-            return slots[index];
-        }
-        return null;
-    }
-
-    public boolean tieneProductoPreparado() {
-        return productoPreparado != null;
-    }
-
-    public Producto getProductoPreparado() {
-        return productoPreparado;
-    }
 }

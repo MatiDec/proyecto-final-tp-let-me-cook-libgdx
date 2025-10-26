@@ -4,28 +4,25 @@ import com.hebergames.letmecook.sonido.GestorAudio;
 
 public class GestorPantallasOverlay {
 
-    private PantallaPausa pantallaPausa;
-    private PantallaCalendario pantallaCalendario;
+    private final PantallaPausa PANTALLA_PAUSA;
+    private final PantallaCalendario PANTALLA_CALENDARIO;
     private boolean calendarioVisible;
     private boolean juegoEnPausa;
-    private GestorMostrarCalendario gestorMostrarCalendario;
     private boolean calendarioMostradoAutomaticamente;
 
     private final GestorAudio gestorAudio;
 
-    public GestorPantallasOverlay(PantallaPausa pantallaPausa, PantallaCalendario pantallaCalendario,
-                                  GestorAudio gestorAudio, GestorMostrarCalendario gestorMostrarCalendario) {
-        this.pantallaPausa = pantallaPausa;
-        this.pantallaCalendario = pantallaCalendario;
+    public GestorPantallasOverlay(PantallaPausa PANTALLA_PAUSA, PantallaCalendario PANTALLA_CALENDARIO,
+                                  GestorAudio gestorAudio) {
+        this.PANTALLA_PAUSA = PANTALLA_PAUSA;
+        this.PANTALLA_CALENDARIO = PANTALLA_CALENDARIO;
         this.gestorAudio = gestorAudio;
-        this.gestorMostrarCalendario = gestorMostrarCalendario;
         this.juegoEnPausa = false;
         this.calendarioVisible = false;
         this.calendarioMostradoAutomaticamente = false;
     }
 
     public void toggleCalendario() {
-        // Si está en modo automático, no permitir toggle manual
         if (calendarioMostradoAutomaticamente) {
             return;
         }
@@ -36,7 +33,7 @@ public class GestorPantallasOverlay {
             if (juegoEnPausa) {
                 juegoEnPausa = false;
             }
-            pantallaCalendario.show();
+            PANTALLA_CALENDARIO.show();
             gestorAudio.pausarMusica();
         } else {
             gestorAudio.reanudarMusica();
@@ -47,7 +44,7 @@ public class GestorPantallasOverlay {
         juegoEnPausa = !juegoEnPausa;
 
         if (juegoEnPausa) {
-            pantallaPausa.show();
+            PANTALLA_PAUSA.show();
             gestorAudio.pausarMusica();
         } else {
             gestorAudio.reanudarMusica();
@@ -61,18 +58,18 @@ public class GestorPantallasOverlay {
 
     public void renderOverlays(float delta, SpriteBatch batch) {
         if (juegoEnPausa) {
-            pantallaPausa.render(delta);
+            PANTALLA_PAUSA.render(delta);
         } else if (calendarioVisible) {
-            pantallaCalendario.render(delta);
+            PANTALLA_CALENDARIO.render(delta);
         }
     }
 
     public void dispose() {
-        if (pantallaPausa != null) {
-            pantallaPausa.dispose();
+        if (PANTALLA_PAUSA != null) {
+            PANTALLA_PAUSA.dispose();
         }
-        if (pantallaCalendario != null) {
-            pantallaCalendario.dispose();
+        if (PANTALLA_CALENDARIO != null) {
+            PANTALLA_CALENDARIO.dispose();
         }
     }
 
@@ -80,7 +77,7 @@ public class GestorPantallasOverlay {
         if (!calendarioVisible) {
             calendarioVisible = true;
             calendarioMostradoAutomaticamente = true;
-            pantallaCalendario.show();
+            PANTALLA_CALENDARIO.show();
             gestorAudio.pausarMusica();
         }
     }
@@ -97,14 +94,10 @@ public class GestorPantallasOverlay {
         return calendarioMostradoAutomaticamente;
     }
 
-    // Getters
     public boolean isJuegoEnPausa() {
         return juegoEnPausa;
     }
 
     public boolean isCalendarioVisible() { return calendarioVisible; }
 
-    public boolean hayOverlayActivo() {
-        return juegoEnPausa;
-    }
 }

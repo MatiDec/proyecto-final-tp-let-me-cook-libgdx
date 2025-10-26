@@ -8,13 +8,12 @@ import java.util.Random;
 
 public class GestorPartida {
     private static GestorPartida instancia;
-    private ArrayList<NivelPartida> nivelesPartida;
+    private final ArrayList<NivelPartida> NIVELES_PARTIDA;
     private int nivelActual;
     private int puntajeTotalPartida;
-    private int cantidadSucursales = 1;
 
     private GestorPartida() {
-        this.nivelesPartida = new ArrayList<>();
+        this.NIVELES_PARTIDA = new ArrayList<>();
         this.nivelActual = 0;
         this.puntajeTotalPartida = 0;
     }
@@ -27,7 +26,7 @@ public class GestorPartida {
     }
 
     public void generarNuevaPartida(ArrayList<String> rutasMapas, int cantidadNiveles) {
-        nivelesPartida.clear();
+        NIVELES_PARTIDA.clear();
         nivelActual = 0;
         puntajeTotalPartida = 0;
 
@@ -44,40 +43,35 @@ public class GestorPartida {
             CancionNivel cancionNivel = cancionesDisponibles[i % cancionesDisponibles.length];
 
             Mapa mapaGenerado = new Mapa(rutaMapaElegida, "Sucursal " + (i + 1));
-            nivelesPartida.add(new NivelPartida(mapaGenerado, turnoAleatorio, cancionNivel));
+            NIVELES_PARTIDA.add(new NivelPartida(mapaGenerado, turnoAleatorio, cancionNivel));
         }
     }
 
     public NivelPartida getNivelActual() {
-        if (nivelActual < nivelesPartida.size()) {
-            return nivelesPartida.get(nivelActual);
+        if (nivelActual < NIVELES_PARTIDA.size()) {
+            return NIVELES_PARTIDA.get(nivelActual);
         }
         return null;
     }
 
     public boolean avanzarNivel(int puntajeNivel) {
-        if (nivelActual < nivelesPartida.size()) {
-            nivelesPartida.get(nivelActual).marcarCompletado(puntajeNivel);
+        if (nivelActual < NIVELES_PARTIDA.size()) {
+            NIVELES_PARTIDA.get(nivelActual).marcarCompletado(puntajeNivel);
             puntajeTotalPartida += puntajeNivel;
             nivelActual++;
         }
-        return nivelActual < nivelesPartida.size();
-    }
-
-    public boolean hayMasNiveles() {
-        return nivelActual < nivelesPartida.size();
+        return nivelActual < NIVELES_PARTIDA.size();
     }
 
     public void resetearPartida() {
-        for (NivelPartida nivel : nivelesPartida) {
+        for (NivelPartida nivel : NIVELES_PARTIDA) {
             if (nivel.getMapa() != null) {
                 nivel.getMapa().dispose();
             }
         }
-        nivelesPartida.clear();
+        NIVELES_PARTIDA.clear();
         nivelActual = 0;
         puntajeTotalPartida = 0;
-        cantidadSucursales = 1;
     }
 
     public int getNivelActualIndex() {
@@ -85,7 +79,7 @@ public class GestorPartida {
     }
 
     public ArrayList<NivelPartida> getTodosLosNiveles() {
-        return this.nivelesPartida;
+        return this.NIVELES_PARTIDA;
     }
 
     public int getPuntajeTotalPartida() { return this.puntajeTotalPartida; }
