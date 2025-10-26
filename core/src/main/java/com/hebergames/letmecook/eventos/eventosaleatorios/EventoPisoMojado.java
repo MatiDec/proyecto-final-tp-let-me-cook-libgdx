@@ -42,7 +42,6 @@ public class EventoPisoMojado implements EventoAleatorio {
             }
 
             activo = true;
-            System.out.println("EVENTO: " + cantidadTiles + " tiles con piso mojado!");
         }
     }
 

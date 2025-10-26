@@ -18,7 +18,6 @@ public class EventoMaquinaRota implements EventoAleatorio {
         if (estacionAfectada != null && !activo) {
             estacionAfectada.setFueraDeServicio(true);
             activo = true;
-            System.out.println("EVENTO: " + estacionAfectada.getClass().getSimpleName() + " fuera de servicio!");
         }
     }
 

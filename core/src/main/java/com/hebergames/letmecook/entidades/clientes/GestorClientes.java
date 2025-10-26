@@ -159,7 +159,6 @@ public class GestorClientes {
     }
 
     private void aplicarPenalizacion(int puntos, String razon) {
-        System.out.println(razon + ": " + puntos + " puntos");
         if (callbackPenalizacion != null) {
             callbackPenalizacion.aplicarPenalizacion(puntos, razon);
         }

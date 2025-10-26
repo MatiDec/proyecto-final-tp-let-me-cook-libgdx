@@ -45,22 +45,18 @@ public abstract class EstacionTrabajo {
 
     public final void interactuarConJugador(Jugador jugador) {
         if (jugador == null) {
-            System.out.println("ERROR: Jugador es null");
             return;
         }
 
         if (fueraDeServicio) {
-            System.out.println("¡Esta máquina está fuera de servicio!");
             return;
         }
 
         if (!puedeInteractuar(jugador)) {
-            System.out.println("Estas demasiado lejos para interactuar con la maquina.");
             return;
         }
 
         if (jugadorOcupante != null && jugadorOcupante != jugador) {
-            System.out.println("Maquina ocupada por otro jugador.");
             return;
         }
 
@@ -91,7 +87,6 @@ public abstract class EstacionTrabajo {
                 Producto productoJugador = (Producto) jugador.getInventario();
                 ResultadoEntrega resultado = mesa.entregarProducto(productoJugador);
                 jugador.sacarDeInventario();
-                System.out.println(resultado.getMensaje());
 
                 jugador.salirDeMenu();
                 alLiberar();
@@ -115,51 +110,31 @@ public abstract class EstacionTrabajo {
     }
 
     public void manejarProcesamiento(Jugador jugador) {
-        System.out.println("DEBUG: manejarProcesamiento() iniciado");
-        System.out.println("DEBUG: Jugador obtenido: " + (jugador != null ? "OK" : "NULL"));
-
         if (procesadora == null) {
-            System.out.println("DEBUG: Esta estación no tiene procesadora");
             return;
         }
 
-        System.out.println("DEBUG: procesadora.tieneProcesandose(): " + procesadora.tieneProcesandose());
-
         if (procesadora.tieneProcesandose()) {
-            System.out.println("DEBUG: Ya hay algo procesándose, intentando retirar");
-
             if (!jugador.tieneInventarioLleno()) {
                 Ingrediente resultado = procesadora.obtenerResultado();
                 if (resultado != null) {
                     jugador.guardarEnInventario(resultado);
-                    System.out.println("Retirado: " + resultado.getNombre());
                 }
             } else {
-                System.out.println("Inventario lleno, no se puede retirar");
             }
             return;
         }
 
         ObjetoAlmacenable objetoInventario = jugador.getInventario();
-        System.out.println("DEBUG: Objeto en inventario: " + objetoInventario);
-        System.out.println("DEBUG: Tipo del objeto: " + (objetoInventario != null ? objetoInventario.getClass().getSimpleName() : "null"));
 
         if (objetoInventario instanceof Ingrediente) {
             Ingrediente ingrediente = (Ingrediente) objetoInventario;
-            System.out.println("DEBUG: Ingrediente válido encontrado: " + ingrediente.getNombre());
-            System.out.println("DEBUG: Llamando a procesadora.iniciarProceso()");
 
             if (procesadora.iniciarProceso(ingrediente)) {
                 jugador.sacarDeInventario();
-                System.out.println("DEBUG: Proceso iniciado exitosamente!");
-                System.out.println("Iniciando proceso con: " + ingrediente.getNombre());
             } else {
-                System.out.println("DEBUG: procesadora.iniciarProceso() devolvió false");
-                System.out.println("Este ingrediente no se puede procesar aquí");
             }
         } else {
-            System.out.println("DEBUG: No hay ingrediente válido - objetoInventario no es Ingrediente");
-            System.out.println("No tienes un ingrediente válido para procesar");
         }
     }
 
@@ -205,7 +180,6 @@ public abstract class EstacionTrabajo {
 
             if (!estaCerca(jugadorOcupante.getPosicion().x,
                 jugadorOcupante.getPosicion().y)) {
-                System.out.println("DEBUG: Liberando estación, jugador se alejó");
                 jugadorOcupante.salirDeMenu();
                 alLiberar();
                 jugadorOcupante = null;

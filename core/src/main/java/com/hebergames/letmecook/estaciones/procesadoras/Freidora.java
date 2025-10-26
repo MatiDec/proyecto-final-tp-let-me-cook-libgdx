@@ -33,7 +33,6 @@ public class Freidora extends EstacionTrabajo {
 
     @Override
     public void alInteractuar() {
-        System.out.println("Interacción con freidora realizada");
         if (getJugadorOcupante() != null) {
             manejarProcesamiento(getJugadorOcupante());
         }

@@ -44,14 +44,12 @@ public class MaquinaEnvasadora extends EstacionTrabajo {
     private void envasarIngrediente() {
         Jugador jugador = getJugadorOcupante();
         if (jugador == null) {
-            System.out.println("No hay jugador ocupando la envasadora");
             return;
         }
 
         ObjetoAlmacenable objetoInventario = jugador.getInventario();
 
         if (!(objetoInventario instanceof Ingrediente)) {
-            System.out.println("No tienes un ingrediente válido para envasar");
             return;
         }
 
@@ -62,7 +60,6 @@ public class MaquinaEnvasadora extends EstacionTrabajo {
         TipoEnvase tipoEnvase = TipoEnvase.obtenerPorIngrediente(nombreIngrediente);
 
         if (tipoEnvase == null) {
-            System.out.println("Este ingrediente no se puede envasar");
             return;
         }
 
@@ -77,7 +74,6 @@ public class MaquinaEnvasadora extends EstacionTrabajo {
         Receta receta = GestorRecetas.getInstance().buscarReceta(ingredientes);
 
         if (receta == null) {
-            System.out.println("No existe una receta para envasar este ingrediente");
             return;
         }
 
@@ -87,13 +83,10 @@ public class MaquinaEnvasadora extends EstacionTrabajo {
         // Retirar el ingrediente del inventario y darle el producto
         jugador.sacarDeInventario();
         jugador.guardarEnInventario(productoEnvasado);
-
-        System.out.println("¡Producto envasado: " + productoEnvasado.getNombre() + "!");
     }
 
     @Override
     protected void iniciarMenu(Jugador jugador) {
-        System.out.println("Entró al menú de MaquinaEnvasadora");
         textosMenu = new ArrayList<>();
 
         Texto texto = new Texto(Recursos.FUENTE_MENU, 24, Color.WHITE, true);
@@ -159,7 +152,6 @@ public class MaquinaEnvasadora extends EstacionTrabajo {
 
     @Override
     public void alInteractuar() {
-        System.out.println("Interactuando con máquina envasadora");
         iniciarMenu(getJugadorOcupante());
     }
 }

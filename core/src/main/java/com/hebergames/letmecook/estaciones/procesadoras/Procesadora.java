@@ -37,7 +37,6 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
             area.y + area.height,
             IndicadorVisual.TipoIndicador.TEMPORIZADOR
         );
-        System.out.println("DEBUG: Creado Procesador #" + idInstancia + " tipo: " + tipo);
     }
 
     private void inicializarIndicador() {
@@ -156,8 +155,6 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
 
     @Override
     public void onCambioEstado(EstadoCoccion nuevoEstado) {
-        System.out.println("Estado de cocción cambió a: " + nuevoEstado.getESTADO());
-
         switch (nuevoEstado) {
             case BIEN_HECHO:
                 GestorAudio.getInstance().reproducirSonido("coccion_perfecta");
@@ -167,7 +164,6 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
 
     @Override
     public void onIngredienteQuemado() {
-        System.out.println("¡Ingrediente quemado!");
         procesando = false;
     }
 

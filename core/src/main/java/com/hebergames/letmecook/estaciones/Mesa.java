@@ -59,13 +59,11 @@ public class Mesa extends EstacionTrabajo {
 
     private void depositarEnSlot(int slotIndex) {
         if (slotIndex < 0 || slotIndex >= MAX_SLOTS) {
-            System.out.println("Slot inválido: " + slotIndex);
             return;
         }
 
         Jugador jugador = getJugadorOcupante();
         if (jugador == null) {
-            System.out.println("No hay jugador ocupando la mesa");
             return;
         }
 
@@ -75,9 +73,7 @@ public class Mesa extends EstacionTrabajo {
                 ObjetoAlmacenable objetoRetirado = slots[slotIndex];
                 slots[slotIndex] = null;
                 jugador.guardarEnInventario(objetoRetirado);
-                System.out.println("Retirado " + objetoRetirado.getNombre() + " del Slot " + (slotIndex + 1));
             } else {
-                System.out.println("Inventario lleno, no puedes retirar el item del slot");
             }
             return;
         }
@@ -86,19 +82,16 @@ public class Mesa extends EstacionTrabajo {
         ObjetoAlmacenable objeto = jugador.getInventario();
 
         if (objeto == null) {
-            System.out.println("No tienes nada en el inventario para depositar");
             return;
         }
 
         // Depositar el objeto del inventario en el slot
         slots[slotIndex] = objeto;
         jugador.sacarDeInventario();
-        System.out.println("Depositado " + objeto.getNombre() + " en Slot " + (slotIndex + 1));
     }
 
     private void crearProducto() {
         if (productoPreparado != null) {
-            System.out.println("Ya hay un producto preparado. Retíralo primero.");
             return;
         }
 
@@ -111,7 +104,6 @@ public class Mesa extends EstacionTrabajo {
         }
 
         if (ingredientesDisponibles.isEmpty()) {
-            System.out.println("No hay ingredientes en la mesa para preparar");
             return;
         }
 
@@ -119,7 +111,6 @@ public class Mesa extends EstacionTrabajo {
         Receta receta = GestorRecetas.getInstance().buscarReceta(ingredientesDisponibles);
 
         if (receta == null) {
-            System.out.println("No se encontró ninguna receta con estos ingredientes");
             return;
         }
 
@@ -130,30 +121,24 @@ public class Mesa extends EstacionTrabajo {
         for (int i = 0; i < slots.length; i++) {
             slots[i] = null;
         }
-
-        System.out.println("¡Producto creado: " + productoPreparado.getNombre() + "!");
     }
 
     private void retirarProducto() {
         Jugador jugador = getJugadorOcupante();
         if (jugador == null) {
-            System.out.println("No hay jugador ocupando la mesa");
             return;
         }
 
         if (productoPreparado == null) {
-            System.out.println("No hay ningún producto para retirar");
             return;
         }
 
         if (jugador.tieneInventarioLleno()) {
-            System.out.println("Tu inventario está lleno. No puedes retirar el producto.");
             return;
         }
 
         // Dar el producto al jugador
         jugador.guardarEnInventario(productoPreparado);
-        System.out.println("Retirado: " + productoPreparado.getNombre());
         productoPreparado = null;
     }
 
@@ -224,7 +209,6 @@ public class Mesa extends EstacionTrabajo {
 
     @Override
     public void alInteractuar() {
-        System.out.println("Interactuando con mesa");
         iniciarMenu(getJugadorOcupante());
     }
 

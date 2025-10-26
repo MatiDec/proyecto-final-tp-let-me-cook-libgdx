@@ -51,13 +51,11 @@ public class Fuente extends EstacionTrabajo {
         if (estadoMenu == EstadoMenuBebida.LISTO && refrescoEnPreparacion != null) {
             if (!jugador.tieneInventarioLleno()) {
                 jugador.guardarEnInventario(refrescoEnPreparacion);
-                System.out.println("Refresco retirado: " + refrescoEnPreparacion.getNombre());
                 refrescoEnPreparacion = null;
                 estadoMenu = EstadoMenuBebida.SELECCION_TAMANO;
                 seleccionTamano = 0;
                 seleccionTipo = 0;
             } else {
-                System.out.println("Inventario lleno");
             }
         }
     }
@@ -74,14 +72,12 @@ public class Fuente extends EstacionTrabajo {
                 tamanoSeleccionado = TamanoBebida.values()[seleccionTamano];
                 estadoMenu = EstadoMenuBebida.SELECCION_TIPO;
                 seleccionTipo = 0;
-                System.out.println("Tamaño seleccionado: " + tamanoSeleccionado.getNombre());
             }
         } else if (estadoMenu == EstadoMenuBebida.SELECCION_TIPO) {
             if (numeroSeleccion >= 1 && numeroSeleccion <= TIPOS_DISPONIBLES.length) {
                 seleccionTipo = numeroSeleccion - 1;
                 tipoSeleccionado = TIPOS_DISPONIBLES[seleccionTipo];
                 iniciarPreparacion();
-                System.out.println("Preparando: " + tipoSeleccionado);
             }
         }
     }
@@ -101,7 +97,6 @@ public class Fuente extends EstacionTrabajo {
             tiempoTranscurrido += delta;
             if (tiempoTranscurrido >= tiempoPreparacion) {
                 estadoMenu = EstadoMenuBebida.LISTO;
-                System.out.println("¡Refresco listo!");
             }
         }
     }

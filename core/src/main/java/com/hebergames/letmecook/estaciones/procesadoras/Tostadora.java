@@ -33,7 +33,6 @@ public class Tostadora extends EstacionTrabajo {
 
     @Override
     public void alInteractuar() {
-        System.out.println("Interacción con tostadora realizada");
         if (getJugadorOcupante() != null) {
             manejarProcesamiento(getJugadorOcupante());
         }

@@ -35,16 +35,13 @@ public class Basurero extends EstacionTrabajo{
     public void alInteractuar() {
         Jugador jugador = getJugadorOcupante();
         if (jugador == null) {
-            System.out.println("ERROR: Jugador ocupante es null en Heladera");
             return;
         }
         else{
             if(jugador.tieneInventarioLleno())
             {
                 jugador.descartarInventario();
-                System.out.println("Se te borro todo del inventario");
             }
-            System.out.println("Hola pocovi");
 
         }
     }

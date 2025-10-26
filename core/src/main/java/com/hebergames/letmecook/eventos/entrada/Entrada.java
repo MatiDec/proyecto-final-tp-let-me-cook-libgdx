@@ -88,18 +88,14 @@ public class Entrada implements InputProcessor {
         if(jugador != null) {
             ConfiguracionTeclas config = CONFIG_TECLAS_JUGADOR.get(jugador);
 
-            System.out.println("DEBUG Entrada: Tecla presionada: " + keycode + " por jugador en posición: " + jugador.getPosicion());
-
             // Si es la tecla de interacción, interactuar con estaciones
             if (config != null && keycode == config.getInteractuar()) {
-                System.out.println("DEBUG Entrada: Tecla de interacción detectada");
                 interactuarConEstacionCercana(jugador);
             }
 
             ENTRADAS_POR_JUGADOR.get(jugador).presionar(keycode);
             return true;
         } else {
-            System.out.println("DEBUG Entrada: Tecla " + keycode + " no mapeada a ningún jugador");
         }
 
         for (Map.Entry<Jugador, int[]> entry : TECLAS_MENU_POR_JUGADOR.entrySet()) {
@@ -123,7 +119,6 @@ public class Entrada implements InputProcessor {
     private void interactuarConEstacionCercana(Jugador jugador) {
         Vector2 posJugador = jugador.getPosicion();
 
-        System.out.println("DEBUG: Buscando estación cerca de: " + posJugador);
 
         EstacionTrabajo estacionMasCercana = null;
         float distanciaMasCercana = Float.MAX_VALUE;
@@ -143,10 +138,8 @@ public class Entrada implements InputProcessor {
 
         // Interactuar con la estación más cercana encontrada
         if (estacionMasCercana != null) {
-            System.out.println("DEBUG: Estación más cercana encontrada a " + distanciaMasCercana + "px, interactuando...");
             estacionMasCercana.interactuarConJugador(jugador);
         } else {
-            System.out.println("DEBUG: No hay estaciones cercanas");
         }
     }
 

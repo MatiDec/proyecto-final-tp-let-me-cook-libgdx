@@ -50,7 +50,7 @@ import java.util.Map;
 
 public class PantallaJuego extends Pantalla {
 
-    private static final int TIEMPO_OBJETIVO = 10; // 3 minutos
+    private static final int TIEMPO_OBJETIVO = 3000; // 3 minutos
     private static final boolean MODO_MULTIJUGADOR = true; // Cambiar a false para un solo jugador
 
     private SpriteBatch batch;
@@ -240,7 +240,6 @@ public class PantallaJuego extends Pantalla {
 
         gestorClientes.setCallbackPenalizacion((puntos, razon) -> {
             gestorPuntaje.agregarPuntos(puntos);
-            System.out.println("Penalización aplicada: " + razon);
         });
 
         // Asignar gestor a las cajas

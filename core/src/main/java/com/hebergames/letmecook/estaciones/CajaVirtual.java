@@ -62,7 +62,6 @@ public class CajaVirtual extends EstacionTrabajo implements EstacionEntrega {
             if (gestorPedidos != null) {
                 clienteVirtual.getPedido().setEstadoPedido(EstadoPedido.EN_PREPARACION);
                 clienteVirtual.resetearTiempo();
-                System.out.println("Pedido virtual tomado");
             }
             jugador.salirDeMenu();
             alLiberar();
@@ -81,7 +80,6 @@ public class CajaVirtual extends EstacionTrabajo implements EstacionEntrega {
             }
 
             jugador.sacarDeInventario();
-            System.out.println(resultado.getMensaje());
 
             jugador.salirDeMenu();
             alLiberar();

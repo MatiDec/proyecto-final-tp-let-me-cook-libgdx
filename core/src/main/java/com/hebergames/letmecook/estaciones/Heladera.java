@@ -52,7 +52,6 @@ public class Heladera extends EstacionTrabajo {
     protected void alLiberar() {
         // Limpiar los textos del menú para que se inicialicen de nuevo al interactuar
         textosMenu = null;
-        System.out.println("DEBUG Heladera: Menú limpiado al liberar");
     }
 
     @Override
@@ -81,10 +80,8 @@ public class Heladera extends EstacionTrabajo {
                     ObjetoAlmacenable objeto = opcion.crearObjeto();
                     if (objeto != null) {
                         jugador.guardarEnInventario(objeto);
-                        System.out.println("Tomado de heladera: " + opcion.getNombre());
                     }
                 } else {
-                    System.out.println("Inventario lleno, no puedes tomar más items");
                 }
             }
 
@@ -95,7 +92,6 @@ public class Heladera extends EstacionTrabajo {
     @Override
     protected void dibujarMenu(SpriteBatch batch, Jugador jugador) {
         if (textosMenu == null || textosMenu.isEmpty()) {
-            System.out.println("DEBUG Heladera: Saliendo porque textosMenu está vacío");
             return;
         }
 
@@ -123,7 +119,6 @@ public class Heladera extends EstacionTrabajo {
     public void alInteractuar() {
         Jugador jugador = getJugadorOcupante();
         if (jugador == null) {
-            System.out.println("ERROR: Jugador ocupante es null en Heladera");
             return;
         }
 

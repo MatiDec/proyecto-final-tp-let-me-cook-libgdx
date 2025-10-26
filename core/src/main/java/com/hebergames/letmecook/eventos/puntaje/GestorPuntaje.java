@@ -11,7 +11,6 @@ public class GestorPuntaje implements CallbackPuntaje {
     @Override
     public void onPuntosObtenidos(int puntos) {
         puntajeActual += puntos;
-        System.out.println("Puntos actuales: " + puntajeActual);
     }
 
     public void agregarPuntos(int puntos) {

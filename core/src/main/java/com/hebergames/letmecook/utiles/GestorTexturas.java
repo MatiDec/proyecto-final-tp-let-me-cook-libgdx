@@ -85,38 +85,16 @@ public class GestorTexturas {
                 "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/bebidas.png"));
             TextureRegion[][] tmpBebidas = TextureRegion.split(texturaBebidas, 32, 32);
 
-            texturasProductos.put("expresopequeno", tmpBebidas[0][0]);
-            texturasProductos.put("americanopequeno", tmpBebidas[0][1]);
-            texturasProductos.put("cortadopequeno", tmpBebidas[0][2]);
 
-            texturasProductos.put("expresomediano", tmpBebidas[1][0]);
-            texturasProductos.put("americanomediano", tmpBebidas[1][1]);
-            texturasProductos.put("cortadomediano", tmpBebidas[1][2]);
+            String[] tiposBebidas = {"expreso", "americano", "cortado", "jugo", "soda", "sprite", "pepsi", "cocacola"};
+            String[] tamanos = {"pequeno", "mediano", "grande"};
 
-            texturasProductos.put("expresogrande", tmpBebidas[2][0]);
-            texturasProductos.put("americanogrande", tmpBebidas[2][1]);
-            texturasProductos.put("cortadogrande", tmpBebidas[2][2]);
-
-            texturasProductos.put("jugopequeno", tmpBebidas[3][0]);
-            texturasProductos.put("sodapequeno", tmpBebidas[3][1]);
-            texturasProductos.put("spritepequeno", tmpBebidas[3][2]);
-            texturasProductos.put("pepsipequeno", tmpBebidas[3][3]);
-            texturasProductos.put("cocacolapequeno", tmpBebidas[3][4]);
-
-            texturasProductos.put("jugomediano", tmpBebidas[4][0]);
-            texturasProductos.put("sodamediano", tmpBebidas[4][1]);
-            texturasProductos.put("spritemediano", tmpBebidas[4][2]);
-            texturasProductos.put("pepsimediano", tmpBebidas[4][3]);
-            texturasProductos.put("cocacolamediano", tmpBebidas[4][4]);
-
-            texturasProductos.put("jugogrande", tmpBebidas[5][0]);
-            texturasProductos.put("sodagrande", tmpBebidas[5][1]);
-            texturasProductos.put("spritegrande", tmpBebidas[5][2]);
-            texturasProductos.put("pepsigrande", tmpBebidas[5][3]);
-            texturasProductos.put("cocacolagrande", tmpBebidas[5][4]);
-
-            System.out.println(texturasProductos.keySet());
-
+            for (int fila = 0; fila < tamanos.length; fila++) {
+                for (int col = 0; col < tiposBebidas.length && col < tmpBebidas[fila].length; col++) {
+                    String nombreTex = tiposBebidas[col] + tamanos[fila];
+                    texturasProductos.put(nombreTex, tmpBebidas[fila][col]);
+                }
+            }
         } catch (Exception e) {
             System.err.println("No se pudieron cargar las texturas de bebidas: " + e.getMessage());
         }
