@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="128" tileheight="128" infinite="0" nextlayerid="4" nextobjectid="53">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="128" tileheight="128" infinite="0" nextlayerid="5" nextobjectid="55">
  <tileset firstgid="1" source="Nivel_1.tsx"/>
- <layer id="1" name="Capa de patrones 1" width="30" height="30">
+ <layer id="1" name="Capa de patrones 1" class="Colisionable" width="30" height="30">
   <data encoding="csv">
 27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
 27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
@@ -67,7 +67,7 @@
   <object id="51" name="MesaRetiro" type="Interactuable" x="2048" y="1920" width="128" height="128"/>
   <object id="52" name="MesaRetiro" type="Interactuable" x="2048" y="2048" width="128" height="128"/>
  </objectgroup>
- <objectgroup id="3" name="Capa de Objetos 2">
+ <objectgroup id="3" name="Colisionables">
   <object id="35" type="Colisionable" x="1024" y="2304" width="768" height="256"/>
   <object id="36" type="Colisionable" x="1024" y="2560" width="256" height="256"/>
   <object id="38" type="Colisionable" x="1024" y="2816" width="1792" height="256"/>
@@ -80,5 +80,9 @@
   <object id="45" type="Colisionable" x="1024" y="1024" width="256" height="256"/>
   <object id="46" type="Colisionable" x="1024" y="768" width="1792" height="256"/>
   <object id="47" type="Colisionable" x="2560" y="1024" width="256" height="256"/>
+ </objectgroup>
+ <objectgroup id="4" name="Jugadores">
+  <object id="53" name="Jugador_1" type="Jugador" x="1792" y="1792" width="128" height="128"/>
+  <object id="54" name="Jugador_2" type="Jugador" x="1920" y="1792" width="128" height="128"/>
  </objectgroup>
 </map>

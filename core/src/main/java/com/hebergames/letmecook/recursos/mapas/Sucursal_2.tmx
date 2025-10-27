@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="24" height="28" tilewidth="128" tileheight="128" infinite="0" nextlayerid="6" nextobjectid="54">
  <tileset firstgid="1" source="Nivel_1.tsx"/>
- <layer id="1" name="Capa de patrones 1" width="24" height="28">
+ <layer id="1" name="Capa de patrones 1" class="Colisionable" width="24" height="28">
   <data encoding="csv">
 27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
 27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,27,
@@ -37,7 +37,7 @@
   <object id="45" name="Jugador_1" type="Jugador" x="1408" y="1792" width="128" height="128"/>
   <object id="46" name="Jugador_2" type="Jugador" x="1408" y="1664" width="128" height="128"/>
  </objectgroup>
- <objectgroup id="2" name="Colisionable">
+ <objectgroup id="2" name="Colisionables">
   <object id="1" type="Colisionable" x="896" y="896" width="256" height="1536"/>
   <object id="3" type="Colisionable" x="1920" y="896" width="256" height="1536"/>
   <object id="4" type="Colisionable" x="1664" y="1792" width="256" height="256"/>
