@@ -47,7 +47,9 @@ import java.util.Map;
 
 public class PantallaJuego extends Pantalla {
 
-    private final int TIEMPO_OBJETIVO = 3000;
+    private final int MIN_CLIENTES_SUCURSAL_CHICA = 10;
+    private final int MIN_CLIENTES_SUCURSAL_GRANDE = 20;
+    private final int TIEMPO_OBJETIVO = 180;
     private final boolean MODO_MULTIJUGADOR = true;
 
     private SpriteBatch batch;
@@ -56,6 +58,8 @@ public class PantallaJuego extends Pantalla {
     private ArrayList<Jugador> jugadores;
     private GestorMapa gestorMapa;
     private ArrayList<EstacionTrabajo> estaciones;
+    private boolean despedido = false;
+    private String razonDespido = "";
 
     private GestorClientes gestorClientes;
     private GestorPedidos gestorPedidos;
@@ -87,7 +91,8 @@ public class PantallaJuego extends Pantalla {
 
         if(gestorPartida.getNivelActual() == null) {
             ArrayList<String> rutasMapas = new ArrayList<>();
-            rutasMapas.add("core/src/main/java/com/hebergames/letmecook/recursos/mapas/Sucursal_1.tmx");
+            rutasMapas.add(Recursos.RUTA_MAPAS + "Sucursal_1.tmx");
+
 
             gestorPartida.generarNuevaPartida(rutasMapas, rutasMapas.size());
         }
@@ -135,12 +140,20 @@ public class PantallaJuego extends Pantalla {
             }
         }
 
-        jugador1 = new Jugador(1000, 672, gestorAnimacionJ1);
+        Rectangle spawnJ1 = gestorMapa.getPuntoSpawn("Jugador_1");
+        float posXJ1 = (spawnJ1 != null) ? spawnJ1.x + (spawnJ1.width / 2f) - 64 : 1000;
+        float posYJ1 = (spawnJ1 != null) ? spawnJ1.y + (spawnJ1.height / 2f) - 64 : 672;
+
+        jugador1 = new Jugador(posXJ1, posYJ1, gestorAnimacionJ1);
         gestorMapa.asignarColisionesYInteracciones(jugador1);
         jugadores.add(jugador1);
 
         if (MODO_MULTIJUGADOR) {
-            jugador2 = new Jugador(1000, 872, gestorAnimacionJ2);
+            Rectangle spawnJ2 = gestorMapa.getPuntoSpawn("Jugador_2");
+            float posXJ2 = (spawnJ2 != null) ? spawnJ2.x + (spawnJ2.width / 2f) - 64 : 1000;
+            float posYJ2 = (spawnJ2 != null) ? spawnJ2.y + (spawnJ2.height / 2f) - 64 : 872;
+
+            jugador2 = new Jugador(posXJ2, posYJ2, gestorAnimacionJ2);
             gestorMapa.asignarColisionesYInteracciones(jugador2);
             jugadores.add(jugador2);
         }
@@ -150,18 +163,17 @@ public class PantallaJuego extends Pantalla {
         }
 
         GestorJugadores.getInstancia().setJugadores(jugadores);
-
     }
 
     private void configurarTexturasJugadores() {
         gestorAnimacionJ1 = new GestorAnimacion(
-            "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/Jugador.png",
+            Recursos.JUGADOR_SPRITESHEET,
             32, 32, 0.2f
         );
 
         if (MODO_MULTIJUGADOR) {
             gestorAnimacionJ2 = new GestorAnimacion(
-                "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/Jugador.png",
+                Recursos.JUGADOR_SPRITESHEET,
                 32, 32, 0.2f
             );
         }
@@ -179,7 +191,8 @@ public class PantallaJuego extends Pantalla {
         gestorAudio.cargarTodasLasMusicasNiveles();
         gestorAudio.cargarTodosLosSonidos();
 
-        CancionNivel cancionNivel = nivelActual.getCancionNivel();
+        TurnoTrabajo turnoActual = nivelActual.getTurno();
+        CancionNivel cancionNivel = CancionNivel.getPorTurno(turnoActual);
         gestorAudio.reproducirMusicaNivel(cancionNivel);
         gestorAudio.pausarMusica();
 
@@ -188,7 +201,6 @@ public class PantallaJuego extends Pantalla {
         gestorOverlays = new GestorPantallasOverlay(pantallaPausa, pantallaCalendario, gestorAudio);
         gestorMostrarCalendario.iniciarMostrar();
         gestorOverlays.mostrarCalendarioInicial();
-
     }
 
     private void inicializarSistemaPedidos() {
@@ -214,8 +226,9 @@ public class PantallaJuego extends Pantalla {
         }
 
         TurnoTrabajo turnoActual = nivelActual.getTurno();
+        int minClientesRequeridos = calcularMinClientesRequeridos();
 
-        gestorClientes = new GestorClientes(cajas, cajasVirtuales, 15f, turnoActual);
+        gestorClientes = new GestorClientes(cajas, cajasVirtuales, 15f, turnoActual, minClientesRequeridos);
         gestorPedidos = new GestorPedidos(gestorClientes, mesas);
 
         gestorClientes.setCallbackPenalizacion((puntos, razon) -> {
@@ -258,7 +271,14 @@ public class PantallaJuego extends Pantalla {
         gestorEventos.iniciarRonda();
     }
 
-
+    private int calcularMinClientesRequeridos() {
+        int nivelActualIndex = gestorPartida.getNivelActualIndex();
+        if (nivelActualIndex == 0 || nivelActualIndex == 2) {
+            return MIN_CLIENTES_SUCURSAL_CHICA;
+        } else {
+            return MIN_CLIENTES_SUCURSAL_GRANDE;
+        }
+    }
 
     @Override
     public void render(float delta) {
@@ -403,12 +423,42 @@ public class PantallaJuego extends Pantalla {
 
     private void verificarFinDeJuego() {
         if (gestorClientes != null && gestorClientes.haAlcanzadoLimiteClientes()) {
-            terminarJuego(calcularPuntajeFinal());
+            int puntajeFinal = calcularPuntajeFinal();
+
+            if (puntajeFinal < 600) {
+                despedido = true;
+                razonDespido = "Puntaje insuficiente (menos de 600 puntos)";
+                terminarJuego(puntajeFinal);
+                return;
+            }
+
+            if (gestorClientes.cumpleRequisitoMinimo()) {
+                despedido = true;
+                razonDespido = "No atendiste a suficientes clientes (" +
+                    gestorClientes.getClientesAtendidos() + "/" +
+                    gestorClientes.getMinClientesRequeridos() + ")";
+                terminarJuego(puntajeFinal);
+                return;
+            }
+
+            terminarJuego(puntajeFinal);
             return;
         }
 
         if (gestorTiempo.haTerminadoTiempo()) {
-            terminarJuego(calcularPuntajeFinal());
+            int puntajeFinal = calcularPuntajeFinal();
+
+            if (puntajeFinal < 600) {
+                despedido = true;
+                razonDespido = "Puntaje insuficiente (menos de 600 puntos)";
+            } else if (gestorClientes != null && gestorClientes.cumpleRequisitoMinimo()) {
+                despedido = true;
+                razonDespido = "No atendiste a suficientes clientes (" +
+                    gestorClientes.getClientesAtendidos() + "/" +
+                    gestorClientes.getMinClientesRequeridos() + ")";
+            }
+
+            terminarJuego(puntajeFinal);
         }
     }
 
@@ -503,16 +553,22 @@ public class PantallaJuego extends Pantalla {
         detenerHilos();
         GestorEventosAleatorios.getInstancia().finalizarRonda();
         gestorAudio.detenerMusica();
-        gestorAudio.reproducirSonido(SonidoJuego.NIVEL_COMPLETADO);
 
-        boolean hayMasNiveles = gestorPartida.avanzarNivel(puntaje);
-
-        if (hayMasNiveles) {
-            Pantalla.cambiarPantalla(new PantallaJuego());
+        if (despedido) {
+            gestorAudio.reproducirSonido(SonidoJuego.DESPIDO);
+            int puntajeTotal = gestorPartida.getPuntajeTotalPartida() + puntaje;
+            Pantalla.cambiarPantalla(new PantallaFinal(gestorTiempo.getTiempoFormateado(), puntajeTotal, true, razonDespido));
         } else {
-            gestorAudio.detenerMusica();
-            int puntajeTotal = gestorPartida.getPuntajeTotalPartida();
-            Pantalla.cambiarPantalla(new PantallaFinal(gestorTiempo.getTiempoFormateado(), puntajeTotal));
+            gestorAudio.reproducirSonido(SonidoJuego.NIVEL_COMPLETADO);
+            boolean hayMasNiveles = gestorPartida.avanzarNivel(puntaje);
+
+            if (hayMasNiveles) {
+                Pantalla.cambiarPantalla(new PantallaJuego());
+            } else {
+                gestorAudio.detenerMusica();
+                int puntajeTotal = gestorPartida.getPuntajeTotalPartida();
+                Pantalla.cambiarPantalla(new PantallaFinal(gestorTiempo.getTiempoFormateado(), puntajeTotal, false, ""));
+            }
         }
     }
 

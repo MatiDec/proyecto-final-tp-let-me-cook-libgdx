@@ -8,6 +8,8 @@ import com.hebergames.letmecook.entidades.Jugador;
 import com.hebergames.letmecook.entregables.ObjetoAlmacenable;
 import com.hebergames.letmecook.entregables.ingredientes.*;
 import com.hebergames.letmecook.elementos.Texto;
+import com.hebergames.letmecook.sonido.GestorAudio;
+import com.hebergames.letmecook.sonido.SonidoJuego;
 import com.hebergames.letmecook.utiles.GestorJugadores;
 import com.hebergames.letmecook.utiles.Recursos;
 
@@ -76,6 +78,7 @@ public class Heladera extends EstacionTrabajo {
                     ObjetoAlmacenable objeto = opcion.crearObjeto();
                     if (objeto != null) {
                         jugador.guardarEnInventario(objeto);
+                        GestorAudio.getInstance().reproducirSonido(SonidoJuego.ITEM_RECOGIDO);
                     }
                 }
             }

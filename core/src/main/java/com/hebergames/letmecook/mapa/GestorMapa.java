@@ -3,14 +3,15 @@ package com.hebergames.letmecook.mapa;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.entidades.Jugador;
-import com.hebergames.letmecook.estaciones.CajaVirtual;
 import com.hebergames.letmecook.eventos.eventosaleatorios.EventoPisoMojado;
 import com.hebergames.letmecook.eventos.eventosaleatorios.GestorEventosAleatorios;
-import com.hebergames.letmecook.estaciones.CajaRegistradora;
 import com.hebergames.letmecook.estaciones.EstacionTrabajo;
-import com.hebergames.letmecook.estaciones.MesaRetiro;
+
 import java.util.ArrayList;
 
 public class GestorMapa {
@@ -62,6 +63,27 @@ public class GestorMapa {
             jugador.setColisionables(mapaActual.getRectangulosColision());
             jugador.setInteractuables(mapaActual.getRectangulosInteractuables());
         }
+    }
+
+    public Rectangle getPuntoSpawn(String nombreObjeto) {
+        if (mapaActual == null || mapaActual.getMapa() == null) {
+            return null;
+        }
+
+        if (mapaActual.getMapa().getLayers().get("Jugadores") != null) {
+            MapObjects objetos = mapaActual.getMapa().getLayers().get("Jugadores").getObjects();
+
+            for (MapObject objeto : objetos) {
+                if (objeto.getName() != null && objeto.getName().equals(nombreObjeto)) {
+                    if (objeto instanceof RectangleMapObject) {
+                        Rectangle rect = ((RectangleMapObject) objeto).getRectangle();
+                        return new Rectangle(rect.x, rect.y, rect.width, rect.height);
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
     public ArrayList<EstacionTrabajo> getEstaciones() {

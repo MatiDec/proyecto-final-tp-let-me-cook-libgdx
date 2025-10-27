@@ -4,6 +4,7 @@ import com.hebergames.letmecook.entregables.productos.bebidas.Cafe;
 import com.hebergames.letmecook.entregables.productos.bebidas.Gaseosa;
 import com.hebergames.letmecook.entregables.productos.bebidas.TamanoBebida;
 import com.hebergames.letmecook.entregables.recetas.TipoReceta;
+import com.hebergames.letmecook.utiles.Aleatorio;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,12 +14,10 @@ public class GestorProductos {
 
     private final ArrayList<TipoProducto> PRODUCTOS_DISPONIBLES;
     private final ArrayList<TipoReceta> RECETAS_DISPONIBLES;
-    private final Random RANDOM;
 
     public GestorProductos() {
         PRODUCTOS_DISPONIBLES = new ArrayList<>();
         RECETAS_DISPONIBLES = new ArrayList<>();
-        RANDOM = new Random();
         cargarProductos();
     }
 
@@ -62,7 +61,7 @@ public class GestorProductos {
             return obtenerProductoAleatorio();
         }
 
-        int seleccion = RANDOM.nextInt(totalOpciones);
+        int seleccion = Aleatorio.entero(totalOpciones);
 
         if (seleccion < recetasFiltradas.size()) {
 
@@ -77,13 +76,13 @@ public class GestorProductos {
     }
 
     public Producto obtenerProductoAleatorio() {
-        boolean generarReceta = RANDOM.nextBoolean();
+        boolean generarReceta = Aleatorio.booleano();
 
         if (generarReceta && !RECETAS_DISPONIBLES.isEmpty()) {
-            int index = RANDOM.nextInt(RECETAS_DISPONIBLES.size());
+            int index = Aleatorio.entero(RECETAS_DISPONIBLES.size());
             return RECETAS_DISPONIBLES.get(index).crear().preparar();
         } else if (!PRODUCTOS_DISPONIBLES.isEmpty()) {
-            int index = RANDOM.nextInt(PRODUCTOS_DISPONIBLES.size());
+            int index = Aleatorio.entero(PRODUCTOS_DISPONIBLES.size());
             TipoProducto tipo = PRODUCTOS_DISPONIBLES.get(index);
 
             return generarBebidaAleatoria(tipo);
@@ -94,18 +93,18 @@ public class GestorProductos {
 
     private Producto generarBebidaAleatoria(TipoProducto tipo) {
         TamanoBebida[] tamanos = TamanoBebida.values();
-        TamanoBebida tamano = tamanos[RANDOM.nextInt(tamanos.length)];
+        TamanoBebida tamano = tamanos[Aleatorio.entero(tamanos.length)];
 
         if (tipo == TipoProducto.CAFE) {
 
             String[] tiposCafe = Cafe.getTiposCafe().keySet().toArray(new String[0]);
-            String tipoCafe = tiposCafe[RANDOM.nextInt(tiposCafe.length)];
+            String tipoCafe = tiposCafe[Aleatorio.entero(tiposCafe.length)];
             return new Cafe(tipoCafe, tamano);
 
         } else if (tipo == TipoProducto.GASEOSA) {
 
             String[] tiposGaseosa = Gaseosa.getTiposGaseosa().keySet().toArray(new String[0]);
-            String tipoGaseosa = tiposGaseosa[RANDOM.nextInt(tiposGaseosa.length)];
+            String tipoGaseosa = tiposGaseosa[Aleatorio.entero(tiposGaseosa.length)];
             return new Gaseosa(tipoGaseosa, tamano);
 
         }

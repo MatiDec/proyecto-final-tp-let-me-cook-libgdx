@@ -160,4 +160,5 @@ public class Mapa {
     }
 
     public String getNombre() { return this.NOMBRE_SUCURSAL; }
+
 }

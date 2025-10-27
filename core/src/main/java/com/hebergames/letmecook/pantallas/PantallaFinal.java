@@ -24,12 +24,18 @@ public class PantallaFinal extends Pantalla {
     private Texto resumenPuntaje;
     private Texto opcionMenu;
     private ArrayList<InfoDiaNivel> diasNiveles;
+    private final boolean despedido;
+    private final String razonDespido;
+    private Texto textoDespido;
+    private Texto textoRazon;
 
     private SpriteBatch batch;
 
-    public PantallaFinal(String tiempo, int puntaje) {
+    public PantallaFinal(String tiempo, int puntaje, boolean despedido, String razonDespido) {
         this.tiempo = tiempo;
         this.puntaje = puntaje;
+        this.despedido = despedido;
+        this.razonDespido = razonDespido;
     }
 
     @Override
@@ -37,8 +43,13 @@ public class PantallaFinal extends Pantalla {
         batch = Render.batch;
         GestorPartida gestorPartida = GestorPartida.getInstancia();
 
-        titulo = new Texto(Recursos.FUENTE_MENU, 64, Color.WHITE, true);
-        titulo.setTexto("¡Partida Finalizada!");
+        if (despedido) {
+            titulo = new Texto(Recursos.FUENTE_MENU, 64, Color.RED, true);
+            titulo.setTexto("¡HAS SIDO DESPEDIDO!");
+        } else {
+            titulo = new Texto(Recursos.FUENTE_MENU, 64, Color.WHITE, true);
+            titulo.setTexto("¡Partida Finalizada!");
+        }
         titulo.setPosition(Gdx.graphics.getWidth()/2f - titulo.getAncho()/2f,
             Gdx.graphics.getHeight() - 100);
 
@@ -55,6 +66,18 @@ public class PantallaFinal extends Pantalla {
         resumenTiempo.setTexto("Tiempo total: " + tiempo);
         resumenTiempo.setPosition(Gdx.graphics.getWidth()/2f - resumenTiempo.getAncho()/2f,
             Gdx.graphics.getHeight() - 230);
+
+        if (despedido) {
+            textoDespido = new Texto(Recursos.FUENTE_MENU, 36, Color.RED, true);
+            textoDespido.setTexto("Razón del despido:");
+            textoDespido.setPosition(Gdx.graphics.getWidth()/2f - textoDespido.getAncho()/2f,
+                Gdx.graphics.getHeight() - 280);
+
+            textoRazon = new Texto(Recursos.FUENTE_MENU, 30, Color.ORANGE, true);
+            textoRazon.setTexto(razonDespido);
+            textoRazon.setPosition(Gdx.graphics.getWidth()/2f - textoRazon.getAncho()/2f,
+                Gdx.graphics.getHeight() - 330);
+        }
 
         diasNiveles = new ArrayList<>();
         ArrayList<NivelPartida> niveles = gestorPartida.getTodosLosNiveles();
@@ -96,6 +119,11 @@ public class PantallaFinal extends Pantalla {
         resumenTiempo.dibujarEnUi(batch);
         resumenPuntaje.dibujarEnUi(batch);
         opcionMenu.dibujarEnUi(batch);
+
+        if (despedido && textoDespido != null && textoRazon != null) {
+            textoDespido.dibujarEnUi(batch);
+            textoRazon.dibujarEnUi(batch);
+        }
 
         for (InfoDiaNivel info : diasNiveles) {
             info.dibujar(batch, false);

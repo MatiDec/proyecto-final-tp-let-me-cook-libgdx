@@ -1,9 +1,9 @@
 package com.hebergames.letmecook.pedidos;
 
 import com.hebergames.letmecook.entregables.productos.Producto;
+import com.hebergames.letmecook.utiles.Aleatorio;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class Pedido {
 
@@ -28,8 +28,8 @@ public class Pedido {
         return this.PRODUCTOS_SOLICITADOS;
     }
 
-    public static int getCantidadProductosAleatorios(Random random) {
-        return 1 + random.nextInt(MAX_PRODUCTOS_POR_PEDIDO);
+    public static int getCantidadProductosAleatorios() {
+        return 1 + Aleatorio.entero(MAX_PRODUCTOS_POR_PEDIDO);
     }
 
 }

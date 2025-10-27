@@ -8,6 +8,8 @@ import com.hebergames.letmecook.entregables.productos.Producto;
 import com.hebergames.letmecook.eventos.puntaje.CallbackPuntaje;
 import com.hebergames.letmecook.pedidos.GestorPedidos;
 import com.hebergames.letmecook.pedidos.ResultadoEntrega;
+import com.hebergames.letmecook.sonido.GestorAudio;
+import com.hebergames.letmecook.sonido.SonidoJuego;
 
 public class MesaRetiro extends EstacionTrabajo implements EstacionEntrega {
     private Cliente clienteAsignado;
@@ -44,6 +46,12 @@ public class MesaRetiro extends EstacionTrabajo implements EstacionEntrega {
 
             if (callbackPuntaje != null) {
                 callbackPuntaje.onPuntosObtenidos(resultado.getPuntos());
+            }
+
+            if (resultado.getPuntos() > 0) {
+                GestorAudio.getInstance().reproducirSonido(SonidoJuego.PEDIDO_ENTREGADO);
+            } else {
+                GestorAudio.getInstance().reproducirSonido(SonidoJuego.PEDIDO_INCORRECTO);
             }
 
             return resultado;

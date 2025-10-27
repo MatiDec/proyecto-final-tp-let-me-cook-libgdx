@@ -11,6 +11,9 @@ import com.hebergames.letmecook.estaciones.MesaRetiro;
 import com.hebergames.letmecook.pedidos.CallbackPenalizacion;
 import com.hebergames.letmecook.pedidos.EstadoPedido;
 import com.hebergames.letmecook.pedidos.Pedido;
+import com.hebergames.letmecook.sonido.GestorAudio;
+import com.hebergames.letmecook.sonido.SonidoJuego;
+import com.hebergames.letmecook.utiles.Aleatorio;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -20,30 +23,29 @@ public class GestorClientes {
     private final ArrayList<CajaRegistradora> CAJAS_DISPONIBLES;
     private float tiempoParaSiguienteCliente;
     private final float INTERVALO_SPAWN;
-    private final Random RANDOM;
     private final TurnoTrabajo TURNO_ACTUAL;
     private CallbackPenalizacion callbackPenalizacion;
     private int ultimaCantidadClientes = 0;
     private int clientesAtendidos;
     private int clientesPerdidos;
-    private static final int MAX_CLIENTES_SIMULTANEOS = 5;
-    private static final int MAX_CLIENTES_TOTALES = 15;
+    private final int MIN_CLIENTES_REQUERIDOS;
+    private final int MAX_CLIENTES_TOTALES;
     private final GestorProductos GESTOR_PRODUCTOS;
     private final ArrayList<CajaVirtual> CAJAS_VIRTUALES;
 
-
     public GestorClientes(ArrayList<CajaRegistradora> cajas, ArrayList<CajaVirtual> cajasVirtuales,
-                          float intervaloSpawn, TurnoTrabajo turno) {
+                          float intervaloSpawn, TurnoTrabajo turno, int minClientesRequeridos) {
         this.CLIENTES_ACTIVOS = new ArrayList<>();
         this.CAJAS_DISPONIBLES = cajas;
         this.CAJAS_VIRTUALES = cajasVirtuales;
         this.GESTOR_PRODUCTOS = new GestorProductos();
         this.INTERVALO_SPAWN = intervaloSpawn;
         this.tiempoParaSiguienteCliente = intervaloSpawn;
-        this.RANDOM = new Random();
         this.TURNO_ACTUAL = turno;
         this.clientesAtendidos = 0;
         this.clientesPerdidos = 0;
+        this.MIN_CLIENTES_REQUERIDOS = minClientesRequeridos;
+        this.MAX_CLIENTES_TOTALES = minClientesRequeridos;
     }
 
     public void setCallbackPenalizacion(CallbackPenalizacion callback) {
@@ -89,6 +91,7 @@ public class GestorClientes {
     }
 
     private void generarNuevoCliente() {
+        int MAX_CLIENTES_SIMULTANEOS = 5;
         if (CLIENTES_ACTIVOS.size() >= MAX_CLIENTES_SIMULTANEOS) {
             return;
         }
@@ -98,7 +101,7 @@ public class GestorClientes {
             return;
         }
 
-        if (!CAJAS_VIRTUALES.isEmpty() && RANDOM.nextBoolean()) {
+        if (!CAJAS_VIRTUALES.isEmpty() && Aleatorio.booleano()) {
             CajaVirtual cajaLibre = buscarCajaVirtualLibre();
             if (cajaLibre != null) {
                 crearYAsignarCliente(cajaLibre, TipoCliente.VIRTUAL);
@@ -114,7 +117,7 @@ public class GestorClientes {
 
     private void crearYAsignarCliente(EstacionTrabajo estacion, TipoCliente tipo) {
         CategoriaProducto[] categoriasActuales = TURNO_ACTUAL.getCategoriasProductos();
-        int cantidadProductos = Pedido.getCantidadProductosAleatorios(RANDOM);
+        int cantidadProductos = Pedido.getCantidadProductosAleatorios();
         ArrayList<Producto> productosDelPedido = new ArrayList<>();
 
         for (int i = 0; i < cantidadProductos; i++) {
@@ -126,7 +129,7 @@ public class GestorClientes {
 
         if (productosDelPedido.isEmpty()) return;
 
-        float tiempoMaximo = 60f + RANDOM.nextFloat() * 30f;
+        float tiempoMaximo = Aleatorio.decimalRango(60f, 90f);
         Cliente nuevoCliente = new Cliente(productosDelPedido, tiempoMaximo, tipo);
         nuevoCliente.inicializarVisualizador();
         nuevoCliente.setEstacionAsignada(estacion);
@@ -138,6 +141,7 @@ public class GestorClientes {
         }
 
         CLIENTES_ACTIVOS.add(nuevoCliente);
+        GestorAudio.getInstance().reproducirSonido(SonidoJuego.CLIENTE_LLEGA);
     }
 
     private CajaVirtual buscarCajaVirtualLibre() {
@@ -199,6 +203,18 @@ public class GestorClientes {
 
     public int getUltimaCantidadClientes() {
         return this.ultimaCantidadClientes;
+    }
+
+    public int getClientesAtendidos() {
+        return clientesAtendidos;
+    }
+
+    public int getMinClientesRequeridos() {
+        return MIN_CLIENTES_REQUERIDOS;
+    }
+
+    public boolean cumpleRequisitoMinimo() {
+        return clientesAtendidos < MIN_CLIENTES_REQUERIDOS;
     }
 
     public void actualizarUltimaCantidadClientes() {

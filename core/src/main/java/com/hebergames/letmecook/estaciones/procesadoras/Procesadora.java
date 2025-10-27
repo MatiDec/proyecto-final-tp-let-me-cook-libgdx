@@ -9,6 +9,7 @@ import com.hebergames.letmecook.entregables.ingredientes.Ingrediente;
 import com.hebergames.letmecook.mapa.indicadores.EstadoIndicador;
 import com.hebergames.letmecook.mapa.indicadores.IndicadorVisual;
 import com.hebergames.letmecook.sonido.GestorAudio;
+import com.hebergames.letmecook.sonido.SonidoJuego;
 import com.hebergames.letmecook.utiles.Recursos;
 
 import java.util.Objects;
@@ -78,6 +79,7 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
                 INDICADOR.setEstado(EstadoIndicador.QUEMANDOSE);
             } else if (ingredienteCocinando.getEstadoCoccion() == EstadoCoccion.BIEN_HECHO) {
                 INDICADOR.setEstado(EstadoIndicador.LISTO);
+                GestorAudio.getInstance().reproducirSonido(SonidoJuego.COCCION_PERFECTA);
             } else {
                 INDICADOR.setEstado(EstadoIndicador.PROCESANDO);
             }

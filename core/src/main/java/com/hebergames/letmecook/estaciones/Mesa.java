@@ -11,6 +11,8 @@ import com.hebergames.letmecook.entregables.ingredientes.Ingrediente;
 import com.hebergames.letmecook.entregables.productos.Producto;
 import com.hebergames.letmecook.entregables.recetas.GestorRecetas;
 import com.hebergames.letmecook.entregables.recetas.Receta;
+import com.hebergames.letmecook.sonido.GestorAudio;
+import com.hebergames.letmecook.sonido.SonidoJuego;
 import com.hebergames.letmecook.utiles.GestorJugadores;
 import com.hebergames.letmecook.utiles.Recursos;
 
@@ -121,6 +123,7 @@ public class Mesa extends EstacionTrabajo {
         }
 
         jugador.guardarEnInventario(productoPreparado);
+        GestorAudio.getInstance().reproducirSonido(SonidoJuego.ITEM_RECOGIDO);
         productoPreparado = null;
     }
 

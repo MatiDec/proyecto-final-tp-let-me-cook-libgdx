@@ -45,42 +45,44 @@ public class GestorTexturas {
     public void cargarTexturas() {
         if (texturasListas) return;
 
-        texturaClientes = new Texture(Gdx.files.internal(
-            "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/clientes.jpg"));
-        TextureRegion[][] tmpClientes = TextureRegion.split(texturaClientes, 32, 32);
+        // Cargar clientes
+        texturaClientes = new Texture(Gdx.files.internal(Recursos.CLIENTES_SPRITESHEET));
+        TextureRegion[][] tmpClientes = TextureRegion.split(texturaClientes,
+            Recursos.SPRITE_CLIENTE_WIDTH, Recursos.SPRITE_CLIENTE_HEIGHT);
         texturaClientePresencial = tmpClientes[0][0];
         texturaClienteVirtual = tmpClientes[0][1];
 
-        texturaCaras = new Texture(Gdx.files.internal(
-            "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/caras.jpg"));
-        TextureRegion[][] tmpCaras = TextureRegion.split(texturaCaras, 32, 32);
+        // Cargar caras
+        texturaCaras = new Texture(Gdx.files.internal(Recursos.CARAS_SPRITESHEET));
+        TextureRegion[][] tmpCaras = TextureRegion.split(texturaCaras,
+            Recursos.SPRITE_ITEM_WIDTH, Recursos.SPRITE_ITEM_HEIGHT);
         caraFeliz = tmpCaras[0][0];
         caraImpaciente = tmpCaras[0][1];
         caraEnojada = tmpCaras[0][2];
 
+        // Cargar productos
         try {
-            Texture texturaProductos = new Texture(Gdx.files.internal(
-                "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/productos.png"));
-            TextureRegion[][] tmpProductos = TextureRegion.split(texturaProductos, 32, 32);
-
+            Texture texturaProductos = new Texture(Gdx.files.internal(Recursos.PRODUCTOS_SPRITESHEET));
+            TextureRegion[][] tmpProductos = TextureRegion.split(texturaProductos,
+                Recursos.SPRITE_ITEM_WIDTH, Recursos.SPRITE_ITEM_HEIGHT);
             TEXTURAS_PRODUCTOS.put("hamburguesa", tmpProductos[0][0]);
-
         } catch (Exception e) {
             System.err.println("No se pudieron cargar las texturas de productos: " + e.getMessage());
         }
 
+        // Cargar icono de error
         try {
-            texturaError = new Texture(Gdx.files.internal("core/src/main/java/com/hebergames/letmecook/recursos/imagenes/error_icon.png"));
+            texturaError = new Texture(Gdx.files.internal(Recursos.ERROR_ICON));
             iconoError = new TextureRegion(texturaError);
         } catch (Exception e) {
             System.err.println("No se pudo cargar icono de error: " + e.getMessage());
         }
 
+        // Cargar bebidas
         try {
-            Texture texturaBebidas = new Texture(Gdx.files.internal(
-                "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/bebidas.png"));
-            TextureRegion[][] tmpBebidas = TextureRegion.split(texturaBebidas, 32, 32);
-
+            Texture texturaBebidas = new Texture(Gdx.files.internal(Recursos.BEBIDAS_SPRITESHEET));
+            TextureRegion[][] tmpBebidas = TextureRegion.split(texturaBebidas,
+                Recursos.SPRITE_ITEM_WIDTH, Recursos.SPRITE_ITEM_HEIGHT);
 
             String[] tiposBebidas = {"expreso", "americano", "cortado", "jugo", "soda", "sprite", "pepsi", "cocacola"};
             String[] tamanos = {"pequeno", "mediano", "grande"};
@@ -95,10 +97,11 @@ public class GestorTexturas {
             System.err.println("No se pudieron cargar las texturas de bebidas: " + e.getMessage());
         }
 
+        // Cargar temporizadores
         try {
-            Texture texturaTemporizadores = new Texture(Gdx.files.internal(
-                "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/temporizadores.png"));
-            TextureRegion[][] tmpTemp = TextureRegion.split(texturaTemporizadores, 32, 32);
+            Texture texturaTemporizadores = new Texture(Gdx.files.internal(Recursos.TEMPORIZADORES_SPRITESHEET));
+            TextureRegion[][] tmpTemp = TextureRegion.split(texturaTemporizadores,
+                Recursos.SPRITE_ITEM_WIDTH, Recursos.SPRITE_ITEM_HEIGHT);
 
             texturasTemporizador = new TextureRegion[3];
             texturasTemporizador[0] = tmpTemp[0][0];
@@ -107,23 +110,20 @@ public class GestorTexturas {
 
             texturaCheck = tmpTemp[1][0];
             texturaAlerta = tmpTemp[1][1];
-            Texture texturaFlechaArchivo = new Texture(Gdx.files.internal(
-                "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/texturaFlecha.png"));
-            texturaFlecha = new TextureRegion(texturaFlechaArchivo);
 
+            Texture texturaFlechaArchivo = new Texture(Gdx.files.internal(Recursos.FLECHA));
+            texturaFlecha = new TextureRegion(texturaFlechaArchivo);
         } catch (Exception e) {
             System.err.println("No se pudieron cargar texturas de indicadores: " + e.getMessage());
         }
 
+        // Cargar piso mojado
         try {
-            texturaPisoMojado = new Texture(Gdx.files.internal(
-                "core/src/main/java/com/hebergames/letmecook/recursos/imagenes/piso_mojado.png"));
+            texturaPisoMojado = new Texture(Gdx.files.internal(Recursos.PISO_MOJADO));
             regionPisoMojado = new TextureRegion(texturaPisoMojado);
         } catch (Exception e) {
             System.err.println("No se pudo cargar textura de piso mojado: " + e.getMessage());
         }
-
-
 
         texturasListas = true;
         System.out.println("Texturas cargadas correctamente");
