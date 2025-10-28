@@ -31,6 +31,7 @@ public class GestorClientes {
     private final int MAX_CLIENTES_TOTALES;
     private final GestorProductos GESTOR_PRODUCTOS;
     private final ArrayList<CajaVirtual> CAJAS_VIRTUALES;
+    private boolean clienteGeneradoEnEsteCiclo = false;
 
     public GestorClientes(ArrayList<CajaRegistradora> cajas, ArrayList<CajaVirtual> cajasVirtuales,
                           float intervaloSpawn, TurnoTrabajo turno, int minClientesRequeridos) {
@@ -52,6 +53,8 @@ public class GestorClientes {
     }
 
     public void actualizar(float delta) {
+        clienteGeneradoEnEsteCiclo = false;
+
         for (int i = CLIENTES_ACTIVOS.size() - 1; i >= 0; i--) {
             Cliente cliente = CLIENTES_ACTIVOS.get(i);
             cliente.actualizar(delta);
@@ -83,8 +86,9 @@ public class GestorClientes {
         }
 
         tiempoParaSiguienteCliente -= delta;
-        if (tiempoParaSiguienteCliente <= 0) {
+        if (tiempoParaSiguienteCliente <= 0 && !clienteGeneradoEnEsteCiclo) {
             generarNuevoCliente();
+            clienteGeneradoEnEsteCiclo = true;
             tiempoParaSiguienteCliente = INTERVALO_SPAWN;
         }
     }

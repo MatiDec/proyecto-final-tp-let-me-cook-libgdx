@@ -67,10 +67,15 @@ public class GestorTexturas {
         try {
             Texture texturaProductos = new Texture(Gdx.files.internal(Recursos.PRODUCTOS_SPRITESHEET));
             TextureRegion[][] tmpProductos = TextureRegion.split(texturaProductos,
-                256, Recursos.SPRITE_ITEM_HEIGHT);
+                Recursos.SPRITE_ITEM_WIDTH, Recursos.SPRITE_ITEM_HEIGHT);
             final int CANTIDAD_PRODUCTOS = 8;
-            final String[] NOMBRES_PRODUCTOS = {"hamburguesadecarne", "hamburguesadepollo", "milanesadecarne",
-                "milanesadepollo", "papasfritas", "nuggetsdepollo", "arosdecebolla", "rabas"};
+            final String[] NOMBRES_PRODUCTOS = {
+                "hamburguesa de carne", "hamburguesa de pollo", "milanesa de carne",
+                "milanesa de pollo", "papas fritas", "nuggets de pollo",
+                "aros de cebolla", "rabas"
+            };
+
+            System.out.println("=== Cargando texturas de productos ===");
             for (int i = 0; i < CANTIDAD_PRODUCTOS; i++) {
                 TEXTURAS_PRODUCTOS.put(NOMBRES_PRODUCTOS[i], tmpProductos[0][i]);
             }
@@ -113,7 +118,6 @@ public class GestorTexturas {
             System.err.println("No se pudieron cargar las texturas de bebidas: " + e.getMessage());
         }
 
-
         // Cargar temporizadores
         try {
             Texture texturaTemporizadores = new Texture(Gdx.files.internal(Recursos.TEMPORIZADORES_SPRITESHEET));
@@ -144,7 +148,6 @@ public class GestorTexturas {
         cargarTexturasMaquinas();
 
         texturasListas = true;
-        System.out.println("Texturas cargadas correctamente");
     }
 
     private void cargarTexturasMaquinas() {

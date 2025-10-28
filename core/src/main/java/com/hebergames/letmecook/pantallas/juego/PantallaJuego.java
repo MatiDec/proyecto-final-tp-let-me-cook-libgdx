@@ -19,7 +19,6 @@ import com.hebergames.letmecook.estaciones.procesadoras.Procesadora;
 import com.hebergames.letmecook.eventos.eventosaleatorios.EventoMaquinaRota;
 import com.hebergames.letmecook.eventos.eventosaleatorios.EventoPisoMojado;
 import com.hebergames.letmecook.eventos.eventosaleatorios.GestorEventosAleatorios;
-import com.hebergames.letmecook.eventos.hilos.HiloClientes;
 import com.hebergames.letmecook.eventos.puntaje.GestorPuntaje;
 import com.hebergames.letmecook.mapa.*;
 import com.hebergames.letmecook.mapa.indicadores.GestorIndicadores;
@@ -49,7 +48,7 @@ public class PantallaJuego extends Pantalla {
 
     private final int MIN_CLIENTES_SUCURSAL_CHICA = 10;
     private final int MIN_CLIENTES_SUCURSAL_GRANDE = 20;
-    private final int TIEMPO_OBJETIVO = 180;
+    private final int TIEMPO_OBJETIVO = 200;
     private final boolean MODO_MULTIJUGADOR = true;
 
     private SpriteBatch batch;
@@ -65,7 +64,6 @@ public class PantallaJuego extends Pantalla {
 
     private GestorClientes gestorClientes;
     private GestorPedidos gestorPedidos;
-    private HiloClientes hiloClientes;
     private GestorPuntaje gestorPuntaje;
 
     private GestorViewport gestorViewport;
@@ -93,7 +91,7 @@ public class PantallaJuego extends Pantalla {
 
         if(gestorPartida.getNivelActual() == null) {
             ArrayList<String> rutasMapas = new ArrayList<>();
-            rutasMapas.add(Recursos.RUTA_MAPAS + "Sucursal_1.tmx");
+            rutasMapas.add(Recursos.RUTA_MAPAS + "Sucursal_4.tmx");
 
             gestorPartida.generarNuevaPartida(rutasMapas, rutasMapas.size());
         }
@@ -251,8 +249,7 @@ public class PantallaJuego extends Pantalla {
             mesa.setCallbackPuntaje(gestorPuntaje);
         }
 
-        hiloClientes = new HiloClientes(gestorClientes);
-        hiloClientes.start();
+
 
         GestorEventosAleatorios gestorEventos = GestorEventosAleatorios.getInstancia();
         gestorEventos.reset();
@@ -347,6 +344,11 @@ public class PantallaJuego extends Pantalla {
             for (Jugador jugador : jugadores) {
                 jugador.actualizar(delta);
             }
+
+            if (gestorClientes != null) {
+                gestorClientes.actualizar(delta);
+            }
+
 
             detectorInactividad.actualizar(delta);
 
@@ -593,8 +595,5 @@ public class PantallaJuego extends Pantalla {
 
     public void detenerHilos() {
         gestorTiempo.detener();
-        if(hiloClientes != null) {
-            hiloClientes.detener();
-        }
     }
 }
