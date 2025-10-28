@@ -3,6 +3,7 @@ package com.hebergames.letmecook.utiles;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.hebergames.letmecook.estaciones.procesadoras.EstadoMaquina;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,7 @@ public class GestorTexturas {
     private TextureRegion texturaCheck;
     private TextureRegion texturaAlerta;
     private TextureRegion texturaFlecha;
+    private final Map<String, TextureRegion[]> TEXTURAS_MAQUINAS;
 
     private final Map<String, TextureRegion> TEXTURAS_PRODUCTOS;
     private boolean texturasListas = false;
@@ -33,6 +35,7 @@ public class GestorTexturas {
 
     private GestorTexturas() {
         TEXTURAS_PRODUCTOS = new HashMap<>();
+        TEXTURAS_MAQUINAS = new HashMap<>();
     }
 
     public static GestorTexturas getInstance() {
@@ -117,7 +120,6 @@ public class GestorTexturas {
             System.err.println("No se pudieron cargar texturas de indicadores: " + e.getMessage());
         }
 
-        // Cargar piso mojado
         try {
             texturaPisoMojado = new Texture(Gdx.files.internal(Recursos.PISO_MOJADO));
             regionPisoMojado = new TextureRegion(texturaPisoMojado);
@@ -125,8 +127,57 @@ public class GestorTexturas {
             System.err.println("No se pudo cargar textura de piso mojado: " + e.getMessage());
         }
 
+        cargarTexturasMaquinas();
+
         texturasListas = true;
         System.out.println("Texturas cargadas correctamente");
+    }
+
+    private void cargarTexturasMaquinas() {
+        try {
+            Texture texturaMaquinas = new Texture(Gdx.files.internal(Recursos.MAQUINAS_SPRITESHEET));
+            TextureRegion[][] tmpMaquinas = TextureRegion.split(texturaMaquinas,
+                Recursos.MEDIDA_TILE, Recursos.MEDIDA_TILE);
+
+            // Horno - Fila 0
+            TextureRegion[] estadosHorno = new TextureRegion[3];
+            estadosHorno[0] = tmpMaquinas[0][0]; // Inactiva
+            estadosHorno[1] = tmpMaquinas[0][1]; // Procesando
+            estadosHorno[2] = tmpMaquinas[0][2]; // Lista
+            TEXTURAS_MAQUINAS.put("horno", estadosHorno);
+
+            // Freidora - Fila 1
+            TextureRegion[] estadosFreidora = new TextureRegion[3];
+            estadosFreidora[0] = tmpMaquinas[1][0]; // Inactiva
+            estadosFreidora[1] = tmpMaquinas[1][1]; // Procesando
+            estadosFreidora[2] = tmpMaquinas[1][2]; // Lista
+            TEXTURAS_MAQUINAS.put("freidora", estadosFreidora);
+
+            // Tostadora - Fila 2
+            TextureRegion[] estadosTostadora = new TextureRegion[3];
+            estadosTostadora[0] = tmpMaquinas[2][0]; // Inactiva
+            estadosTostadora[1] = tmpMaquinas[2][1]; // Procesando
+            estadosTostadora[2] = tmpMaquinas[2][2]; // Lista
+            TEXTURAS_MAQUINAS.put("tostadora", estadosTostadora);
+
+            System.out.println("Texturas de máquinas cargadas: Horno, Freidora, Tostadora");
+
+        } catch (Exception e) {
+            System.err.println("No se pudieron cargar texturas de máquinas: " + e.getMessage());
+        }
+    }
+
+    public void dispose() {
+        if (texturaClientes != null) {
+            texturaClientes.dispose();
+        }
+        if (texturaPisoMojado != null) {
+            texturaPisoMojado.dispose();
+        }
+        if (texturaCaras != null) {
+            texturaCaras.dispose();
+        }
+        texturasListas = false;
     }
 
     public TextureRegion getTexturaTemporizador(int frame) {
@@ -174,6 +225,30 @@ public class GestorTexturas {
         return regionPisoMojado;
     }
 
+    public TextureRegion getTexturaMaquina(String nombreMaquina, EstadoMaquina estado) {
+        if (!texturasListas) {
+            System.err.println("ADVERTENCIA: Texturas no cargadas aún");
+            return null;
+        }
+
+        TextureRegion[] texturas = TEXTURAS_MAQUINAS.get(nombreMaquina);
+        if (texturas == null) {
+            System.err.println("ADVERTENCIA: No existe textura para máquina: " + nombreMaquina);
+            return iconoError;
+        }
+
+        return texturas[estado.getIndice()];
+    }
+
+    public TextureRegion[] getTexturasMaquina(String nombreMaquina) {
+        if (!texturasListas) {
+            System.err.println("ADVERTENCIA: Texturas no cargadas aún");
+            return null;
+        }
+
+        return TEXTURAS_MAQUINAS.get(nombreMaquina);
+    }
+
     public TextureRegion getTexturaFlecha() {
         return texturaFlecha != null ? texturaFlecha : iconoError;
     }
@@ -190,19 +265,6 @@ public class GestorTexturas {
         } else {
             return caraEnojada;
         }
-    }
-
-    public void dispose() {
-        if (texturaClientes != null) {
-            texturaClientes.dispose();
-        }
-        if (texturaPisoMojado != null) {
-            texturaPisoMojado.dispose();
-        }
-        if (texturaCaras != null) {
-            texturaCaras.dispose();
-        }
-        texturasListas = false;
     }
 
     public TextureRegion getTexturaVirtualInactiva() {

@@ -1,6 +1,7 @@
 package com.hebergames.letmecook.estaciones.procesadoras;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.entregables.ingredientes.CoccionListener;
@@ -10,6 +11,7 @@ import com.hebergames.letmecook.mapa.indicadores.EstadoIndicador;
 import com.hebergames.letmecook.mapa.indicadores.IndicadorVisual;
 import com.hebergames.letmecook.sonido.GestorAudio;
 import com.hebergames.letmecook.sonido.SonidoJuego;
+import com.hebergames.letmecook.utiles.GestorTexturas;
 import com.hebergames.letmecook.utiles.Recursos;
 
 import java.util.Objects;
@@ -19,19 +21,27 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
     private Ingrediente ingredienteCocinando;
     private boolean procesando = false;
     private float tiempoSonidoTemporizador = 0f;
-    private static final float INTERVALO_SONIDO_TEMPORIZADOR = 1f;
+    private final float INTERVALO_SONIDO_TEMPORIZADOR = 1f;
+    private final String TIPO_MAQUINA;
+    private TextureRegion[] texturasMaquina;
 
     private final Rectangle AREA;
 
     private final IndicadorVisual INDICADOR;
 
-    public Procesadora(Rectangle area) {
+    public Procesadora(Rectangle area, String tipoMaquina) {
         this.AREA = area;
+        this.TIPO_MAQUINA = tipoMaquina;
         inicializarIndicador();
         this.INDICADOR = new IndicadorVisual(
             area.x + area.width / 2f,
             area.y + area.height
         );
+        cargarTexturas();
+    }
+
+    private void cargarTexturas() {
+        this.texturasMaquina = GestorTexturas.getInstance().getTexturasMaquina(TIPO_MAQUINA);
     }
 
     private void inicializarIndicador() {
@@ -85,9 +95,13 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
             }
         }
 
-        tiempoSonidoTemporizador += delta;
-        if (tiempoSonidoTemporizador >= INTERVALO_SONIDO_TEMPORIZADOR) {
-            tiempoSonidoTemporizador = 0f;
+        if (!ingredienteCocinando.estaQuemado() &&
+            ingredienteCocinando.getEstadoCoccion() != EstadoCoccion.BIEN_HECHO) {
+            tiempoSonidoTemporizador += delta;
+            if (tiempoSonidoTemporizador >= INTERVALO_SONIDO_TEMPORIZADOR) {
+                GestorAudio.getInstance().reproducirSonido(SonidoJuego.TEMPORIZADOR);
+                tiempoSonidoTemporizador = 0f;
+            }
         }
 
         if (ingredienteCocinando.estaQuemado()) {
@@ -127,5 +141,20 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
 
     public IndicadorVisual getIndicador() {
         return this.INDICADOR;
+    }
+
+    public TextureRegion getTexturaActual() {
+        if (texturasMaquina == null) {
+            return null;
+        }
+
+        if (!procesando) {
+            return texturasMaquina[EstadoMaquina.INACTIVA.getIndice()];
+        }
+        if (ingredienteCocinando != null &&
+            ingredienteCocinando.getEstadoCoccion() == EstadoCoccion.BIEN_HECHO) {
+            return texturasMaquina[EstadoMaquina.LISTA.getIndice()];
+        }
+        return texturasMaquina[EstadoMaquina.ACTIVA.getIndice()];
     }
 }

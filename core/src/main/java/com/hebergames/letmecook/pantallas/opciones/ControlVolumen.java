@@ -16,6 +16,7 @@ public class ControlVolumen {
     private final int CUADRADOS_TOTAL = 10;
     private final float ANCHO_CUADRADO = 20f;
     private final float ESPACIADO_CUADRADO = 5f;
+    private final float DIFERENCIA_ALTURA = 7.5f;
 
     public ControlVolumen(String titulo, int volumenInicial) {
         this.volumenActual = volumenInicial;
@@ -39,16 +40,18 @@ public class ControlVolumen {
         TEXTO_TITULO.setPosition(x, y);
 
         float anchoBarra = (CUADRADOS_TOTAL * ANCHO_CUADRADO) + ((CUADRADOS_TOTAL - 1) * ESPACIADO_CUADRADO);
-        float MARGEN_TITULO_A_FLECHA = 20f;
-        float flechaIzqX = x + TEXTO_TITULO.getAncho() + MARGEN_TITULO_A_FLECHA;
-        TEXTO_FLECHA_IZQ.setPosition(flechaIzqX, y);
 
-        float MARGEN_FLECHA_A_BARRA = 10f;
+        float MARGEN_TITULO_A_FLECHA = 10f;
+        float flechaIzqX = x + TEXTO_TITULO.getAncho() + MARGEN_TITULO_A_FLECHA;
+        TEXTO_FLECHA_IZQ.setPosition(flechaIzqX, y + DIFERENCIA_ALTURA);
+
+        float MARGEN_FLECHA_A_BARRA = 5f;
+
         float inicioBarraX = flechaIzqX + TEXTO_FLECHA_IZQ.getAncho() + MARGEN_FLECHA_A_BARRA;
 
-        float MARGEN_BARRA_A_FLECHA_DER = 10f;
-        float flechaDerX = inicioBarraX + anchoBarra + MARGEN_BARRA_A_FLECHA_DER;
-        TEXTO_FLECHA_DER.setPosition(flechaDerX, y);
+        float flechaDerX = inicioBarraX + anchoBarra + MARGEN_FLECHA_A_BARRA;
+
+        TEXTO_FLECHA_DER.setPosition(flechaDerX, y + DIFERENCIA_ALTURA);
     }
 
     public void aumentarVolumen() {
@@ -60,16 +63,19 @@ public class ControlVolumen {
     }
 
     public void dibujar(SpriteBatch batch) {
+        actualizarPosiciones();
+
         TEXTO_TITULO.dibujar();
         TEXTO_FLECHA_IZQ.dibujar();
         TEXTO_FLECHA_DER.dibujar();
 
-        actualizarPosiciones();
+        float barraY = y - (ANCHO_CUADRADO / 2) + DIFERENCIA_ALTURA;
 
-        float inicioBarraX = x + TEXTO_TITULO.getAncho() + 30f;
-        float barraY = y - 15f;
+        float MARGEN_FLECHA_A_BARRA = 5f;
+        float inicioBarraX = TEXTO_FLECHA_IZQ.getX() + TEXTO_FLECHA_IZQ.getAncho() + MARGEN_FLECHA_A_BARRA;
 
         int cuadradosLlenos = volumenActual / INCREMENTO;
+        float ALTO_CUADRADO = -40f;
 
         for (int i = 0; i < CUADRADOS_TOTAL; i++) {
             float cuadradoX = inicioBarraX + (i * (ANCHO_CUADRADO + ESPACIADO_CUADRADO));
@@ -80,7 +86,6 @@ public class ControlVolumen {
                 batch.setColor(Color.DARK_GRAY);
             }
 
-            float ALTO_CUADRADO = 20f;
             batch.draw(Recursos.PIXEL, cuadradoX, barraY, ANCHO_CUADRADO, ALTO_CUADRADO);
         }
 

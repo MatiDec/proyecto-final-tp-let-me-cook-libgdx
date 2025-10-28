@@ -13,6 +13,9 @@ import com.hebergames.letmecook.eventos.entrada.TextoInteractuable;
 import com.hebergames.letmecook.pantallas.Pantalla;
 import com.hebergames.letmecook.pantallas.PantallaMenu;
 import com.hebergames.letmecook.pantallas.juego.PantallaJuego;
+import com.hebergames.letmecook.pantallas.opciones.ControlVolumen;
+import com.hebergames.letmecook.pantallas.juego.GestorConfiguracion;
+import com.hebergames.letmecook.sonido.GestorAudio;
 import com.hebergames.letmecook.utiles.Recursos;
 import com.hebergames.letmecook.utiles.Render;
 
@@ -22,8 +25,11 @@ public class PantallaPausa extends Pantalla {
     private final SpriteBatch BATCH;
 
     private Texto oContinuar, oMenuPrincipal;
-    private Entrada entrada;
+    private Texto tPantallaCompleta, tAplicar;
+    private ControlVolumen controlVolumen;
+    private boolean pantallaCompleta;
 
+    private Entrada entrada;
     private final Viewport VIEWPORT;
     private final OrthographicCamera CAMARA;
 
@@ -32,21 +38,44 @@ public class PantallaPausa extends Pantalla {
         this.BATCH = Render.batch;
         this.CAMARA = new OrthographicCamera();
         this.VIEWPORT = new ScreenViewport(CAMARA);
-
         VIEWPORT.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
     }
 
     @Override
     public void show() {
-
         VIEWPORT.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
 
-        entrada = new Entrada();
-        Gdx.input.setInputProcessor(entrada);
-        inicializarOpciones();
-        posicionarTextos();
-        registrarEntradas();
+        if (entrada == null) {
+            entrada = new Entrada();
+            inicializarOpciones();
+            registrarEntradas();
+        }
 
+        Gdx.input.setInputProcessor(entrada);
+        posicionarTextos();
+    }
+
+    private void inicializarOpciones() {
+        oContinuar = new Texto(Recursos.FUENTE_MENU, 72, Color.WHITE, true);
+        oContinuar.setTexto("Continuar");
+
+        oMenuPrincipal = new Texto(Recursos.FUENTE_MENU, 72, Color.WHITE, true);
+        oMenuPrincipal.setTexto("Menú Principal");
+
+        controlVolumen = new ControlVolumen("Volumen: ",
+            GestorConfiguracion.getInt("volumenMusica", 100));
+
+        pantallaCompleta = GestorConfiguracion.getBoolean("pantallaCompleta", false);
+
+        tPantallaCompleta = new Texto(Recursos.FUENTE_MENU, 48, Color.WHITE, true);
+        actualizarTextoPantallaCompleta();
+
+        tAplicar = new Texto(Recursos.FUENTE_MENU, 48, Color.WHITE, true);
+        tAplicar.setTexto("Aplicar");
+    }
+
+    private void actualizarTextoPantallaCompleta() {
+        tPantallaCompleta.setTexto("Pantalla completa: " + (pantallaCompleta ? "ON" : "OFF"));
     }
 
     private void registrarEntradas() {
@@ -58,30 +87,66 @@ public class PantallaPausa extends Pantalla {
             PANTALLA_JUEGO.detenerHilos();
             cambiarPantalla(new PantallaMenu());
         }));
+
+        entrada.registrar(new TextoInteractuable(controlVolumen.getTextoFlechaIzq(), () -> {
+            controlVolumen.disminuirVolumen();
+            GestorConfiguracion.set("volumenMusica",
+                String.valueOf(controlVolumen.getVolumen()));
+            GestorAudio.getInstance().setVolumenMusica(controlVolumen.getVolumen() / 100f);
+        }));
+
+        entrada.registrar(new TextoInteractuable(controlVolumen.getTextoFlechaDer(), () -> {
+            controlVolumen.aumentarVolumen();
+            GestorConfiguracion.set("volumenMusica",
+                String.valueOf(controlVolumen.getVolumen()));
+            GestorAudio.getInstance().setVolumenMusica(controlVolumen.getVolumen() / 100f);
+        }));
+
+        entrada.registrar(new TextoInteractuable(tPantallaCompleta, () -> {
+            pantallaCompleta = !pantallaCompleta;
+            actualizarTextoPantallaCompleta();
+        }));
+
+        entrada.registrar(new TextoInteractuable(tAplicar, () -> {
+            GestorConfiguracion.set("pantallaCompleta", String.valueOf(pantallaCompleta));
+            aplicarConfiguracion();
+        }));
     }
 
-    private void inicializarOpciones() {
-        oContinuar = new Texto(Recursos.FUENTE_MENU, 72, Color.WHITE, true);
-        oContinuar.setTexto("Continuar");
-
-        oMenuPrincipal = new Texto(Recursos.FUENTE_MENU, 72, Color.WHITE, true);
-        oMenuPrincipal.setTexto("Menú Principal");
+    private void aplicarConfiguracion() {
+        if (pantallaCompleta) {
+            Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+        } else {
+            int w = 1280;
+            int h = 720;
+            Gdx.graphics.setWindowedMode(w, h);
+        }
+        VIEWPORT.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+        posicionarTextos();
     }
 
     private void posicionarTextos() {
-        float anchoViewport = VIEWPORT.getWorldWidth();
-        float altoViewport = VIEWPORT.getWorldHeight();
+        float ancho = VIEWPORT.getWorldWidth();
+        float alto = VIEWPORT.getWorldHeight();
+        float centroX = ancho / 2f;
+        float centroY = alto / 2f;
 
-        float centroX = anchoViewport / 2f;
-        float centroY = altoViewport / 2f;
+        float espaciado = 90f;
 
-        float espaciado = Math.max(40, altoViewport * 0.1f);
-        float alturaTexto = oContinuar.getAlto();
+        float inicio = centroY + 2.5f * espaciado;
 
-        float posY = centroY + (alturaTexto / 2f) + (espaciado / 2f);
+        oContinuar.setPosition(centroX - oContinuar.getAncho() / 2f, inicio);
 
-        oContinuar.setPosition(centroX - oContinuar.getAncho() / 2f, posY);
-        oMenuPrincipal.setPosition(centroX - oMenuPrincipal.getAncho() / 2f, posY - alturaTexto - espaciado);
+        oMenuPrincipal.setPosition(centroX - oMenuPrincipal.getAncho() / 2f,
+            inicio - 1.25f * espaciado);
+
+        controlVolumen.setPosicion(centroX - 300f, inicio - 2.5f * espaciado);
+
+        tPantallaCompleta.setPosition(centroX - tPantallaCompleta.getAncho() / 2f,
+            inicio - 3.75f * espaciado);
+
+        tAplicar.setPosition(centroX - tAplicar.getAncho() / 2f,
+            inicio - 5f * espaciado);
     }
 
     @Override
@@ -96,14 +161,13 @@ public class PantallaPausa extends Pantalla {
         BATCH.setProjectionMatrix(CAMARA.combined);
         BATCH.begin();
 
-        BATCH.setColor(0, 0, 0, 0.5f);
-
-
-        float anchoViewport = VIEWPORT.getWorldWidth();
-        float altoViewport = VIEWPORT.getWorldHeight();
-        BATCH.draw(Recursos.PIXEL, 0, 0, anchoViewport, altoViewport);
+        BATCH.setColor(0, 0, 0, 0.65f);
+        BATCH.draw(Recursos.PIXEL, 0, 0, VIEWPORT.getWorldWidth(), VIEWPORT.getWorldHeight());
         BATCH.setColor(1, 1, 1, 1);
 
+        controlVolumen.dibujar(BATCH);
+        tPantallaCompleta.dibujar();
+        tAplicar.dibujar();
         oContinuar.dibujar();
         oMenuPrincipal.dibujar();
 
@@ -115,21 +179,11 @@ public class PantallaPausa extends Pantalla {
     @Override
     public void resize(int width, int height) {
         VIEWPORT.update(width, height, true);
-
-        if (oContinuar != null && oMenuPrincipal != null) {
-            posicionarTextos();
-        }
+        posicionarTextos();
     }
 
-    @Override
-    public void pause() {}
-
-    @Override
-    public void resume() {}
-
-    @Override
-    public void hide() {}
-
-    @Override
-    public void dispose() {}
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
+    @Override public void dispose() {}
 }

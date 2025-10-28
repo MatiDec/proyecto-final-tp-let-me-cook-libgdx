@@ -13,6 +13,7 @@ public class Recursos {
     public static final String FONDO = RUTA_IMAGENES + "pruebadeimagen.png";
     public static final String FUENTE_MENU = RUTA_FUENTES + "Chewy-Regular.ttf";
     public static final Texture PIXEL = new Texture(RUTA_IMAGENES + "pixel.png");
+    public static final String MAQUINAS_SPRITESHEET = RUTA_IMAGENES + "maquinas.png";
     private static final Texture TEXTURA_INGREDIENTES = new Texture(RUTA_IMAGENES + "ingredientes.png");
     public static final TextureRegion INGREDIENTES = new TextureRegion(TEXTURA_INGREDIENTES);
 

@@ -8,7 +8,7 @@ import com.hebergames.letmecook.estaciones.EstacionTrabajo;
 public class Tostadora extends EstacionTrabajo {
     public Tostadora(Rectangle area) {
         super(area);
-        procesadora = new Procesadora(area);
+        procesadora = new Procesadora(area, "tostadora");
     }
 
     @Override

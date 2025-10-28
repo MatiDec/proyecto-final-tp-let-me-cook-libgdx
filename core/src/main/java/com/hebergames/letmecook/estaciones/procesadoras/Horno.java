@@ -9,7 +9,7 @@ public class Horno extends EstacionTrabajo {
 
     public Horno(Rectangle area) {
         super(area);
-        procesadora = new Procesadora(area);
+        procesadora = new Procesadora(area, "horno");
     }
 
     @Override

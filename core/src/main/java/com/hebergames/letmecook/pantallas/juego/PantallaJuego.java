@@ -60,6 +60,8 @@ public class PantallaJuego extends Pantalla {
     private ArrayList<EstacionTrabajo> estaciones;
     private boolean despedido = false;
     private String razonDespido = "";
+    private DetectorInactividad detectorInactividad;
+    private final float TIEMPO_LIMITE_INACTIVIDAD = 10f;
 
     private GestorClientes gestorClientes;
     private GestorPedidos gestorPedidos;
@@ -92,7 +94,6 @@ public class PantallaJuego extends Pantalla {
         if(gestorPartida.getNivelActual() == null) {
             ArrayList<String> rutasMapas = new ArrayList<>();
             rutasMapas.add(Recursos.RUTA_MAPAS + "Sucursal_1.tmx");
-
 
             gestorPartida.generarNuevaPartida(rutasMapas, rutasMapas.size());
         }
@@ -163,6 +164,7 @@ public class PantallaJuego extends Pantalla {
         }
 
         GestorJugadores.getInstancia().setJugadores(jugadores);
+        detectorInactividad = new DetectorInactividad(jugadores, TIEMPO_LIMITE_INACTIVIDAD);
     }
 
     private void configurarTexturasJugadores() {
@@ -345,6 +347,9 @@ public class PantallaJuego extends Pantalla {
             for (Jugador jugador : jugadores) {
                 jugador.actualizar(delta);
             }
+
+            detectorInactividad.actualizar(delta);
+
             if (!gestorOverlays.isJuegoEnPausa() && !gestorOverlays.isCalendarioVisible() && gestorMostrarCalendario.estaMostrando()) {
                 gestorIndicadores.actualizar(delta, gestorViewport.getCamaraJuego());
             }
@@ -422,6 +427,12 @@ public class PantallaJuego extends Pantalla {
     }
 
     private void verificarFinDeJuego() {
+        if (detectorInactividad.haySuperadoLimite()) {
+            despedido = true;
+            razonDespido = "Despedido por inactividad";
+            terminarJuego(calcularPuntajeFinal());
+            return;
+        }
         if (gestorClientes != null && gestorClientes.haAlcanzadoLimiteClientes()) {
             int puntajeFinal = calcularPuntajeFinal();
 

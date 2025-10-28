@@ -31,13 +31,6 @@ public class PantallaOpciones extends Pantalla {
     private boolean pantallaCompleta;
     private final String[] RESOLUCIONES = {"840x680", "1280x720", "1366x768", "1600x900", "1920x1080", "2560x1440"};
 
-    private final boolean ES_DESDE_PAUSA;
-    private final PantallaPausa PANTALLA_PAUSA = null;
-
-    public PantallaOpciones() {
-        this.ES_DESDE_PAUSA = false;
-    }
-
     @Override
     public void show() {
         BATCH = Render.batch;
@@ -128,12 +121,10 @@ public class PantallaOpciones extends Pantalla {
         }));
 
         entrada.registrar(new TextoInteractuable(tVolver, () -> {
-            if (ES_DESDE_PAUSA) {
-                cambiarPantalla(PANTALLA_PAUSA);
-            } else {
-                cambiarPantalla(new PantallaMenu());
-            }
+            Pantalla.limpiarPila();
+            cambiarPantalla(new PantallaMenu());
         }));
+
     }
 
     private void posicionarTextos() {
