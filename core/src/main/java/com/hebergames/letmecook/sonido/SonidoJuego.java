@@ -13,6 +13,8 @@ public enum SonidoJuego {
     DESPIDO("despido", Recursos.RUTA_AUDIO + "sonidos/despido.ogg"),
     COLISION_JUGADORES("colision_jugadores", Recursos.RUTA_AUDIO + "sonidos/colision_jugadores.ogg"),
     CLIENTE_SE_VA("cliente_se_va", Recursos.RUTA_AUDIO + "sonidos/cliente_se_va.ogg"),
+    ERROR_INTERACCION("error_interaccion", Recursos.RUTA_AUDIO + "sonidos/error_interaccion.ogg"),
+    ALERTA_QUEMADO("alerta_quemado", Recursos.RUTA_AUDIO + "sonidos/alerta_quemado.ogg"),
     NIVEL_COMPLETADO("nivel_completado", Recursos.RUTA_AUDIO + "sonidos/nivel_completo.ogg");
 
     private final String IDENTIFICADOR;

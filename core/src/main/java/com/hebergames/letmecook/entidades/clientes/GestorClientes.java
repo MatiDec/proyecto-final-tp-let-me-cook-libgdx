@@ -68,6 +68,7 @@ public class GestorClientes {
                 clientesAtendidos++;
 
             } else if (cliente.haExpiradoTiempo() && estado == EstadoPedido.EN_PREPARACION) {
+                GestorAudio.getInstance().reproducirSonido(SonidoJuego.CLIENTE_SE_VA);
                 aplicarPenalizacion(-50, "Cliente se fue por timeout en preparación");
                 cliente.getPedido().setEstadoPedido(EstadoPedido.CANCELADO);
                 liberarEstacion(cliente);
@@ -76,6 +77,7 @@ public class GestorClientes {
                 clientesPerdidos++;
 
             } else if (cliente.haExpiradoTiempoCaja() && estado == EstadoPedido.EN_ESPERA) {
+                GestorAudio.getInstance().reproducirSonido(SonidoJuego.CLIENTE_SE_VA);
                 aplicarPenalizacion(-30, "Cliente se fue sin ser atendido");
                 cliente.getPedido().setEstadoPedido(EstadoPedido.CANCELADO);
                 liberarEstacion(cliente);
@@ -101,11 +103,9 @@ public class GestorClientes {
         int totalClientesProcesados = clientesAtendidos + clientesPerdidos;
         if (totalClientesProcesados >= MAX_CLIENTES_TOTALES) return;
 
-        // Intentamos asignar solo un cliente por actualización
         EstacionTrabajo estacion = null;
         TipoCliente tipo = null;
 
-        // Prioridad a virtual
         if (!CAJAS_VIRTUALES.isEmpty()) {
             CajaVirtual cajaVirtual = buscarCajaVirtualLibre();
             if (cajaVirtual != null && Aleatorio.booleano()) {
@@ -114,7 +114,6 @@ public class GestorClientes {
             }
         }
 
-        // Si no se pudo asignar virtual, asignamos presencial
         if (estacion == null) {
             CajaRegistradora cajaFisica = buscarCajaLibre();
             if (cajaFisica != null) {
@@ -123,8 +122,7 @@ public class GestorClientes {
             }
         }
 
-        // Solo crear cliente si hay estación asignada
-        if (estacion != null && tipo != null) {
+        if (estacion != null) {
             crearYAsignarCliente(estacion, tipo);
             if (tipo == TipoCliente.VIRTUAL) {
                 GestorAudio.getInstance().reproducirSonido(SonidoJuego.CLIENTE_LLEGA_VIRTUAL.getIdentificador());

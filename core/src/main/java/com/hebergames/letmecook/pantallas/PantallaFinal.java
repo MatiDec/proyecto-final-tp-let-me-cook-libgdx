@@ -31,6 +31,9 @@ public class PantallaFinal extends Pantalla {
 
     private SpriteBatch batch;
 
+    private float tiempoTranscurrido = 0f;
+    private final float TIEMPO_MAXIMO = 10f;
+
     public PantallaFinal(String tiempo, int puntaje, boolean despedido, String razonDespido) {
         this.tiempo = tiempo;
         this.puntaje = puntaje;
@@ -50,40 +53,26 @@ public class PantallaFinal extends Pantalla {
             titulo = new Texto(Recursos.FUENTE_MENU, 64, Color.WHITE, true);
             titulo.setTexto("¡Partida Finalizada!");
         }
-        titulo.setPosition(Gdx.graphics.getWidth()/2f - titulo.getAncho()/2f,
-            Gdx.graphics.getHeight() - 100);
 
         resumenPuntaje = new Texto(Recursos.FUENTE_MENU, 40, Color.YELLOW, true);
         resumenPuntaje.setTexto("Puntaje Total: " + puntaje);
-        resumenPuntaje.setPosition(Gdx.graphics.getWidth()/2f - resumenPuntaje.getAncho()/2f,
-            Gdx.graphics.getHeight() - 180);
 
         opcionMenu = new Texto(Recursos.FUENTE_MENU, 28, Color.YELLOW, true);
         opcionMenu.setTexto("Presiona ENTER para volver al menú");
-        opcionMenu.setPosition(Gdx.graphics.getWidth()/2f - opcionMenu.getAncho()/2f, 80);
 
         resumenTiempo = new Texto(Recursos.FUENTE_MENU, 40, Color.CYAN, true);
         resumenTiempo.setTexto("Tiempo total: " + tiempo);
-        resumenTiempo.setPosition(Gdx.graphics.getWidth()/2f - resumenTiempo.getAncho()/2f,
-            Gdx.graphics.getHeight() - 230);
 
         if (despedido) {
             textoDespido = new Texto(Recursos.FUENTE_MENU, 36, Color.RED, true);
             textoDespido.setTexto("Razón del despido:");
-            textoDespido.setPosition(Gdx.graphics.getWidth()/2f - textoDespido.getAncho()/2f,
-                Gdx.graphics.getHeight() - 280);
 
             textoRazon = new Texto(Recursos.FUENTE_MENU, 30, Color.ORANGE, true);
             textoRazon.setTexto(razonDespido);
-            textoRazon.setPosition(Gdx.graphics.getWidth()/2f - textoRazon.getAncho()/2f,
-                Gdx.graphics.getHeight() - 330);
         }
 
         diasNiveles = new ArrayList<>();
         ArrayList<NivelPartida> niveles = gestorPartida.getTodosLosNiveles();
-        System.out.println("Cantidad de niveles cargados: " + niveles.size());
-
-
         for (int i = 0; i < niveles.size(); i++) {
             NivelPartida nivel = niveles.get(i);
             InfoDiaNivel info = new InfoDiaNivel(i + 1, nivel);
@@ -98,19 +87,43 @@ public class PantallaFinal extends Pantalla {
         float altoVentana = Gdx.graphics.getHeight();
 
         int cantidadDias = diasNiveles.size();
-        float anchoTotal = (cantidadDias * Recursos.ANCHO_DIA) + ((cantidadDias - 1) * Recursos.ESPACIADO);
+        float escalaX = anchoVentana / 1920f;
+        float escalaY = altoVentana / 1080f;
+
+        float anchoTotal = (cantidadDias * Recursos.ANCHO_DIA * escalaX) + ((cantidadDias - 1) * Recursos.ESPACIADO * escalaX);
         float inicioX = (anchoVentana - anchoTotal) / 2f;
-        float posY = altoVentana / 2f + 50f;
+        float posY = altoVentana / 2f + 50f * escalaY;
 
         for (int i = 0; i < diasNiveles.size(); i++) {
             InfoDiaNivel info = diasNiveles.get(i);
-            float posX = inicioX + (i * (Recursos.ANCHO_DIA + Recursos.ESPACIADO));
+            float posX = inicioX + (i * (Recursos.ANCHO_DIA * escalaX + Recursos.ESPACIADO * escalaX));
             info.setPosicion(posX, posY);
+        }
+
+        titulo.setPosition(Gdx.graphics.getWidth()/2f - titulo.getAncho()/2f,
+            Gdx.graphics.getHeight() - 100 * escalaY);
+        resumenPuntaje.setPosition(Gdx.graphics.getWidth()/2f - resumenPuntaje.getAncho()/2f,
+            Gdx.graphics.getHeight() - 180 * escalaY);
+        opcionMenu.setPosition(Gdx.graphics.getWidth()/2f - opcionMenu.getAncho()/2f,
+            80 * escalaY);
+
+        if (despedido && textoDespido != null && textoRazon != null) {
+            textoDespido.setPosition(Gdx.graphics.getWidth()/2f - textoDespido.getAncho()/2f,
+                Gdx.graphics.getHeight() - 280 * escalaY);
+            textoRazon.setPosition(Gdx.graphics.getWidth()/2f - textoRazon.getAncho()/2f,
+                Gdx.graphics.getHeight() - 330 * escalaY);
         }
     }
 
     @Override
     public void render(float delta) {
+        tiempoTranscurrido += delta;
+
+        if (tiempoTranscurrido >= TIEMPO_MAXIMO) {
+            Pantalla.cambiarPantalla(new PantallaMenu());
+            return;
+        }
+
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -138,12 +151,10 @@ public class PantallaFinal extends Pantalla {
     @Override
     public void resize(int width, int height) {
         if (titulo != null) {
-            titulo.setPosition(width/2f - titulo.getAncho()/2f, height - 100);
-            resumenPuntaje.setPosition(width/2f - resumenPuntaje.getAncho()/2f, height - 180);
-            opcionMenu.setPosition(width/2f - opcionMenu.getAncho()/2f, 80);
             posicionarTarjetas();
         }
     }
+
     @Override public void pause() {}
     @Override public void resume() {}
     @Override public void hide() {}

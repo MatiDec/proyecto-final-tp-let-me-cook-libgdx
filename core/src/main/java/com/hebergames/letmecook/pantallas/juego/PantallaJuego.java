@@ -90,8 +90,11 @@ public class PantallaJuego extends Pantalla {
         gestorPartida = GestorPartida.getInstancia();
 
         if(gestorPartida.getNivelActual() == null) {
+            final int CANTIDAD_MAPAS = 4;
             ArrayList<String> rutasMapas = new ArrayList<>();
-            rutasMapas.add(Recursos.RUTA_MAPAS + "Sucursal_4.tmx");
+            for (int i = 1; i <= CANTIDAD_MAPAS; i++) {
+                rutasMapas.add(Recursos.RUTA_MAPAS + "Sucursal_" + i + ".tmx");
+            }
 
             gestorPartida.generarNuevaPartida(rutasMapas, rutasMapas.size());
         }

@@ -142,8 +142,6 @@ public class GestorAudio implements Disposable {
             sonido.stop(id);
             SONIDOS_ACTIVOS.remove(nombre);
             System.out.println("Sonido detenido: " + nombre);
-        } else {
-            System.err.println("No hay sonido activo con el nombre: " + nombre);
         }
     }
 

@@ -106,11 +106,6 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
             sonidoTemporizadorActivo = false;
         }
 
-        if (ingredienteCocinando.estaQuemado()) {
-            GestorAudio.getInstance().detenerSonido(SonidoJuego.TEMPORIZADOR.getIdentificador());
-            sonidoTemporizadorActivo = false;
-            procesando = false;
-        }
     }
 
     public void dibujarEstado(SpriteBatch batch) {
@@ -138,7 +133,7 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
 
     @Override
     public Ingrediente obtenerResultado() {
-        if (!tieneProcesandose()) return null;
+        if (ingredienteCocinando == null) return null;
 
         Ingrediente resultado = ingredienteCocinando;
         ingredienteCocinando.setCoccionListener(null);
@@ -160,8 +155,8 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
     @Override
     public void onIngredienteQuemado() {
         GestorAudio.getInstance().detenerSonido(SonidoJuego.TEMPORIZADOR.getIdentificador());
+        GestorAudio.getInstance().reproducirSonido(SonidoJuego.ALERTA_QUEMADO.getIdentificador());
         sonidoTemporizadorActivo = false;
-        procesando = false;
     }
 
     public IndicadorVisual getIndicador() {

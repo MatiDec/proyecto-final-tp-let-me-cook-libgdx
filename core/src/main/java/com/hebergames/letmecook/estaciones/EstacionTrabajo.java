@@ -10,6 +10,8 @@ import com.hebergames.letmecook.estaciones.conmenu.EstacionConMenu;
 import com.hebergames.letmecook.estaciones.interaccionclientes.CajaRegistradora;
 import com.hebergames.letmecook.estaciones.interaccionclientes.MesaRetiro;
 import com.hebergames.letmecook.estaciones.procesadoras.MaquinaProcesadora;
+import com.hebergames.letmecook.sonido.GestorAudio;
+import com.hebergames.letmecook.sonido.SonidoJuego;
 import com.hebergames.letmecook.utiles.GestorTexturas;
 import com.hebergames.letmecook.utiles.Recursos;
 
@@ -50,6 +52,7 @@ public abstract class EstacionTrabajo {
         }
 
         if (fueraDeServicio) {
+            GestorAudio.getInstance().reproducirSonido(SonidoJuego.ERROR_INTERACCION);
             return;
         }
 

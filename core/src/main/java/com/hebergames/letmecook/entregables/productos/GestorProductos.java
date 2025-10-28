@@ -27,6 +27,9 @@ public class GestorProductos {
 
         PRODUCTOS_DISPONIBLES.add(TipoProducto.CAFE);
         PRODUCTOS_DISPONIBLES.add(TipoProducto.GASEOSA);
+        RECETAS_DISPONIBLES.removeIf(receta ->
+            receta.getTipoProducto().getCategoria() == CategoriaProducto.INVALIDO
+        );
     }
 
     public Producto obtenerProductoAleatorioPorCategorias(CategoriaProducto... categoriasPermitidas) {
