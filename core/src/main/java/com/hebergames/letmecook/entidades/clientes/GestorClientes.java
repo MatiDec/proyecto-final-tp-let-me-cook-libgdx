@@ -91,30 +91,42 @@ public class GestorClientes {
 
     private void generarNuevoCliente() {
         int MAX_CLIENTES_SIMULTANEOS = 5;
-        if (CLIENTES_ACTIVOS.size() >= MAX_CLIENTES_SIMULTANEOS) {
-            return;
-        }
+
+        if (CLIENTES_ACTIVOS.size() >= MAX_CLIENTES_SIMULTANEOS) return;
 
         int totalClientesProcesados = clientesAtendidos + clientesPerdidos;
-        if (totalClientesProcesados >= MAX_CLIENTES_TOTALES) {
-            return;
-        }
+        if (totalClientesProcesados >= MAX_CLIENTES_TOTALES) return;
 
-        if (!CAJAS_VIRTUALES.isEmpty() && Aleatorio.booleano()) {
-            CajaVirtual cajaLibre = buscarCajaVirtualLibre();
-            if (cajaLibre != null) {
-                crearYAsignarCliente(cajaLibre, TipoCliente.VIRTUAL);
-                return;
+        // Intentamos asignar solo un cliente por actualización
+        EstacionTrabajo estacion = null;
+        TipoCliente tipo = null;
+
+        // Prioridad a virtual
+        if (!CAJAS_VIRTUALES.isEmpty()) {
+            CajaVirtual cajaVirtual = buscarCajaVirtualLibre();
+            if (cajaVirtual != null && Aleatorio.booleano()) {
+                estacion = cajaVirtual;
+                tipo = TipoCliente.VIRTUAL;
             }
         }
 
-        CajaRegistradora cajaLibre = buscarCajaLibre();
-        if (cajaLibre != null && !CLIENTES_ACTIVOS.isEmpty()) {
-            return;
+        // Si no se pudo asignar virtual, asignamos presencial
+        if (estacion == null) {
+            CajaRegistradora cajaFisica = buscarCajaLibre();
+            if (cajaFisica != null) {
+                estacion = cajaFisica;
+                tipo = TipoCliente.PRESENCIAL;
+            }
         }
 
-        if (cajaLibre != null) {
-            crearYAsignarCliente(cajaLibre, TipoCliente.PRESENCIAL);
+        // Solo crear cliente si hay estación asignada
+        if (estacion != null && tipo != null) {
+            crearYAsignarCliente(estacion, tipo);
+            if (tipo == TipoCliente.VIRTUAL) {
+                GestorAudio.getInstance().reproducirSonido(SonidoJuego.CLIENTE_LLEGA_VIRTUAL.getIdentificador());
+            } else {
+                GestorAudio.getInstance().reproducirSonido(SonidoJuego.CLIENTE_LLEGA.getIdentificador());
+            }
         }
     }
 
@@ -144,7 +156,6 @@ public class GestorClientes {
         }
 
         CLIENTES_ACTIVOS.add(nuevoCliente);
-        GestorAudio.getInstance().reproducirSonido(SonidoJuego.CLIENTE_LLEGA.getIdentificador());
     }
 
     private CajaVirtual buscarCajaVirtualLibre() {
@@ -168,6 +179,7 @@ public class GestorClientes {
     private void aplicarPenalizacion(int puntos, String razon) {
         if (callbackPenalizacion != null) {
             callbackPenalizacion.aplicarPenalizacion(puntos, razon);
+            System.out.println("PENALIZACION APLICADA: " + razon);
         }
     }
 

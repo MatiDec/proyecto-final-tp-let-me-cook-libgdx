@@ -11,6 +11,8 @@ import com.hebergames.letmecook.eventos.entrada.DatosEntrada;
 import com.hebergames.letmecook.eventos.eventosaleatorios.EventoPisoMojado;
 import com.hebergames.letmecook.eventos.eventosaleatorios.GestorEventosAleatorios;
 import com.hebergames.letmecook.estaciones.EstacionTrabajo;
+import com.hebergames.letmecook.sonido.GestorAudio;
+import com.hebergames.letmecook.sonido.SonidoJuego;
 import com.hebergames.letmecook.utiles.GestorAnimacion;
 
 import java.util.ArrayList;
@@ -28,6 +30,9 @@ public class Jugador {
     private final float OFFSET_HITBOX_X = 0;
     private final float OFFSET_HITBOX_Y = 0;
 
+    private boolean colisionReciente = false;
+    private float tiempoColisionReset = 0f;
+    private final float TIEMPO_RESET_COLISION = 0.5f; // tiempo mínimo entre sonidos
 
     private boolean estaEnMenu = false;
     private EstacionTrabajo estacionActual = null;
@@ -120,6 +125,15 @@ public class Jugador {
             posicion.add(desplazamientoX, desplazamientoY);
             HITBOX.setPosition(posicion.x + OFFSET_HITBOX_X, posicion.y + OFFSET_HITBOX_Y);
         }
+
+        if (colisionReciente) {
+            tiempoColisionReset += delta;
+            if (tiempoColisionReset >= TIEMPO_RESET_COLISION) {
+                colisionReciente = false;
+                tiempoColisionReset = 0f;
+            }
+        }
+
     }
 
     public void dibujar(SpriteBatch batch) {
@@ -166,7 +180,14 @@ public class Jugador {
         }
     }
 
+    private void reproducirSonidoColision() {
+        // Distorsión: pitch aleatorio entre 0.8 y 1.2
+        float pitch = 0.8f + (float)Math.random() * 0.4f;
+        GestorAudio.getInstance().reproducirSonido(SonidoJuego.COLISION_JUGADORES);
+    }
+
     private boolean colisiona(Rectangle rect) {
+
         for (Rectangle obstaculo : colisionables) {
             if (obstaculo.overlaps(rect)) {
                 return true;
@@ -174,8 +195,13 @@ public class Jugador {
         }
 
         for (Jugador otro : otrosJugadores) {
-            if (otro != this && otro.getHITBOX().overlaps(rect))
-            {
+            if (otro != this && otro.getHITBOX().overlaps(rect)) {
+                // Solo reproducir sonido si no se ha reproducido recientemente
+                if (!colisionReciente) {
+                    reproducirSonidoColision();
+                    colisionReciente = true;
+                    tiempoColisionReset = 0f;
+                }
                 return true;
             }
         }
