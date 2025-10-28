@@ -1,9 +1,8 @@
-package com.hebergames.letmecook.estaciones;
+package com.hebergames.letmecook.estaciones.interaccionclientes;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.entidades.clientes.Cliente;
-import com.hebergames.letmecook.entidades.Jugador;
+import com.hebergames.letmecook.estaciones.EstacionTrabajo;
 import com.hebergames.letmecook.pedidos.EstadoPedido;
 import com.hebergames.letmecook.pedidos.GestorPedidos;
 
@@ -37,7 +36,7 @@ public class CajaRegistradora extends EstacionTrabajo {
 
     public boolean tomarPedido() {
         if (gestorPedidos != null && tieneCliente() &&
-                clienteAsignado.getPEDIDO().getEstadoPedido() == EstadoPedido.EN_ESPERA) {
+                clienteAsignado.getPedido().getEstadoPedido() == EstadoPedido.EN_ESPERA) {
             return gestorPedidos.tomarPedido(this);
         }
         return false;
@@ -45,26 +44,6 @@ public class CajaRegistradora extends EstacionTrabajo {
 
     @Override
     public void alInteractuar() {
-
-    }
-
-    @Override
-    protected void iniciarMenu(Jugador jugador) {
-
-    }
-
-    @Override
-    public void manejarSeleccionMenu(Jugador jugador, int numeroSeleccion) {
-
-    }
-
-    @Override
-    protected void dibujarMenu(SpriteBatch batch, Jugador jugador) {
-
-    }
-
-    @Override
-    protected void alLiberar() {
 
     }
 }

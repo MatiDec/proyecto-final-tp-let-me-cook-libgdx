@@ -3,11 +3,11 @@ package com.hebergames.letmecook.entidades.clientes;
 import com.hebergames.letmecook.entregables.productos.CategoriaProducto;
 import com.hebergames.letmecook.entregables.productos.GestorProductos;
 import com.hebergames.letmecook.entregables.productos.Producto;
-import com.hebergames.letmecook.estaciones.CajaVirtual;
+import com.hebergames.letmecook.estaciones.interaccionclientes.CajaVirtual;
 import com.hebergames.letmecook.mapa.niveles.TurnoTrabajo;
-import com.hebergames.letmecook.estaciones.CajaRegistradora;
+import com.hebergames.letmecook.estaciones.interaccionclientes.CajaRegistradora;
 import com.hebergames.letmecook.estaciones.EstacionTrabajo;
-import com.hebergames.letmecook.estaciones.MesaRetiro;
+import com.hebergames.letmecook.estaciones.interaccionclientes.MesaRetiro;
 import com.hebergames.letmecook.pedidos.CallbackPenalizacion;
 import com.hebergames.letmecook.pedidos.EstadoPedido;
 import com.hebergames.letmecook.pedidos.Pedido;
@@ -16,7 +16,6 @@ import com.hebergames.letmecook.sonido.SonidoJuego;
 import com.hebergames.letmecook.utiles.Aleatorio;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class GestorClientes {
     private final ArrayList<Cliente> CLIENTES_ACTIVOS;
@@ -57,7 +56,7 @@ public class GestorClientes {
             Cliente cliente = CLIENTES_ACTIVOS.get(i);
             cliente.actualizar(delta);
 
-            EstadoPedido estado = cliente.getPEDIDO().getEstadoPedido();
+            EstadoPedido estado = cliente.getPedido().getEstadoPedido();
 
             if (estado == EstadoPedido.COMPLETADO) {
                 liberarEstacion(cliente);
@@ -67,7 +66,7 @@ public class GestorClientes {
 
             } else if (cliente.haExpiradoTiempo() && estado == EstadoPedido.EN_PREPARACION) {
                 aplicarPenalizacion(-50, "Cliente se fue por timeout en preparación");
-                cliente.getPEDIDO().setEstadoPedido(EstadoPedido.CANCELADO);
+                cliente.getPedido().setEstadoPedido(EstadoPedido.CANCELADO);
                 liberarEstacion(cliente);
                 cliente.liberarRecursos();
                 CLIENTES_ACTIVOS.remove(i);
@@ -75,7 +74,7 @@ public class GestorClientes {
 
             } else if (cliente.haExpiradoTiempoCaja() && estado == EstadoPedido.EN_ESPERA) {
                 aplicarPenalizacion(-30, "Cliente se fue sin ser atendido");
-                cliente.getPEDIDO().setEstadoPedido(EstadoPedido.CANCELADO);
+                cliente.getPedido().setEstadoPedido(EstadoPedido.CANCELADO);
                 liberarEstacion(cliente);
                 cliente.liberarRecursos();
                 CLIENTES_ACTIVOS.remove(i);
@@ -110,6 +109,10 @@ public class GestorClientes {
         }
 
         CajaRegistradora cajaLibre = buscarCajaLibre();
+        if (cajaLibre != null && !CLIENTES_ACTIVOS.isEmpty()) {
+            return;
+        }
+
         if (cajaLibre != null) {
             crearYAsignarCliente(cajaLibre, TipoCliente.PRESENCIAL);
         }
@@ -141,7 +144,7 @@ public class GestorClientes {
         }
 
         CLIENTES_ACTIVOS.add(nuevoCliente);
-        GestorAudio.getInstance().reproducirSonido(SonidoJuego.CLIENTE_LLEGA);
+        GestorAudio.getInstance().reproducirSonido(SonidoJuego.CLIENTE_LLEGA.getIdentificador());
     }
 
     private CajaVirtual buscarCajaVirtualLibre() {
@@ -194,7 +197,7 @@ public class GestorClientes {
     public ArrayList<Cliente> getClientesEnPreparacion() {
         ArrayList<Cliente> enPreparacion = new ArrayList<>();
         for (Cliente cliente : CLIENTES_ACTIVOS) {
-            if (cliente.getPEDIDO().getEstadoPedido() == EstadoPedido.EN_PREPARACION) {
+            if (cliente.getPedido().getEstadoPedido() == EstadoPedido.EN_PREPARACION) {
                 enPreparacion.add(cliente);
             }
         }

@@ -3,9 +3,9 @@ package com.hebergames.letmecook.pedidos;
 import com.hebergames.letmecook.entidades.clientes.Cliente;
 import com.hebergames.letmecook.entidades.clientes.GestorClientes;
 import com.hebergames.letmecook.entregables.productos.Producto;
-import com.hebergames.letmecook.estaciones.CajaRegistradora;
-import com.hebergames.letmecook.estaciones.EstacionEntrega;
-import com.hebergames.letmecook.estaciones.MesaRetiro;
+import com.hebergames.letmecook.estaciones.interaccionclientes.CajaRegistradora;
+import com.hebergames.letmecook.estaciones.interaccionclientes.EstacionEntrega;
+import com.hebergames.letmecook.estaciones.interaccionclientes.MesaRetiro;
 
 import java.util.ArrayList;
 
@@ -31,7 +31,7 @@ public class GestorPedidos {
         }
 
         logMem("antes setEstado");
-        cliente.getPEDIDO().setEstadoPedido(EstadoPedido.EN_PREPARACION);
+        cliente.getPedido().setEstadoPedido(EstadoPedido.EN_PREPARACION);
         logMem("despues setEstado");
 
         cliente.resetearTiempo();
@@ -47,8 +47,8 @@ public class GestorPedidos {
         logMem("despues liberarCaja");
 
         System.out.println("Pedido tomado. Cliente movido a mesa de retiro");
-        for (int i = 0; i<cliente.getPEDIDO().getProductosSolicitados().size(); i++) {
-            System.out.println(cliente.getPEDIDO().getProductosSolicitados().get(i).getNombre());
+        for (int i = 0; i<cliente.getPedido().getProductosSolicitados().size(); i++) {
+            System.out.println(cliente.getPedido().getProductosSolicitados().get(i).getNombre());
         }
         return true;
     }
@@ -64,7 +64,7 @@ public class GestorPedidos {
             return new ResultadoEntrega(0);
         }
 
-        Pedido pedido = cliente.getPEDIDO();
+        Pedido pedido = cliente.getPedido();
         ArrayList<Producto> productosEsperados = pedido.getProductosSolicitados();
 
         boolean correcto = false;

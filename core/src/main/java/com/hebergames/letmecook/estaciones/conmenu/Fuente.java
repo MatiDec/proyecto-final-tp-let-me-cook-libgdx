@@ -1,17 +1,16 @@
-package com.hebergames.letmecook.estaciones.bebidas;
+package com.hebergames.letmecook.estaciones.conmenu;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.elementos.Texto;
 import com.hebergames.letmecook.entidades.Jugador;
-import com.hebergames.letmecook.entregables.productos.bebidas.Cafe;
 import com.hebergames.letmecook.entregables.productos.bebidas.EstadoMenuBebida;
+import com.hebergames.letmecook.entregables.productos.bebidas.Gaseosa;
 import com.hebergames.letmecook.entregables.productos.bebidas.TamanoBebida;
-import com.hebergames.letmecook.estaciones.EstacionTrabajo;
 import com.hebergames.letmecook.utiles.Recursos;
 
-public class Cafetera extends EstacionTrabajo {
+public class Fuente extends EstacionConMenu {
 
     private EstadoMenuBebida estadoMenu;
     private String tipoSeleccionado;
@@ -20,25 +19,25 @@ public class Cafetera extends EstacionTrabajo {
     private int seleccionTamano;
     private int seleccionTipo;
 
-    private Cafe cafeEnPreparacion;
+    private Gaseosa refrescoEnPreparacion;
     private float tiempoPreparacion;
     private float tiempoTranscurrido;
 
     private final Texto TEXTO_MENU;
     private final Texto TEXTO_OPCIONES;
 
-    public Cafetera(Rectangle area) {
+    public Fuente(Rectangle area) {
         super(area);
         this.estadoMenu = EstadoMenuBebida.SELECCION_TAMANO;
         this.seleccionTamano = 0;
         this.seleccionTipo = 0;
         this.TEXTO_MENU = new Texto(Recursos.FUENTE_MENU, 20, Color.WHITE, true);
         this.TEXTO_OPCIONES = new Texto(Recursos.FUENTE_MENU, 16, Color.YELLOW, true);
-        this.TIPOS_DISPONIBLES = Cafe.getTiposCafe().keySet().toArray(new String[0]);
+        this.TIPOS_DISPONIBLES = Gaseosa.getTiposGaseosa().keySet().toArray(new String[0]);
     }
 
     @Override
-    protected void alLiberar() {
+    public void alLiberar() {
         if (estadoMenu != EstadoMenuBebida.PREPARANDO && estadoMenu != EstadoMenuBebida.LISTO) {
             estadoMenu = EstadoMenuBebida.SELECCION_TAMANO;
             seleccionTamano = 0;
@@ -47,11 +46,11 @@ public class Cafetera extends EstacionTrabajo {
     }
 
     @Override
-    protected void iniciarMenu(Jugador jugador) {
-        if (estadoMenu == EstadoMenuBebida.LISTO && cafeEnPreparacion != null) {
+    public void iniciarMenu(Jugador jugador) {
+        if (estadoMenu == EstadoMenuBebida.LISTO && refrescoEnPreparacion != null) {
             if (!jugador.tieneInventarioLleno()) {
-                jugador.guardarEnInventario(cafeEnPreparacion);
-                cafeEnPreparacion = null;
+                jugador.guardarEnInventario(refrescoEnPreparacion);
+                refrescoEnPreparacion = null;
                 estadoMenu = EstadoMenuBebida.SELECCION_TAMANO;
                 seleccionTamano = 0;
                 seleccionTipo = 0;
@@ -82,8 +81,8 @@ public class Cafetera extends EstacionTrabajo {
     }
 
     private void iniciarPreparacion() {
-        cafeEnPreparacion = new Cafe(tipoSeleccionado, tamanoSeleccionado);
-        tiempoPreparacion = cafeEnPreparacion.getTiempoPreparacion();
+        refrescoEnPreparacion = new Gaseosa(tipoSeleccionado, tamanoSeleccionado);
+        tiempoPreparacion = refrescoEnPreparacion.getTiempoPreparacion();
         tiempoTranscurrido = 0f;
         estadoMenu = EstadoMenuBebida.PREPARANDO;
     }
@@ -116,8 +115,8 @@ public class Cafetera extends EstacionTrabajo {
             TEXTO_OPCIONES.dibujarEnUi(batch);
 
         } else if (estadoMenu == EstadoMenuBebida.SELECCION_TIPO) {
-            TEXTO_MENU.setTexto("Selecciona tipo de café:");
-            TEXTO_MENU.setPosition(menuX, menuY + 100);
+            TEXTO_MENU.setTexto("Selecciona bebida:");
+            TEXTO_MENU.setPosition(menuX, menuY + 120);
             TEXTO_MENU.dibujarEnUi(batch);
 
             StringBuilder opciones = new StringBuilder();
@@ -131,12 +130,12 @@ public class Cafetera extends EstacionTrabajo {
 
         } else if (estadoMenu == EstadoMenuBebida.PREPARANDO) {
             float progreso = (tiempoTranscurrido / tiempoPreparacion) * 100f;
-            TEXTO_MENU.setTexto(String.format("Preparando... %.0f%%", progreso));
+            TEXTO_MENU.setTexto(String.format("Sirviendo... %.0f%%", progreso));
             TEXTO_MENU.setPosition(menuX, menuY + 40);
             TEXTO_MENU.dibujarEnUi(batch);
 
         } else if (estadoMenu == EstadoMenuBebida.LISTO) {
-            TEXTO_MENU.setTexto("¡Café listo! Presiona E");
+            TEXTO_MENU.setTexto("¡Bebida lista! Presiona E");
             TEXTO_MENU.setPosition(menuX, menuY + 40);
             TEXTO_MENU.dibujarEnUi(batch);
         }
@@ -144,7 +143,7 @@ public class Cafetera extends EstacionTrabajo {
 
     @Override
     public void alInteractuar() {
-        if (estadoMenu == EstadoMenuBebida.LISTO && cafeEnPreparacion != null) {
+        if (estadoMenu == EstadoMenuBebida.LISTO && refrescoEnPreparacion != null) {
             return;
         }
 

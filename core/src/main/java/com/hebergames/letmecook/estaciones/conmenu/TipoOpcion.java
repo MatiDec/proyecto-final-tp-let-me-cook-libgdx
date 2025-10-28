@@ -1,4 +1,4 @@
-package com.hebergames.letmecook.estaciones;
+package com.hebergames.letmecook.estaciones.conmenu;
 
 public enum TipoOpcion {
     CREAR_OBJETO,

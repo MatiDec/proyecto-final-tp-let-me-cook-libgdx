@@ -16,6 +16,8 @@ public class GestorAudio implements Disposable {
     private final Map<String, Music> CANCIONES;
     private final Map<String, Sound> SONIDOS;
 
+    private final Map<String, Long> SONIDOS_ACTIVOS;
+
     private float volumenMusica = 0.6f;
     private float volumenSonidos = 0.6f;
 
@@ -25,6 +27,7 @@ public class GestorAudio implements Disposable {
     private GestorAudio() {
         CANCIONES = new HashMap<>();
         SONIDOS = new HashMap<>();
+        SONIDOS_ACTIVOS = new HashMap<>();
         cargarVolumenDesdeConfiguracion();
     }
 
@@ -81,7 +84,6 @@ public class GestorAudio implements Disposable {
     }
 
     public void reproducirCancion(String nombre, boolean enBucle) {
-
         if (musicaActual != null && !nombre.equals(nombreMusicaActual)) {
             detenerMusica();
         }
@@ -125,9 +127,23 @@ public class GestorAudio implements Disposable {
     public void reproducirSonido(String nombre) {
         Sound sonido = SONIDOS.get(nombre);
         if (sonido != null) {
-            sonido.play(volumenSonidos);
+            long id = sonido.play(volumenSonidos);
+            SONIDOS_ACTIVOS.put(nombre, id);
         } else {
             System.err.println("Sonido no encontrado: " + nombre);
+        }
+    }
+
+    public void detenerSonido(String nombre) {
+        Sound sonido = SONIDOS.get(nombre);
+        Long id = SONIDOS_ACTIVOS.get(nombre);
+
+        if (sonido != null && id != null) {
+            sonido.stop(id);
+            SONIDOS_ACTIVOS.remove(nombre);
+            System.out.println("Sonido detenido: " + nombre);
+        } else {
+            System.err.println("No hay sonido activo con el nombre: " + nombre);
         }
     }
 
@@ -140,7 +156,6 @@ public class GestorAudio implements Disposable {
 
     @Override
     public void dispose() {
-
         for (Music musica : CANCIONES.values()) {
             musica.dispose();
         }
@@ -151,9 +166,9 @@ public class GestorAudio implements Disposable {
         }
         SONIDOS.clear();
 
+        SONIDOS_ACTIVOS.clear();
+
         musicaActual = null;
         nombreMusicaActual = null;
-
     }
-
 }

@@ -1,10 +1,9 @@
-package com.hebergames.letmecook.estaciones;
+package com.hebergames.letmecook.estaciones.interaccionclientes;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.entidades.clientes.Cliente;
-import com.hebergames.letmecook.entidades.Jugador;
 import com.hebergames.letmecook.entregables.productos.Producto;
+import com.hebergames.letmecook.estaciones.EstacionTrabajo;
 import com.hebergames.letmecook.eventos.puntaje.CallbackPuntaje;
 import com.hebergames.letmecook.pedidos.GestorPedidos;
 import com.hebergames.letmecook.pedidos.ResultadoEntrega;
@@ -40,7 +39,7 @@ public class MesaRetiro extends EstacionTrabajo implements EstacionEntrega {
         this.callbackPuntaje = callback;
     }
 
-    public ResultadoEntrega entregarProducto(Producto producto) {
+    public void entregarProducto(Producto producto) {
         if (gestorPedidos != null && tieneCliente() && producto != null) {
             ResultadoEntrega resultado = gestorPedidos.entregarPedido(this, producto);
 
@@ -54,9 +53,7 @@ public class MesaRetiro extends EstacionTrabajo implements EstacionEntrega {
                 GestorAudio.getInstance().reproducirSonido(SonidoJuego.PEDIDO_INCORRECTO);
             }
 
-            return resultado;
         }
-        return new ResultadoEntrega(0);
     }
 
     public void liberarCliente() {
@@ -65,16 +62,4 @@ public class MesaRetiro extends EstacionTrabajo implements EstacionEntrega {
 
     @Override
     public void alInteractuar() {}
-
-    @Override
-    protected void iniciarMenu(Jugador jugador) {}
-
-    @Override
-    public void manejarSeleccionMenu(Jugador jugador, int numeroSeleccion) {}
-
-    @Override
-    protected void dibujarMenu(SpriteBatch batch, Jugador jugador) {}
-
-    @Override
-    protected void alLiberar() {}
 }

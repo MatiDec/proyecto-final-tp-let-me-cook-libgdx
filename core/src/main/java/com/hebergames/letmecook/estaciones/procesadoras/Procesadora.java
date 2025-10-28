@@ -21,10 +21,9 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
 
     private Ingrediente ingredienteCocinando;
     private boolean procesando = false;
-    private float tiempoSonidoTemporizador = 0f;
-    private final float INTERVALO_SONIDO_TEMPORIZADOR = 1f;
     private final String TIPO_MAQUINA;
     private TextureRegion[] texturasMaquina;
+    private boolean sonidoTemporizadorActivo = false;
 
     private final Rectangle AREA;
 
@@ -90,22 +89,26 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
                 INDICADOR.setEstado(EstadoIndicador.QUEMANDOSE);
             } else if (ingredienteCocinando.getEstadoCoccion() == EstadoCoccion.BIEN_HECHO) {
                 INDICADOR.setEstado(EstadoIndicador.LISTO);
-                GestorAudio.getInstance().reproducirSonido(SonidoJuego.COCCION_PERFECTA);
             } else {
                 INDICADOR.setEstado(EstadoIndicador.PROCESANDO);
             }
         }
 
-        if (!ingredienteCocinando.estaQuemado() &&
-            ingredienteCocinando.getEstadoCoccion() != EstadoCoccion.BIEN_HECHO) {
-            tiempoSonidoTemporizador += delta;
-            if (tiempoSonidoTemporizador >= INTERVALO_SONIDO_TEMPORIZADOR) {
-                GestorAudio.getInstance().reproducirSonido(SonidoJuego.TEMPORIZADOR);
-                tiempoSonidoTemporizador = 0f;
+        if (!ingredienteCocinando.estaQuemado() && ingredienteCocinando.getEstadoCoccion() != EstadoCoccion.BIEN_HECHO) {
+            if (!sonidoTemporizadorActivo) {
+                GestorAudio.getInstance().reproducirSonido(SonidoJuego.TEMPORIZADOR.getIdentificador());
+                sonidoTemporizadorActivo = true;
             }
         }
 
+        if (ingredienteCocinando.getEstadoCoccion() == EstadoCoccion.BIEN_HECHO) {
+            GestorAudio.getInstance().detenerSonido(SonidoJuego.TEMPORIZADOR.getIdentificador());
+            sonidoTemporizadorActivo = false;
+        }
+
         if (ingredienteCocinando.estaQuemado()) {
+            GestorAudio.getInstance().detenerSonido(SonidoJuego.TEMPORIZADOR.getIdentificador());
+            sonidoTemporizadorActivo = false;
             procesando = false;
         }
     }
@@ -141,7 +144,8 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
         ingredienteCocinando.setCoccionListener(null);
         ingredienteCocinando = null;
         procesando = false;
-        tiempoSonidoTemporizador = 0f;
+        GestorAudio.getInstance().detenerSonido(SonidoJuego.TEMPORIZADOR.getIdentificador());
+        sonidoTemporizadorActivo = false;
 
         return resultado;
     }
@@ -155,6 +159,8 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
 
     @Override
     public void onIngredienteQuemado() {
+        GestorAudio.getInstance().detenerSonido(SonidoJuego.TEMPORIZADOR.getIdentificador());
+        sonidoTemporizadorActivo = false;
         procesando = false;
     }
 

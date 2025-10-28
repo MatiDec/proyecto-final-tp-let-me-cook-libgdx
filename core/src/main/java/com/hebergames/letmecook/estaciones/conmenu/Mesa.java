@@ -1,4 +1,4 @@
-package com.hebergames.letmecook.estaciones;
+package com.hebergames.letmecook.estaciones.conmenu;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -19,7 +19,7 @@ import com.hebergames.letmecook.utiles.Recursos;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Mesa extends EstacionTrabajo {
+public class Mesa extends EstacionConMenu {
 
     private final int MAX_SLOTS = 2;
     private List<OpcionMenu> opcionesMenu;
@@ -37,7 +37,7 @@ public class Mesa extends EstacionTrabajo {
     }
 
     @Override
-    protected void alLiberar() {
+    public void alLiberar() {
 
     }
 
@@ -128,7 +128,7 @@ public class Mesa extends EstacionTrabajo {
     }
 
     @Override
-    protected void iniciarMenu(Jugador jugador) {
+    public void iniciarMenu(Jugador jugador) {
         textosMenu = new ArrayList<>();
 
         for (OpcionMenu opcion : opcionesMenu) {

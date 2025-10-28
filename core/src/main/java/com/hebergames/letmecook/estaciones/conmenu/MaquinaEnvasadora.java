@@ -1,4 +1,4 @@
-package com.hebergames.letmecook.estaciones;
+package com.hebergames.letmecook.estaciones.conmenu;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -18,7 +18,7 @@ import com.hebergames.letmecook.utiles.Recursos;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MaquinaEnvasadora extends EstacionTrabajo {
+public class MaquinaEnvasadora extends EstacionConMenu {
 
     private List<OpcionMenu> opcionesMenu;
     private List<Texto> textosMenu;
@@ -29,7 +29,7 @@ public class MaquinaEnvasadora extends EstacionTrabajo {
     }
 
     @Override
-    protected void alLiberar() {}
+    public void alLiberar() {}
 
     private void inicializarOpciones() {
         opcionesMenu = new ArrayList<>();
@@ -76,7 +76,7 @@ public class MaquinaEnvasadora extends EstacionTrabajo {
     }
 
     @Override
-    protected void iniciarMenu(Jugador jugador) {
+    public void iniciarMenu(Jugador jugador) {
         textosMenu = new ArrayList<>();
 
         Texto texto = new Texto(Recursos.FUENTE_MENU, 24, Color.WHITE, true);

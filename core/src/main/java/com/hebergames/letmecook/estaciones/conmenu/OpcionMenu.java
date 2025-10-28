@@ -1,4 +1,4 @@
-package com.hebergames.letmecook.estaciones;
+package com.hebergames.letmecook.estaciones.conmenu;
 
 import com.hebergames.letmecook.entregables.ObjetoAlmacenable;
 import java.util.function.Supplier;

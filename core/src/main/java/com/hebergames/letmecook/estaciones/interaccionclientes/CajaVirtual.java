@@ -1,4 +1,4 @@
-package com.hebergames.letmecook.estaciones;
+package com.hebergames.letmecook.estaciones.interaccionclientes;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.entidades.Jugador;
 import com.hebergames.letmecook.entidades.clientes.Cliente;
 import com.hebergames.letmecook.entregables.productos.Producto;
+import com.hebergames.letmecook.estaciones.EstacionTrabajo;
 import com.hebergames.letmecook.eventos.puntaje.CallbackPuntaje;
 import com.hebergames.letmecook.pedidos.EstadoPedido;
 import com.hebergames.letmecook.pedidos.GestorPedidos;
@@ -58,17 +59,16 @@ public class CajaVirtual extends EstacionTrabajo implements EstacionEntrega {
         Jugador jugador = getJugadorOcupante();
         if (jugador == null) return;
 
-        if (tieneCliente() && clienteVirtual.getPEDIDO().getEstadoPedido() == EstadoPedido.EN_ESPERA) {
+        if (tieneCliente() && clienteVirtual.getPedido().getEstadoPedido() == EstadoPedido.EN_ESPERA) {
             if (gestorPedidos != null) {
-                clienteVirtual.getPEDIDO().setEstadoPedido(EstadoPedido.EN_PREPARACION);
+                clienteVirtual.getPedido().setEstadoPedido(EstadoPedido.EN_PREPARACION);
                 clienteVirtual.resetearTiempo();
             }
             jugador.salirDeMenu();
-            alLiberar();
         }
 
         else if (tieneCliente() &&
-            clienteVirtual.getPEDIDO().getEstadoPedido() == EstadoPedido.EN_PREPARACION &&
+            clienteVirtual.getPedido().getEstadoPedido() == EstadoPedido.EN_PREPARACION &&
             jugador.getInventario() instanceof Producto) {
 
             Producto productoJugador = (Producto) jugador.getInventario();
@@ -82,7 +82,6 @@ public class CajaVirtual extends EstacionTrabajo implements EstacionEntrega {
             jugador.sacarDeInventario();
 
             jugador.salirDeMenu();
-            alLiberar();
         }
     }
 
@@ -104,16 +103,4 @@ public class CajaVirtual extends EstacionTrabajo implements EstacionEntrega {
     public void dibujarEstado(SpriteBatch batch) {
         dibujarEstadoCaja(batch);
     }
-
-    @Override
-    protected void iniciarMenu(Jugador jugador) {}
-
-    @Override
-    public void manejarSeleccionMenu(Jugador jugador, int numeroSeleccion) {}
-
-    @Override
-    protected void dibujarMenu(SpriteBatch batch, Jugador jugador) {}
-
-    @Override
-    protected void alLiberar() {}
 }

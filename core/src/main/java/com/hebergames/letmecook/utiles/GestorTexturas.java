@@ -67,8 +67,13 @@ public class GestorTexturas {
         try {
             Texture texturaProductos = new Texture(Gdx.files.internal(Recursos.PRODUCTOS_SPRITESHEET));
             TextureRegion[][] tmpProductos = TextureRegion.split(texturaProductos,
-                Recursos.SPRITE_ITEM_WIDTH, Recursos.SPRITE_ITEM_HEIGHT);
-            TEXTURAS_PRODUCTOS.put("hamburguesa", tmpProductos[0][0]);
+                256, Recursos.SPRITE_ITEM_HEIGHT);
+            final int CANTIDAD_PRODUCTOS = 8;
+            final String[] NOMBRES_PRODUCTOS = {"hamburguesadecarne", "hamburguesadepollo", "milanesadecarne",
+                "milanesadepollo", "papasfritas", "nuggetsdepollo", "arosdecebolla", "rabas"};
+            for (int i = 0; i < CANTIDAD_PRODUCTOS; i++) {
+                TEXTURAS_PRODUCTOS.put(NOMBRES_PRODUCTOS[i], tmpProductos[0][i]);
+            }
         } catch (Exception e) {
             System.err.println("No se pudieron cargar las texturas de productos: " + e.getMessage());
         }
@@ -87,18 +92,27 @@ public class GestorTexturas {
             TextureRegion[][] tmpBebidas = TextureRegion.split(texturaBebidas,
                 Recursos.SPRITE_ITEM_WIDTH, Recursos.SPRITE_ITEM_HEIGHT);
 
-            String[] tiposBebidas = {"expreso", "americano", "cortado", "jugo", "soda", "sprite", "pepsi", "cocacola"};
+            String[] tiposCafe = {"expreso", "americano", "cortado"};
+            String[] tiposGaseosa = {"jugo", "soda", "sprite", "pepsi", "cocacola"};
             String[] tamanos = {"pequeno", "mediano", "grande"};
 
-            for (int fila = 0; fila < tamanos.length; fila++) {
-                for (int col = 0; col < tiposBebidas.length && col < tmpBebidas[fila].length; col++) {
-                    String nombreTex = tiposBebidas[col] + tamanos[fila];
-                    TEXTURAS_PRODUCTOS.put(nombreTex, tmpBebidas[fila][col]);
+            for (int i = 0; i < tiposCafe.length; i++) {
+                for (int j = 0; j < tamanos.length; j++) {
+                    String nombreTex = tiposCafe[i] + tamanos[j];
+                    TEXTURAS_PRODUCTOS.put(nombreTex, tmpBebidas[j][i]);
+                }
+            }
+
+            for (int i = 0; i < tiposGaseosa.length; i++) {
+                for (int j = 0; j < tamanos.length; j++) {
+                    String nombreTex = tiposGaseosa[i] + tamanos[j];
+                    TEXTURAS_PRODUCTOS.put(nombreTex, tmpBebidas[j + 3][i]);
                 }
             }
         } catch (Exception e) {
             System.err.println("No se pudieron cargar las texturas de bebidas: " + e.getMessage());
         }
+
 
         // Cargar temporizadores
         try {

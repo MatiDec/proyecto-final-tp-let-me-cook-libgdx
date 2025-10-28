@@ -15,15 +15,13 @@ import java.util.ArrayList;
 
 public class TarjetaPedido {
 
-    private TextureRegion texturaCliente;
-    private TextureRegion texturaProducto;
     private final Texto TEXTO_TIEMPO;
     private final ShapeRenderer SHAPE_RENDERER;
 
-    private static final float ANCHO_TARJETA = 200f;
-    private static final float ALTO_TARJETA = 100f;
-    private static final float TAMANO_IMAGEN = 64f;
-    private static final float PADDING = 10f;
+    private final float ANCHO_TARJETA = 200f;
+    private final float ALTO_TARJETA = 100f;
+    private final float TAMANO_IMAGEN = 64f;
+    private final float PADDING = 10f;
 
     public TarjetaPedido() {
         SHAPE_RENDERER = new ShapeRenderer();
@@ -31,9 +29,9 @@ public class TarjetaPedido {
     }
 
     public void dibujar(SpriteBatch batch, Cliente cliente, float x, float y,
-                        TextureRegion texturaCliente, TextureRegion texturaProducto) {
+                        TextureRegion texturaCliente) {
 
-        if (cliente.getPEDIDO().getEstadoPedido() != EstadoPedido.EN_PREPARACION) {
+        if (cliente.getPedido().getEstadoPedido() != EstadoPedido.EN_PREPARACION) {
             return;
         }
 
@@ -68,7 +66,7 @@ public class TarjetaPedido {
                 24f, 24f);
         }
 
-        ArrayList<Producto> productos = cliente.getPEDIDO().getProductosSolicitados();
+        ArrayList<Producto> productos = cliente.getPedido().getProductosSolicitados();
         int cantidadAMostrar = Math.min(productos.size(), 3);
 
         for (int i = 0; i < cantidadAMostrar; i++) {

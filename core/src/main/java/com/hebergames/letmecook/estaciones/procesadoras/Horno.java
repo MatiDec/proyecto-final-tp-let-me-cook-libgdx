@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.entidades.Jugador;
 import com.hebergames.letmecook.estaciones.EstacionTrabajo;
 
-public class Horno extends EstacionTrabajo {
+public class Horno extends EstacionProcesadora {
 
     public Horno(Rectangle area) {
         super(area);
@@ -13,22 +13,15 @@ public class Horno extends EstacionTrabajo {
     }
 
     @Override
-    protected void alLiberar() {}
-
-    @Override
-    protected void iniciarMenu(Jugador jugador) {}
-
-    @Override
-    public void manejarSeleccionMenu(Jugador jugador, int direccion) {}
-
-    @Override
-    protected void dibujarMenu(SpriteBatch batch, Jugador jugador) {}
-
-    @Override
     public void alInteractuar() {
         if (getJugadorOcupante() != null) {
             manejarProcesamiento(getJugadorOcupante());
         }
+    }
+
+    @Override
+    public void dibujarEstado(SpriteBatch batch) {
+
     }
 
 }

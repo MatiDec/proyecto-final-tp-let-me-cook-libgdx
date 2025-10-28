@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hebergames.letmecook.entidades.Jugador;
+import com.hebergames.letmecook.estaciones.conmenu.EstacionConMenu;
 import com.hebergames.letmecook.estaciones.EstacionTrabajo;
 
 import java.util.ArrayList;
@@ -66,8 +67,8 @@ public class Entrada implements InputProcessor {
 
             if (jugador.estaEnMenu()) {
                 EstacionTrabajo estacion = jugador.getEstacionActual();
-                if (estacion != null) {
-                    estacion.manejarSeleccionMenu(jugador, numeroSeleccionado);
+                if (estacion instanceof EstacionConMenu) {
+                    ((EstacionConMenu) estacion).manejarSeleccionMenu(jugador, numeroSeleccionado);
                 }
             }
         }

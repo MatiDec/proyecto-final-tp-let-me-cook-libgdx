@@ -53,7 +53,7 @@ public class Cliente {
     }
 
     public void dibujar(SpriteBatch batch) {
-        if (visualizador == null || estacionAsignada == null || PEDIDO == null) {
+        if (visualizador == null || estacionAsignada == null) {
             return;
         }
 
@@ -85,7 +85,7 @@ public class Cliente {
         return this.tiempoEspera / this.TIEMPO_MAXIMO_ESPERA;
     }
 
-    public Pedido getPEDIDO() {
+    public Pedido getPedido() {
         return this.PEDIDO;
     }
 

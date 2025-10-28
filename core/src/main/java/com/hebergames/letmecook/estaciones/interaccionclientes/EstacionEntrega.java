@@ -1,4 +1,4 @@
-package com.hebergames.letmecook.estaciones;
+package com.hebergames.letmecook.estaciones.interaccionclientes;
 
 import com.hebergames.letmecook.entidades.clientes.Cliente;
 

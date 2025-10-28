@@ -111,7 +111,7 @@ public class GestorUIJuego {
 
             if (i < TARJETAS_PEDIDOS.size()) {
                 TARJETAS_PEDIDOS.get(i).dibujar(batch, cliente, x, y,
-                    GestorTexturas.getInstance().getTexturaCliente(), null);
+                    GestorTexturas.getInstance().getTexturaCliente());
             }
         }
     }

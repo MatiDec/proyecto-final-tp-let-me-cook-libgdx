@@ -6,8 +6,10 @@ import com.hebergames.letmecook.entidades.Jugador;
 import com.hebergames.letmecook.entregables.ObjetoAlmacenable;
 import com.hebergames.letmecook.entregables.ingredientes.Ingrediente;
 import com.hebergames.letmecook.entregables.productos.Producto;
+import com.hebergames.letmecook.estaciones.conmenu.EstacionConMenu;
+import com.hebergames.letmecook.estaciones.interaccionclientes.CajaRegistradora;
+import com.hebergames.letmecook.estaciones.interaccionclientes.MesaRetiro;
 import com.hebergames.letmecook.estaciones.procesadoras.MaquinaProcesadora;
-import com.hebergames.letmecook.pedidos.ResultadoEntrega;
 import com.hebergames.letmecook.utiles.GestorTexturas;
 import com.hebergames.letmecook.utiles.Recursos;
 
@@ -15,7 +17,7 @@ public abstract class EstacionTrabajo {
     public Rectangle area;
     protected MaquinaProcesadora procesadora;
 
-    private final static float DIFERENCIA = 150f;
+    private final float DIFERENCIA = 150f;
 
     private Jugador jugadorOcupante = null;
 
@@ -63,19 +65,25 @@ public abstract class EstacionTrabajo {
             ocupar(jugador);
         }
 
-        if (!jugador.estaEnMenu()) {
-            jugador.entrarEnMenu(this);
+        if (this instanceof EstacionConMenu) {
+            if (!jugador.estaEnMenu()) {
+                jugador.entrarEnMenu(this);
+            }
         }
 
         alInteractuar();
 
-        iniciarMenu(jugador);
+        if (this instanceof EstacionConMenu) {
+            ((EstacionConMenu) this).iniciarMenu(jugador);
+        }
 
         if (this instanceof CajaRegistradora) {
             CajaRegistradora caja = (CajaRegistradora) this;
             if (caja.tomarPedido()) {
                 jugador.salirDeMenu();
-                alLiberar();
+                if (this instanceof EstacionConMenu) {
+                    ((EstacionConMenu) this).alLiberar();
+                }
                 jugadorOcupante = null;
             }
         }
@@ -84,11 +92,13 @@ public abstract class EstacionTrabajo {
             MesaRetiro mesa = (MesaRetiro) this;
             if (mesa.tieneCliente() && jugador.getInventario() instanceof Producto) {
                 Producto productoJugador = (Producto) jugador.getInventario();
-                ResultadoEntrega resultado = mesa.entregarProducto(productoJugador);
+                mesa.entregarProducto(productoJugador);
                 jugador.sacarDeInventario();
 
                 jugador.salirDeMenu();
-                alLiberar();
+                if (this instanceof EstacionConMenu) {
+                    ((EstacionConMenu) this).alLiberar();
+                }
                 jugadorOcupante = null;
             }
         }
@@ -152,11 +162,7 @@ public abstract class EstacionTrabajo {
 
     public void dibujarEstado(SpriteBatch batch) {}
 
-    public void dibujar(SpriteBatch batch, Jugador jugador) {
-        if (jugadorOcupante == jugador && jugador.estaEnMenu()) {
-            dibujarMenu(batch, jugador);
-        }
-    }
+    public void dibujar(SpriteBatch batch, Jugador jugador) {}
 
     public Jugador getJugadorOcupante() {
         return this.jugadorOcupante;
@@ -174,7 +180,9 @@ public abstract class EstacionTrabajo {
             if (!estaCerca(jugadorOcupante.getPosicion().x,
                 jugadorOcupante.getPosicion().y)) {
                 jugadorOcupante.salirDeMenu();
-                alLiberar();
+                if (this instanceof EstacionConMenu) {
+                    ((EstacionConMenu) this).alLiberar();
+                }
                 jugadorOcupante = null;
             }
         }
@@ -183,11 +191,6 @@ public abstract class EstacionTrabajo {
     public void setFueraDeServicio(boolean fuera) {
         this.fueraDeServicio = fuera;
     }
-
-    protected abstract void alLiberar();
-    protected abstract void iniciarMenu(Jugador jugador);
-    public abstract void manejarSeleccionMenu(Jugador jugador, int numeroSeleccion);
-    protected abstract void dibujarMenu(SpriteBatch batch, Jugador jugador);
 
     public abstract void alInteractuar();
 

@@ -12,18 +12,6 @@ public class Basurero extends EstacionTrabajo{
     }
 
     @Override
-    protected void alLiberar() {}
-
-    @Override
-    protected void iniciarMenu(Jugador jugador) {}
-
-    @Override
-    public void manejarSeleccionMenu(Jugador jugador, int numeroSeleccion) {}
-
-    @Override
-    protected void dibujarMenu(SpriteBatch batch, Jugador jugador) {}
-
-    @Override
     public void alInteractuar() {
         Jugador jugador = getJugadorOcupante();
         if(jugador.tieneInventarioLleno())
