@@ -12,8 +12,6 @@ public class GestorIndicadores {
     private final Rectangle areaVisibleCache;
     private float tiempoUltimaAlerta;
 
-    private static final float INTERVALO_SONIDO_ALERTA = 2f;
-
     public GestorIndicadores() {
         INDICADORES = new ArrayList<>();
         areaVisibleCache = new Rectangle();
@@ -42,6 +40,7 @@ public class GestorIndicadores {
             }
         }
 
+        float INTERVALO_SONIDO_ALERTA = 2f;
         if (hayAlertaActiva && tiempoUltimaAlerta >= INTERVALO_SONIDO_ALERTA) {
             GestorAudio.getInstance().reproducirSonido("alerta_quemado");
             tiempoUltimaAlerta = 0f;

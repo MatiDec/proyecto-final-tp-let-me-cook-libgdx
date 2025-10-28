@@ -1,9 +1,8 @@
 package com.hebergames.letmecook.estaciones.procesadoras;
 
 public enum EstadoMaquina {
-    INACTIVA(0),
-    ACTIVA(1),
-    LISTA(2);
+    ACTIVA(0),
+    LISTA(1);
 
     private final int indice;
 

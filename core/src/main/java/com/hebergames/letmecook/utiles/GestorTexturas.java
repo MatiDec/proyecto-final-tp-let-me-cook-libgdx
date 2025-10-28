@@ -139,25 +139,19 @@ public class GestorTexturas {
             TextureRegion[][] tmpMaquinas = TextureRegion.split(texturaMaquinas,
                 Recursos.MEDIDA_TILE, Recursos.MEDIDA_TILE);
 
-            // Horno - Fila 0
-            TextureRegion[] estadosHorno = new TextureRegion[3];
-            estadosHorno[0] = tmpMaquinas[0][0]; // Inactiva
-            estadosHorno[1] = tmpMaquinas[0][1]; // Procesando
-            estadosHorno[2] = tmpMaquinas[0][2]; // Lista
-            TEXTURAS_MAQUINAS.put("horno", estadosHorno);
-
-            // Freidora - Fila 1
-            TextureRegion[] estadosFreidora = new TextureRegion[3];
-            estadosFreidora[0] = tmpMaquinas[1][0]; // Inactiva
-            estadosFreidora[1] = tmpMaquinas[1][1]; // Procesando
-            estadosFreidora[2] = tmpMaquinas[1][2]; // Lista
+            TextureRegion[] estadosFreidora = new TextureRegion[2];
+            estadosFreidora[0] = tmpMaquinas[0][1];
+            estadosFreidora[1] = tmpMaquinas[0][2];
             TEXTURAS_MAQUINAS.put("freidora", estadosFreidora);
 
-            // Tostadora - Fila 2
-            TextureRegion[] estadosTostadora = new TextureRegion[3];
-            estadosTostadora[0] = tmpMaquinas[2][0]; // Inactiva
-            estadosTostadora[1] = tmpMaquinas[2][1]; // Procesando
-            estadosTostadora[2] = tmpMaquinas[2][2]; // Lista
+            TextureRegion[] estadosHorno = new TextureRegion[2];
+            estadosHorno[0] = tmpMaquinas[1][1];
+            estadosHorno[1] = tmpMaquinas[1][2];
+            TEXTURAS_MAQUINAS.put("horno", estadosHorno);
+
+            TextureRegion[] estadosTostadora = new TextureRegion[2];
+            estadosTostadora[0] = tmpMaquinas[2][1];
+            estadosTostadora[1] = tmpMaquinas[2][2];
             TEXTURAS_MAQUINAS.put("tostadora", estadosTostadora);
 
             System.out.println("Texturas de máquinas cargadas: Horno, Freidora, Tostadora");

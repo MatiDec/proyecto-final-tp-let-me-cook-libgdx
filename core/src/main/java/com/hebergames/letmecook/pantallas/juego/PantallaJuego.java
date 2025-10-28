@@ -371,6 +371,14 @@ public class PantallaJuego extends Pantalla {
             jugador.dibujar(batch);
         }
 
+        for (EstacionTrabajo estacion : estaciones) {
+            if (estacion.getProcesadora() instanceof Procesadora) {
+                Procesadora proc = (Procesadora) estacion.getProcesadora();
+                proc.dibujarEstado(batch);
+            }
+        }
+
+
         if (gestorClientes != null) {
             for (Cliente cliente : gestorClientes.getClientesActivos()) {
                 cliente.dibujar(batch);

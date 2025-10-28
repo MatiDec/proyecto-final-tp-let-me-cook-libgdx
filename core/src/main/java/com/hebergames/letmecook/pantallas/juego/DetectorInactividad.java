@@ -7,35 +7,35 @@ public class DetectorInactividad {
 
     private float tiempoInactividad = 0f;
     private final float TIEMPO_LIMITE_INACTIVIDAD;
-    private ArrayList<Jugador> jugadores;
-    private float[] ultimasPosicionesX;
-    private float[] ultimasPosicionesY;
+    private final ArrayList<Jugador> JUGADORES;
+    private final float[] ULTIMAS_POSICIONES_X;
+    private final float[] ULTIMAS_POSICIONES_Y;
 
-    public DetectorInactividad(ArrayList<Jugador> jugadores, float tiempoLimite) {
-        this.jugadores = jugadores;
+    public DetectorInactividad(ArrayList<Jugador> JUGADORES, float tiempoLimite) {
+        this.JUGADORES = JUGADORES;
         this.TIEMPO_LIMITE_INACTIVIDAD = tiempoLimite;
-        this.ultimasPosicionesX = new float[jugadores.size()];
-        this.ultimasPosicionesY = new float[jugadores.size()];
+        this.ULTIMAS_POSICIONES_X = new float[JUGADORES.size()];
+        this.ULTIMAS_POSICIONES_Y = new float[JUGADORES.size()];
 
-        for (int i = 0; i < jugadores.size(); i++) {
-            ultimasPosicionesX[i] = jugadores.get(i).getPosicion().x;
-            ultimasPosicionesY[i] = jugadores.get(i).getPosicion().y;
+        for (int i = 0; i < JUGADORES.size(); i++) {
+            ULTIMAS_POSICIONES_X[i] = JUGADORES.get(i).getPosicion().x;
+            ULTIMAS_POSICIONES_Y[i] = JUGADORES.get(i).getPosicion().y;
         }
     }
 
     public void actualizar(float delta) {
         boolean algunoSeMovio = false;
 
-        for (int i = 0; i < jugadores.size(); i++) {
-            Jugador jugador = jugadores.get(i);
+        for (int i = 0; i < JUGADORES.size(); i++) {
+            Jugador jugador = JUGADORES.get(i);
             float posX = jugador.getPosicion().x;
             float posY = jugador.getPosicion().y;
 
-            if (Math.abs(posX - ultimasPosicionesX[i]) > 0.1f ||
-                Math.abs(posY - ultimasPosicionesY[i]) > 0.1f) {
+            if (Math.abs(posX - ULTIMAS_POSICIONES_X[i]) > 0.1f ||
+                Math.abs(posY - ULTIMAS_POSICIONES_Y[i]) > 0.1f) {
                 algunoSeMovio = true;
-                ultimasPosicionesX[i] = posX;
-                ultimasPosicionesY[i] = posY;
+                ULTIMAS_POSICIONES_X[i] = posX;
+                ULTIMAS_POSICIONES_Y[i] = posY;
             }
         }
 
@@ -48,13 +48,5 @@ public class DetectorInactividad {
 
     public boolean haySuperadoLimite() {
         return tiempoInactividad >= TIEMPO_LIMITE_INACTIVIDAD;
-    }
-
-    public float getTiempoInactividad() {
-        return tiempoInactividad;
-    }
-
-    public void reset() {
-        tiempoInactividad = 0f;
     }
 }

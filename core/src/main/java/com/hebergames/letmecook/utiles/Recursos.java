@@ -16,6 +16,7 @@ public class Recursos {
     public static final String MAQUINAS_SPRITESHEET = RUTA_IMAGENES + "maquinas.png";
     private static final Texture TEXTURA_INGREDIENTES = new Texture(RUTA_IMAGENES + "ingredientes.png");
     public static final TextureRegion INGREDIENTES = new TextureRegion(TEXTURA_INGREDIENTES);
+    public static final String ARCHIVO_CONFIG = "core/src/main/java/com/hebergames/letmecook/configuracion/configuracion.txt";
 
 
     public static final String JUGADOR_SPRITESHEET = RUTA_IMAGENES + "Jugador.png";

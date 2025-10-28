@@ -17,10 +17,8 @@ public class IndicadorVisual {
     private float anguloFlecha;
     private EstadoIndicador estado;
 
-    private static final float OFFSET_Y = 40f;
-    private static final float TAMANO = 32f;
-
     public IndicadorVisual(float x, float y) {
+        float OFFSET_Y = 40f;
         this.POSICION_MUNDO = new Vector2(x, y + OFFSET_Y);
         this.POSICION_PANTALLA = new Vector2();
         this.visible = false;
@@ -85,6 +83,7 @@ public class IndicadorVisual {
     public void dibujar(SpriteBatch batch) {
         if (!visible || texturaActual == null) return;
 
+        float TAMANO = 32f;
         float x = POSICION_PANTALLA.x - TAMANO / 2f;
         float y = POSICION_PANTALLA.y - TAMANO / 2f;
 

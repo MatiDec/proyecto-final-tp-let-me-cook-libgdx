@@ -1,6 +1,7 @@
 package com.hebergames.letmecook.estaciones.procesadoras;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.hebergames.letmecook.elementos.Texto;
@@ -109,6 +110,24 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
         }
     }
 
+    public void dibujarEstado(SpriteBatch batch) {
+        if (!procesando && (ingredienteCocinando == null)) return;
+
+        TextureRegion overlay = null;
+
+        if (procesando) {
+            overlay = GestorTexturas.getInstance()
+                .getTexturaMaquina(TIPO_MAQUINA, EstadoMaquina.ACTIVA);
+        } else if (ingredienteCocinando.getEstadoCoccion() == EstadoCoccion.BIEN_HECHO) {
+            overlay = GestorTexturas.getInstance()
+                .getTexturaMaquina(TIPO_MAQUINA, EstadoMaquina.LISTA);
+        }
+
+        if (overlay != null) {
+            batch.draw(overlay, AREA.x, AREA.y, AREA.width, AREA.height);
+        }
+    }
+
     @Override
     public boolean tieneProcesandose() {
         return procesando && ingredienteCocinando != null;
@@ -146,10 +165,6 @@ public class Procesadora implements MaquinaProcesadora, CoccionListener {
     public TextureRegion getTexturaActual() {
         if (texturasMaquina == null) {
             return null;
-        }
-
-        if (!procesando) {
-            return texturasMaquina[EstadoMaquina.INACTIVA.getIndice()];
         }
         if (ingredienteCocinando != null &&
             ingredienteCocinando.getEstadoCoccion() == EstadoCoccion.BIEN_HECHO) {

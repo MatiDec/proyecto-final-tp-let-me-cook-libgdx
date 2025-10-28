@@ -1,15 +1,16 @@
 package com.hebergames.letmecook.pantallas.juego;
 
+import com.hebergames.letmecook.utiles.Recursos;
+
 import java.io.*;
 import java.util.Properties;
 
 public class GestorConfiguracion {
 
-    public static final String ARCHIVO_CONFIG = "core/src/main/java/com/hebergames/letmecook/configuracion/configuracion.txt";
     private static final Properties PROPIEDADES = new Properties();
 
     public static void cargar() {
-        File archivo = new File(ARCHIVO_CONFIG);
+        File archivo = new File(Recursos.ARCHIVO_CONFIG);
         if (archivo.exists()) {
             try (FileInputStream fis = new FileInputStream(archivo)) {
                 PROPIEDADES.load(fis);
@@ -20,7 +21,7 @@ public class GestorConfiguracion {
     }
 
     public static void guardar() {
-        try (FileOutputStream fos = new FileOutputStream(ARCHIVO_CONFIG)) {
+        try (FileOutputStream fos = new FileOutputStream(Recursos.ARCHIVO_CONFIG)) {
             PROPIEDADES.store(fos, "Configuraciones del juego");
         } catch (IOException e) {
             e.printStackTrace();
