@@ -1,17 +1,17 @@
 package com.hebergames.letmecook.entregables.ingredientes;
 
 public enum EstadoCoccion {
-    CRUDO("Crudo"),
-    COCIDO("Cocido"),
-    QUEMADO("Quemado");
+    MAL_HECHO("Mal hecho"),
+    BIEN_HECHO("Bien hecho"),
+    PASADO("Pasado");
 
-    private String nombre;
+    private final String ESTADO;
 
-    EstadoCoccion(String nombre) {
-        this.nombre = nombre;
+    EstadoCoccion(final String ESTADO) {
+        this.ESTADO = ESTADO;
     }
 
-    public String getNombre() {
-        return this.nombre;
+    public String getESTADO() {
+        return this.ESTADO;
     }
 }

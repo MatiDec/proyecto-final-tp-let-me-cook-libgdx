@@ -1,15 +1,23 @@
 package com.hebergames.letmecook.entregables.recetas;
 
 import com.hebergames.letmecook.entregables.ingredientes.Ingrediente;
+
 import java.util.ArrayList;
 
 public class GestorRecetas {
     private static GestorRecetas instancia;
-    private ArrayList<Receta> recetas;
+    private final ArrayList<Receta> RECETAS;
 
     private GestorRecetas() {
-        recetas = new ArrayList<>();
-        inicializarRecetas();
+        RECETAS = new ArrayList<>();
+        cargarRecetas();
+    }
+
+    public void cargarRecetas() {
+        RECETAS.clear();
+        for (TipoReceta tipo : TipoReceta.values()) {
+            RECETAS.add(tipo.crear());
+        }
     }
 
     public static GestorRecetas getInstance() {
@@ -19,13 +27,8 @@ public class GestorRecetas {
         return instancia;
     }
 
-    private void inicializarRecetas() {
-        recetas.add(new RecetaHamburguesa());
-        // desde acá se añaden más recetas
-    }
-
     public Receta buscarReceta(ArrayList<Ingrediente> ingredientes) {
-        for (Receta receta : recetas) {
+        for (Receta receta : RECETAS) {
             if (receta.puedePreparar(ingredientes)) {
                 return receta;
             }
@@ -33,7 +36,7 @@ public class GestorRecetas {
         return null;
     }
 
-    public ArrayList<Receta> getRecetas() {
-        return this.recetas;
+    public ArrayList<Receta> getRECETAS() {
+        return this.RECETAS;
     }
 }

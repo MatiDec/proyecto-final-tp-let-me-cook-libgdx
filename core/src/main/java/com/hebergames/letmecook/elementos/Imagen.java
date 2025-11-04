@@ -6,24 +6,23 @@ import com.hebergames.letmecook.utiles.Render;
 
 public class Imagen {
 
-    private Texture t;
-    private Sprite s;
+    private final Sprite sprite;
 
     public Imagen(String ruta) {
-        t = new Texture(ruta);
-        s = new Sprite(t);
+        Texture textura = new Texture(ruta);
+        sprite = new Sprite(textura);
     }
 
     public void dibujar() {
-        s.draw(Render.batch);
+        this.sprite.draw(Render.batch);
     }
 
     public void setSize(int ancho, int alto) {
-        s.setSize(ancho, alto);
+        this.sprite.setSize(ancho, alto);
     }
 
     public void setPosicion(float x, float y) {
-        s.setPosition(x, y);
+        this.sprite.setPosition(x, y);
     }
 
 }

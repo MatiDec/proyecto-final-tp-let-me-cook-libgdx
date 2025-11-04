@@ -4,12 +4,17 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hebergames.letmecook.elementos.Texto;
-import com.hebergames.letmecook.eventos.Entrada;
-import com.hebergames.letmecook.eventos.TextoInteractuable;
-import com.hebergames.letmecook.utiles.Configuracion;
+import com.hebergames.letmecook.eventos.entrada.Entrada;
+import com.hebergames.letmecook.eventos.entrada.TextoInteractuable;
+import com.hebergames.letmecook.mapa.niveles.GestorPartida;
+import com.hebergames.letmecook.pantallas.juego.PantallaJuego;
+import com.hebergames.letmecook.pantallas.opciones.PantallaOpciones;
+import com.hebergames.letmecook.pantallas.tutorial.PantallaTutorial;
+import com.hebergames.letmecook.utiles.GestorJugadores;
 import com.hebergames.letmecook.elementos.Imagen;
 import com.hebergames.letmecook.utiles.Recursos;
 import com.hebergames.letmecook.utiles.Render;
@@ -19,14 +24,14 @@ public class PantallaMenu extends Pantalla {
     private Imagen fondo;
     private SpriteBatch BATCH;
 
-    private Texto o1, o2, o3, o4; // Así la cantidad de opciones que tenga el menú
+    private Texto[] opcionesTexto;
+    private TextoInteractuable[] opcionesInteractuables;
 
-    private static final float DISENO_ANCHO = 1920f;
-    private static final float DISENO_ALTO = 1080f;
+    private final int TOTAL_OPCIONES = OpcionMenuPrincipal.values().length;
 
-    // Viewport y cámara
     private Viewport viewport;
     private OrthographicCamera camara;
+    private Vector3 coordenadasMouse;
 
     @Override
     public void show() {
@@ -37,51 +42,52 @@ public class PantallaMenu extends Pantalla {
             Gdx.graphics.getHeight() * 1f);
         camara.update();
 
+        coordenadasMouse = new Vector3();
+
         inicializarTextos();
         configurarEntrada();
 
         fondo = new Imagen(Recursos.FONDO);
         BATCH = Render.batch;
-
     }
 
     private void configurarEntrada() {
         Entrada entrada = new Entrada();
         Gdx.input.setInputProcessor(entrada);
 
-        //La flechita es porque TextoInteractuable recibe una función, es por el Runnable. Lo mejor sería reemplazarlo pq es una expresión lambda y es complejo, se puede simplificar.
-        TextoInteractuable multijugadorLocal = new TextoInteractuable(o1, () ->
-            cambiarPantalla(new PantallaJuego()));
+        opcionesInteractuables = new TextoInteractuable[TOTAL_OPCIONES];
 
-        TextoInteractuable multijugadorOnline = new TextoInteractuable(o2, () ->
+        opcionesInteractuables[0] = new TextoInteractuable(opcionesTexto[0], () -> {
+            GestorPartida.getInstancia().resetearPartida();
+            cambiarPantalla(new PantallaJuego());
+        });
+
+        opcionesInteractuables[1] = new TextoInteractuable(opcionesTexto[1], () ->
             System.out.println("Acá debería entrar al modo multijugador online"));
 
-        TextoInteractuable opciones = new TextoInteractuable(o3, () ->
-            System.out.println("Acá debería entrar al menu de opciones"));
+        opcionesInteractuables[2] = new TextoInteractuable(opcionesTexto[2], () ->
+            cambiarPantalla(new PantallaTutorial()));
 
-        TextoInteractuable salir = new TextoInteractuable(o4, () -> {
+        opcionesInteractuables[3] = new TextoInteractuable(opcionesTexto[3], () ->
+            cambiarPantalla(new PantallaOpciones()));
+
+        opcionesInteractuables[4] = new TextoInteractuable(opcionesTexto[4], () -> {
             dispose();
             Gdx.app.exit();
         });
 
-        entrada.registrar(multijugadorLocal);
-        entrada.registrar(multijugadorOnline);
-        entrada.registrar(opciones);
-        entrada.registrar(salir);
+        for (TextoInteractuable opcion : opcionesInteractuables) {
+            entrada.registrar(opcion);
+        }
     }
 
     private void inicializarTextos() {
-        o1 = new Texto(Recursos.FUENTE_MENU, 72, Color.WHITE, true);
-        o1.setTexto("Multijugador Local");
+        opcionesTexto = new Texto[TOTAL_OPCIONES];
 
-        o2 = new Texto(Recursos.FUENTE_MENU, 72, Color.WHITE, true);
-        o2.setTexto("Multijugador Online");
-
-        o3 = new Texto(Recursos.FUENTE_MENU, 72, Color.WHITE, true);
-        o3.setTexto("Opciones");
-
-        o4 = new Texto(Recursos.FUENTE_MENU, 72, Color.WHITE, true);
-        o4.setTexto("Salir");
+        for (int i = 0; i < TOTAL_OPCIONES; i++) {
+            opcionesTexto[i] = new Texto(Recursos.FUENTE_MENU, 72, Color.WHITE, true);
+            opcionesTexto[i].setTexto(OpcionMenuPrincipal.values()[i].getNombre());
+        }
 
         posicionarTextos();
     }
@@ -91,18 +97,32 @@ public class PantallaMenu extends Pantalla {
         viewport.apply();
         camara.update();
         actualizarFondo();
+
+        actualizarHover();
+
         BATCH.setProjectionMatrix(camara.combined);
         BATCH.begin();
+
         fondo.dibujar();
-        o1.dibujar();
-        o2.dibujar();
-        o3.dibujar();
-        o4.dibujar();
+
+        for (Texto opcion : opcionesTexto) {
+            opcion.dibujar();
+        }
+
         BATCH.end();
     }
 
+    private void actualizarHover() {
+        coordenadasMouse.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+        camara.unproject(coordenadasMouse);
+
+        for (TextoInteractuable opcion : opcionesInteractuables) {
+            opcion.actualizarHover(coordenadasMouse.x, coordenadasMouse.y);
+        }
+    }
+
     private void actualizarFondo() {
-        fondo.setSize((int)Configuracion.ANCHO, (int)Configuracion.ALTO);
+        fondo.setSize((int) GestorJugadores.ANCHO, (int) GestorJugadores.ALTO);
         fondo.setPosicion(0, 0);
     }
 
@@ -121,15 +141,18 @@ public class PantallaMenu extends Pantalla {
         float centroY = altoVirtual / 2f;
 
         float espaciado = Math.max(40, altoVirtual * 0.08f);
-        float alturaOpcion = o1.getAlto();
+        float alturaOpcion = opcionesTexto[0].getAlto();
 
-        float alturaTotal = (alturaOpcion * 4) + (espaciado * 3);
+        float alturaTotal = (alturaOpcion * TOTAL_OPCIONES) + (espaciado * (TOTAL_OPCIONES - 1));
         float posicionInicial = centroY + (alturaTotal / 2f) - (alturaOpcion / 2f);
 
-        o1.setPosition(centroX - (o1.getAncho() / 2f), posicionInicial);
-        o2.setPosition(centroX - (o2.getAncho() / 2f), posicionInicial - (alturaOpcion + espaciado));
-        o3.setPosition(centroX - (o3.getAncho() / 2f), posicionInicial - (alturaOpcion + espaciado) * 2);
-        o4.setPosition(centroX - (o4.getAncho() / 2f), posicionInicial - (alturaOpcion + espaciado) * 3);
+        for (int i = 0; i < TOTAL_OPCIONES; i++) {
+            float yPos = posicionInicial - (alturaOpcion + espaciado) * i;
+            opcionesTexto[i].setPosition(
+                centroX - (opcionesTexto[i].getAncho() / 2f),
+                yPos
+            );
+        }
     }
 
     @Override
