@@ -16,3 +16,9 @@ __Estado Actual del Proyecto:__ Configuración de las mecánicas y elementos cla
 ## Todas las características implementadas se encuentran en el archivo [CHANGELOG.md](https://github.com/MatiDec/proyecto-final-tp-let-me-cook-libgdx/blob/main/CHANGELOG.md)
 
 *[Ver una demostración del prototipo jugable del proyecto aquí](https://youtu.be/aVAIvmzZSUY)*
+
+# Para jugar la versión online accede a los siguientes repositorios
+
+*[Repositorio del servidor](https://github.com/MatiDec/proyecto-final-tp-let-me-cook-libgdx-servidor)*
+
+*[Repositorio del cliente](https://github.com/MatiDec/proyecto-final-tp-let-me-cook-libgdx-cliente)*
